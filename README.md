@@ -9,4 +9,5 @@ Multi Platform 3D Library
 - PSP
 
 Currently I am working on the PS2.
+<img src="sc.jpg?raw=true" alt="PS2 Demo" width="480" height="360">
 
