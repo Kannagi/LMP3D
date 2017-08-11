@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<title>Basic Model 3D</title>
+
+<h2>
+    Content
+</h2>
+<table id="toc" class="toc">
+    <ul>
+    <li class="toclevel-1 tocsection-1"><a rel="nofollow" href="#File_header"><span class="tocnumber">1</span> <span class="toctext">File header</span></a></li>
+    <li class="toclevel-1 tocsection-2"><a rel="nofollow" href="#Vertex_information"><span class="tocnumber">2</span> <span class="toctext">Vertex information</span></a></li>
+    <li class="toclevel-1 tocsection-3"><a rel="nofollow" href="#Index_information"><span class="tocnumber">3</span> <span class="toctext">Index information</span></a></li>
+    <li class="toclevel-1 tocsection-4"><a rel="nofollow" href="#Materials_information"><span class="tocnumber">4</span> <span class="toctext">Materials information</span></a></li>
+    <li class="toclevel-1 tocsection-5"><a rel="nofollow" href="#Groupe_information"><span class="tocnumber">5</span> <span class="toctext">Groupe information</span></a></li>
+    <li class="toclevel-1 tocsection-6"><a rel="nofollow" href="#Bones_information"><span class="tocnumber">6</span> <span class="toctext">Bones information</span></a></li>
+    <li class="toclevel-1 tocsection-7"><a rel="nofollow" href="#Inverse_Kinematics_information"><span class="tocnumber">7</span> <span class="toctext">Skeleton information</span></a></li>
+    </ul>
+</table>
+
+<h2>
+    <span class="mw-headline" id="File_header">File header</span>
+</h2>
+<p>Signature</p>
+
+<table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
+    <tbody>
+        <tr>
+        <td><b>Data type</b></td>
+        <td><b>Value</b></td>
+        </tr>
+
+        <tr>
+        <td>byte[1] (char)</td>
+        <td>'B'&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp </td>
+        </tr>
+
+        <tr>
+        <td>byte[1] (char)</td>
+        <td>'C'</td>
+        </tr>
+
+        <tr>
+        <td>byte[1] (char)</td>
+        <td>'M'</td>
+        </tr>
+
+        <tr>
+        <td>byte[1] (char)</td>
+        <td>'\0'</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Information</p>
+
+<table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
+    <tbody>
+        <tr>
+        <td><b>Data type</b></td>
+        <td><b>Description</b></td>
+        </tr>
+
+        <tr>
+        <td>byte[1] (char)</td>
+        <td>version</td>
+        </tr>
+
+        <tr>
+        <td>byte[1] (char)</td>
+        <td>flags type</td>
+        </tr>
+
+        <tr>
+        <td>byte[2] (short)</td>
+        <td>offset</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>flags type</p>
+
+<table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
+    <tbody>
+        <tr>
+        <td><b>Data type</b></td>
+        <td><b>Description</b></td>
+        </tr>
+
+        <tr>
+        <td>0x01</td>
+        <td>(0)Array/(1)Elements</td>
+        </tr>
+
+        <tr>
+        <td>0x02</td>
+        <td>(0)Static/(1)Animation</td>
+        </tr>
+
+        <tr>
+        <td>0x04</td>
+        <td>(0)no weight/(1)with weight</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>
+    <span class="mw-headline" id="Vertex_information">Vertex information</span>
+</h2>
+<p>Nombre de Vertex</p>
+
+<table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
+    <tbody>
+        <tr>
+        <td><b>Data type</b></td>
+        <td><b>Description</b></td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (long)</td>
+        <td>nombre de vertex</td>
+        </tr>
+    </tbody>
+</table>
+
+<p>Mesh</p>
+<table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
+    <tbody>
+        <tr>
+        <td><b>Data type</b></td>
+        <td><b>Description</b></td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>vertex x</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>vertex y</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>vertex z</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>normal x</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>normal y</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>normal z</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>cood de texture x</td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (float)</td>
+        <td>cood de texture y</td>
+        </tr>
+
+        <tr>
+        <td>byte[2] (short)</td>
+        <td>si animation , bone id</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>
+    <span class="mw-headline" id="Index_information">Index information</span>
+</h2>
+
+<p>Nombre d'Index</p>
+
+<table style="width: 100%;" border="1" cellpadding="1" cellspacing="1">
+    <tbody>
+        <tr>
+        <td><b>Data type</b></td>
+        <td><b>Description</b></td>
+        </tr>
+
+        <tr>
+        <td>byte[4] (long)</td>
+        <td>nombre d'index</td>
+        </tr>
+    </tbody>
+</table>
+
+

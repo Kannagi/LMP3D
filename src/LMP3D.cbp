@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="LMP3D" />
+		<Option pch_mode="2" />
+		<Option default_target="PS2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Linux">
+				<Option output="bin/demo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/Linux/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DPC" />
+				</Compiler>
+				<Linker>
+					<Add library="GL" />
+					<Add library="GLU" />
+					<Add library="SDL" />
+				</Linker>
+			</Target>
+			<Target title="Windows">
+				<Option output="bin/demo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/Windows/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DPC" />
+				</Compiler>
+				<Linker>
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="SDL" />
+				</Linker>
+			</Target>
+			<Target title="PS2">
+				<Option output="bin/PS2_demo.elf" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/PS2/" />
+				<Option type="1" />
+				<Option compiler="ps2_gcc_compiler" />
+				<Option parameters="&amp; pcsx2" />
+				<Compiler>
+					<Add option="-DPLAYSTATION2" />
+				</Compiler>
+				<Linker>
+					<Add option="-lc -lc -lkernel -lmf -lpad" />
+				</Linker>
+			</Target>
+			<Target title="Dreamcast">
+				<Option output="bin/DC_demo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/DC/" />
+				<Option type="0" />
+				<Option compiler="dc_gcc_compiler" />
+				<Compiler>
+					<Add option="-DDREAMCAST" />
+				</Compiler>
+			</Target>
+			<Target title="PSP">
+				<Option output="bin/PSP_demo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/PSP/" />
+				<Option type="0" />
+				<Option compiler="psp_gcc_compiler" />
+				<Compiler>
+					<Add option="-DPLAYSTATION_PORTABLE" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wmain" />
+			<Add option="-w" />
+			<Add directory="../LMP3D" />
+		</Compiler>
+		<Unit filename="LMP3D/Event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Event.h" />
+		<Unit filename="LMP3D/Graphics/Animation.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Camera.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Camera.h" />
+		<Unit filename="LMP3D/Graphics/Model.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Model.h" />
+		<Unit filename="LMP3D/Graphics/Platform/GL_Camera.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/GL_Model.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/GL_Other.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/GL_Texture.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Camera.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Model.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Other.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Texture.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_VU.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Vram.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Texture.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Texture.h" />
+		<Unit filename="LMP3D/LMP3D.h" />
+		<Unit filename="LMP3D/Load.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Load.h" />
+		<Unit filename="LMP3D/Load/bcm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Load/smd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Load/upng.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Load/upng.h" />
+		<Unit filename="LMP3D/Math.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Math.h" />
+		<Unit filename="LMP3D/Platform/PS2_Event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Platform/PS2_Register.h" />
+		<Unit filename="LMP3D/Platform/PS2_Window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Platform/SDL_Event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Platform/SDL_Window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Script.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Script.h" />
+		<Unit filename="LMP3D/Type.h" />
+		<Unit filename="LMP3D/Window.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Window.h" />
+		<Unit filename="game.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
