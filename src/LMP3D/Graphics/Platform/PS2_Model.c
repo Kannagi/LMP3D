@@ -7,44 +7,45 @@
 #include "LMP3D/LMP3D.h"
 void drawvu1(float* matrix,LMP3D_Model *model);
 
-void PS2_MatrixRotateY(float* matrix, float angle);
-void PS2_MatrixRotateX(float* matrix, float angle);
-void PS2_MatrixRotateZ(float* matrix, float angle);
-void PS2_MatrixTranslate(float* matrix, float x, float y, float z);
-void PS2_MatrixScale(float* matrix, float xscale, float yscale, float zscale);
-void PS2_MatrixProjection(float* matrix);
-void PS2_MatrixMultiply(float* dest,const float* src1,const float* src2);
-
-void PS2_MatrixIdentity(float* matrix);
-void GsAlpha();
-
-void LMP3D_Draw_Model_GL_VA(LMP3D_Model *model)
+void LMP3D_Model_Draw(LMP3D_Model *model)
 {
-	//GsAlpha();
-	float cameraMatrix[16],temprotMatrix[16],viewscreenMatrix[16];
-	float finalMatrix[16] __attribute__((aligned(16)));;
+	float rotateMatrix[16],rotateMatrix2[16];
+	float translateMatrix[16];
+	float scaleMatrix[16];
 
-	PS2_MatrixIdentity(cameraMatrix );
-	PS2_MatrixRotateX(&cameraMatrix, 1.57 );
+	float projectionMatrix[16],cameraMatrix[16];
+	float finalMatrix[16];
 
-
-
-
-	PS2_MatrixIdentity(temprotMatrix );
-	PS2_MatrixTranslate(temprotMatrix, model->position.x, model->position.y, model->position.z);
-
-
-	PS2_MatrixMultiply(cameraMatrix,cameraMatrix, temprotMatrix);
+	LMP3D_MatrixRotateX(rotateMatrix, 1.57 );
+	LMP3D_MatrixRotateY(rotateMatrix2, 0 );
+	LMP3D_MatrixMultiply(rotateMatrix,rotateMatrix, rotateMatrix2);
+	LMP3D_MatrixRotateZ(rotateMatrix2, 0);
+	LMP3D_MatrixMultiply(rotateMatrix,rotateMatrix, rotateMatrix2);
 
 
 
+	//Translate
+	LMP3D_MatrixIdentity(translateMatrix );
+	LMP3D_MatrixTranslate(translateMatrix, model->position.x, model->position.y, model->position.z);
 
-	PS2_MatrixIdentity(viewscreenMatrix );
-	PS2_MatrixProjection(viewscreenMatrix );
+	//Scale
+	LMP3D_MatrixIdentity(scaleMatrix );
+	LMP3D_MatrixTranslate(scaleMatrix, model->scale.x, model->scale.y, model->scale.z);
 
-	PS2_MatrixMultiply(finalMatrix,cameraMatrix, viewscreenMatrix);
+	//T+S
+	LMP3D_MatrixMultiply(cameraMatrix,scaleMatrix, translateMatrix);
+
+	//T+S+R
+	LMP3D_MatrixMultiply(cameraMatrix,rotateMatrix, cameraMatrix);
 
 
+
+
+	//final
+	LMP3D_MatrixProjection(projectionMatrix);
+	LMP3D_MatrixMultiply(finalMatrix,cameraMatrix, projectionMatrix);
+
+	//LMP3D_Texture_Setup(model->texture[0]);
 	drawvu1(finalMatrix,model);
 
 }

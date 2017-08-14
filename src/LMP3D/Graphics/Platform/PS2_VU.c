@@ -7,13 +7,13 @@
 #include "LMP3D/LMP3D.h"
 #include <tamtypes.h>
 
-#include "LMP3D/Platform/PS2_Register.h"
+#include "LMP3D/Platform/PS2.h"
 #include "PS2_vu1Triangle.c"
 
 
 int pdkVu1Size(u32* start, u32* end)
 {
-  int size = (end-start)/2;
+	int size = (end-start)/2;
 
 	// if size is odd we have make it even in order for the transfer to work
 	// (quadwords, because of that its VERY important to have an extra nop nop
@@ -27,33 +27,33 @@ int pdkVu1Size(u32* start, u32* end)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void pdkVu1UploadProg(int Dest, void* start, void* end)
 {
-  int   count = 0;
-  u8 tempDma[1024] ALIGNED(16);
-  void* chain = (u64*)&tempDma; // uncached
+	int   count = 0;
+	u8 tempDma[1024] ALIGNED(16);
+	void* chain = (u64*)&tempDma; // uncached
 
-  // get the size of the code as we can only send 256 instructions in each MPGtag
+	// get the size of the code as we can only send 256 instructions in each MPGtag
 
-  count = pdkVu1Size( start, end );
+	count = pdkVu1Size( start, end );
 
-  while( count > 0 )
-  {
-    u32 current_count = count > 256 ? 256 : count;
+	while( count > 0 )
+	{
+		u32 current_count = count > 256 ? 256 : count;
 
-    *((u64*) chain)++ = DMA_REF_TAG( (u32)start, current_count/2 );
-    *((u32*) chain)++ = VIF_CODE( VIF_NOP,0,0 );
-    *((u32*) chain)++ = VIF_CODE( VIF_MPG,current_count&0xff,Dest );
+		*((u64*) chain)++ = DMA_REF_TAG( (u32)start, current_count/2 );
+		*((u32*) chain)++ = VIF_CODE( VIF_NOP,0,0 );
+		*((u32*) chain)++ = VIF_CODE( VIF_MPG,current_count&0xff,Dest );
 
-    start += current_count*2;
-    count -= current_count;
-    Dest += current_count;
-  }
+		start += current_count*2;
+		count -= current_count;
+		Dest += current_count;
+	}
 
-  *((u64*) chain)++ = DMA_END_TAG( 0 );
-  *((u32*) chain)++ = VIF_CODE(VIF_NOP,0,0);
-  *((u32*) chain)++ = VIF_CODE(VIF_NOP,0,0);
+	*((u64*) chain)++ = DMA_END_TAG( 0 );
+	*((u32*) chain)++ = VIF_CODE(VIF_NOP,0,0);
+	*((u32*) chain)++ = VIF_CODE(VIF_NOP,0,0);
 
-  // Send it to vif1
-  FlushCache(0);
+	// Send it to vif1
+	FlushCache(0);
 
 
 	RW_REGISTER_U32(D1_MADR) = 0;
@@ -64,15 +64,15 @@ void pdkVu1UploadProg(int Dest, void* start, void* end)
 	while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void PS2_VU_Init()
 {
 
 	void *end = vu1Triangle + size_vu1Triangle;
 	pdkVu1UploadProg(0,&vu1Triangle,end);
 
-
-	#define VIF1_ITOPS		0x10003CC0
-#define VIF1_ITOP		0x10003CD0
 	RW_REGISTER_U32(VIF1_ITOPS) = 511; //GIF
 	RW_REGISTER_U32(VIF1_ITOP)  = 0;   //VU1
 }
@@ -83,7 +83,7 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 	void *currentBuffer,*kickBuffer;
 	int i,n1,l,n2,result,tn1,tn2,tn,n3,n4,tn3,tn4;
 	u32 adress = 0;
-	int switchBuffer = 0;
+	int switchBuffer = 0,gifswitchBuffer = 0;
 	char dmaBuffer [2][17*1024] __attribute__((aligned(16)));
 
 	currentBuffer = (void *)VU1_Mem;
@@ -118,9 +118,9 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 											   0, 3);
 	*((u64*)currentBuffer)++ = 0x512;
 
-	u32 out[12];
-	u32 matrix[12];
-	u32 in[12];
+
+
+
 
 
 	result = model->nf;
@@ -164,11 +164,17 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 
 			tn = (tn1+tn2)>>1;
 
+			tn = 0;
+
 		}
+
+
 
 		*((u64*)currentBuffer)++ = DMA_CNT_TAG(1);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_STCYL,0,0x0101 );
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,4);
+
+
 
 		*((u64*)currentBuffer)++ = 0;
 		*((u32*)currentBuffer)++ = 0;
@@ -186,12 +192,11 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
 			*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCAL,0,0);
 
-
 			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(2016) , tn>>1);
 			*((u32*)currentBuffer)++ = VIF_CODE( VIF_STCYL,0,0x0101); //CL = 1 WL = 1
 			*((u32*)currentBuffer)++ = VIF_CODE( VIF_UNPACK_V4_16,tn1,6+(tn1) );
 
-			adress += 4032;
+			adress += 2016*2;
 
 		}else
 		{
@@ -223,6 +228,7 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 
 
 
+
 		*((u64*)currentBuffer)++ = DMA_END_TAG(1);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
@@ -232,39 +238,9 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
 
-
-
-
-		int i = 0;
-		//for(i = 0;i < 30;i++) RW_REGISTER_U32(D1_CHCR2)) & 0x100;
-		while( (RW_REGISTER_U32(D1_CHCR)) &0x100)
-		{
-			asm __volatile__ (
-			"lqc2		vf1, 0x00(%0)	\n"
-			"lqc2		vf2, 0x10(%0)	\n"
-			"lqc2		vf3, 0x20(%0)	\n"
-			"lqc2		vf4, 0x30(%0)	\n"
-
-			"lqc2		vf6, 0x20(%2)	\n"
-			"vmulax		ACC,vf1, vf6	\n"
-			"vmadday	ACC,vf2, vf6	\n"
-			"vmaddaz	ACC,vf3, vf6	\n"
-			"vmaddw		vf5,vf4, vf6	\n"
-
-
-			"vdiv		Q, vf0w, vf5w	\n"
-			"vwaitq						\n"
-			"vmulq.xyz	vf6, vf5, Q		\n"
-			"vftoi4		vf6, vf6		\n"
-
-
-			"sqc2		vf6, 0x20(%1)	\n"
-			"sqc2		vf6, 0x00(%1)	\n"
-			"sqc2		vf6, 0x10(%1)	\n"
-			: : "r" (matrix), "r" (out), "r" (in): "memory");
-			i++;
-		}
-		if(i > model->test) model->test = i;
+		l = 0;
+		while( (RW_REGISTER_U32(D1_CHCR)) &0x100) l++;
+		if(l > model->test) model->test = l;
 
 
 		RW_REGISTER_U32(D1_MADR) = 0;
@@ -281,6 +257,7 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 	while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
 
 }
+
 
 
 void drawvu0(float* matrix,void *data,int n)

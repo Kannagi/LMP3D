@@ -3,34 +3,54 @@
 #include <stdio.h>
 
 #ifdef PLAYSTATION2
-#include <tamtypes.h>
 #include <kernel.h>
-#include <sifrpc.h>
-#include <loadfile.h>
-#include <stdio.h>
+#include <libpad.h>
 
-#include "libpad.h"
+#include "LMP3D/LMP3D.h"
 
-#include "LMP3D/Event.h"
-struct padButtonStatus buttons;
-extern int _port,_slot;
-u32 paddata;
-    u32 old_pad = 0;
-    u32 new_pad;
+
+static int _port,_slot;
+int PS2_initializePad(int port, int slot);
+
+void PS2_Init_Pad()
+{
+	int ret;
+	static char padBuf[256] __attribute__((aligned(64)));
+	padInit(0);
+
+	_port = 0; // 0 -> Connector 1, 1 -> Connector 2
+	_slot = 0; // Always zero if not using multitap
+
+	printf("PortMax: %d\n", padGetPortMax());
+	printf("SlotMax: %d\n", padGetSlotMax(_port));
+
+	if((ret = padPortOpen(_port, _slot, padBuf)) == 0) {
+		printf("padOpenPort failed: %d\n", ret);
+		SleepThread();
+	}
+
+	if(!PS2_initializePad(_port, _slot)) {
+		printf("pad initalization failed!\n");
+		SleepThread();
+	}
+}
 
 void LMP3D_Event_Update(LMP3D_Event *event)
 {
-	event->key[Button_Up] = 0;
-	event->key[Button_Down] = 0;
-	event->key[Button_Start] = 0;
+	static struct padButtonStatus buttons;
+	static u32 paddata;
+	static u32 old_pad = 0;
+	static u32 new_pad;
+
+	int i,ret;
+
+	for(i = 0;i < Button_Number;i++)
+	{
+		event->key[i] = 0;
+	}
 
 
-	event->key[Button_R1] = 0;
-	event->key[Button_L1] = 0;
-	event->key[Button_R2] = 0;
-	event->key[Button_L2] = 0;
-
-	int i=0,ret;
+	i=0;
 	ret=padGetState(_port, _slot);
 	while((ret != PAD_STATE_STABLE) && (ret != PAD_STATE_FINDCTP1)) {
 		if(ret==PAD_STATE_DISCONN) {
@@ -112,7 +132,6 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 	}
 }
 
-static char padBuf[256] __attribute__((aligned(64)));
 
 static char actAlign[6];
 static int actuators;
@@ -120,7 +139,7 @@ static int actuators;
 /*
  * waitPadReady()
  */
- int waitPadReady(int port, int slot)
+ int PS2_waitPadReady(int port, int slot)
 {
     int state;
     int lastState;
@@ -149,14 +168,14 @@ static int actuators;
  * initializePad()
  */
  int
-initializePad(int port, int slot)
+PS2_initializePad(int port, int slot)
 {
 
     int ret;
     int modes;
     int i;
 
-    waitPadReady(port, slot);
+    PS2_waitPadReady(port, slot);
 
     // How many different modes can this device operate in?
     // i.e. get # entrys in the modetable
@@ -206,13 +225,13 @@ initializePad(int port, int slot)
     // When using MMODE_LOCK, user cant change mode with Select button
     padSetMainMode(port, slot, PAD_MMODE_DUALSHOCK, PAD_MMODE_LOCK);
 
-    waitPadReady(port, slot);
+    PS2_waitPadReady(port, slot);
     printf("infoPressMode: %d\n", padInfoPressMode(port, slot));
 
-    waitPadReady(port, slot);
+    PS2_waitPadReady(port, slot);
     printf("enterPressMode: %d\n", padEnterPressMode(port, slot));
 
-    waitPadReady(port, slot);
+    PS2_waitPadReady(port, slot);
     actuators = padInfoAct(port, slot, -1, 0);
     printf("# of actuators: %d\n",actuators);
 
@@ -224,7 +243,7 @@ initializePad(int port, int slot)
         actAlign[4] = 0xff;
         actAlign[5] = 0xff;
 
-        waitPadReady(port, slot);
+        PS2_waitPadReady(port, slot);
         printf("padSetActAlign: %d\n",
                    padSetActAlign(port, slot, actAlign));
     }
@@ -232,7 +251,7 @@ initializePad(int port, int slot)
         printf("Did not find any actuators.\n");
     }
 
-    waitPadReady(port, slot);
+    PS2_waitPadReady(port, slot);
 
     return 1;
 }

@@ -129,13 +129,7 @@ LMP3D_Model *LMP3D_Load_Model_bcm(char *nom_du_fichier)
 
 
 #ifdef PLAYSTATION2
-		#define ftoi4(ft4) (int)(( (float)ft4 )*16.0f)
-		#define ftoi8(ft8) (int)(( (float)ft8 )*64.0f)
-		#define ftoi15(ft15) (int)(( (float)ft15 )*225.0f)
 
-		#define itof4(it4) (float)(( (float)it4 )/16.0f)
-		#define itof8(it8) (float)(( (float)it15 )/64.0f)
-		#define itof15(it15) (float)(( (float)it15 )/225.0f)
 
 
 		int tv,l2;
@@ -175,11 +169,9 @@ LMP3D_Model *LMP3D_Load_Model_bcm(char *nom_du_fichier)
     char dossier[100];
 
     LMP3D_Folder_Out(nom_du_fichier,dossier);
-
 #ifdef PC
     LMP3D_Load_Texture_Array(obj,dossier);
 #endif
-
     return obj;
 }
 /*

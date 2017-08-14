@@ -1,102 +1,108 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "LMP3D/Math.h"
 
-
-void LMP3D_Math_Rotation3D(float rotx,float roty,float rotz,float *x,float *y,float *z)
+float LMP3D_sinf(float x)
 {
-    float tx,ty,tz,c,s;
+	int q = (x * 6.3661977236758138e-1f) +0.5f; //floor
 
-    //x axis
-    ty = *y,tz = *z;
+	float t = x - q * 1.5707963267923333e+00f;
+	t = t - q * 2.5633441515945189e-12f;
 
-    c = cos(rotx);
-    s = sin(rotx);
-    *y = ( c * ty ) - ( s * tz );
-    *z = ( s * ty ) + ( c * tz );
+	float t2 = t * t;
+	if (q & 1)
+		t = ((-1.36058866707554670912e-03f * t2 + 4.16566258031673830195e-02f) * t2 - 4.99998875577611430384e-01f) * t2 + 9.99999980750852337007e-01f;
+	else
+		t = (((-1.94842039748219288187e-04f * t2 + 8.33179571459221545387e-03f) * t2 - 1.66666423796176028737e-01f) * t2 + 9.99999989793669848536e-01f) * t;
 
-    //y axis
-    tx = *x,tz = *z;
+	if (q & 2) t = -t;
 
-    c = cos(roty);
-    s = sin(roty);
-    *z = ( c * tz ) - ( s * tx );
-    *x = ( s * tz ) + ( c * tx );
+	return t;
+}
 
-    //z axis
-    tx = *x,ty = *y;
+double LMP3D_sind(double x)
+{
+	int q = (x * 6.3661977236758138e-1) +0.5; //floor
 
-    c = cos(-rotz);
-    s = sin(-rotz);
-    *y = ( c * ty ) - ( s * tx );
-    *x = ( s * ty ) + ( c * tx );
+	double t = x - q * 1.5707963267923333e+00;
+	t = t - q * 2.5633441515945189e-12;
+
+	double t2 = t * t;
+	if (q & 1)
+		t = ((-1.36058866707554670912e-03 * t2 + 4.16566258031673830195e-02) * t2 - 4.99998875577611430384e-01) * t2 + 9.99999980750852337007e-01;
+	else
+		t = (((-1.94842039748219288187e-04 * t2 + 8.33179571459221545387e-03) * t2 - 1.66666423796176028737e-01) * t2 + 9.99999989793669848536e-01) * t;
+
+	if (q & 2) t = -t;
+
+	return t;
+}
+
+float LMP3D_cosf(float x)
+{
+	x += PI/2;
+	int q = (x * 6.3661977236758138e-1f) +0.5f; //floor
+
+	float t = x - q * 1.5707963267923333e+00f;
+	t = t - q * 2.5633441515945189e-12f;
+
+	float t2 = t * t;
+	if (q & 1)
+		t = ((-1.36058866707554670912e-03f * t2 + 4.16566258031673830195e-02f) * t2 - 4.99998875577611430384e-01f) * t2 + 9.99999980750852337007e-01f;
+	else
+		t = (((-1.94842039748219288187e-04f * t2 + 8.33179571459221545387e-03f) * t2 - 1.66666423796176028737e-01f) * t2 + 9.99999989793669848536e-01f) * t;
+
+	if (q & 2) t = -t;
+
+	return t;
+}
+
+double LMP3D_cosd(double x)
+{
+	x += PI/2;
+	int q = (x * 6.3661977236758138e-1) +0.5; //floor
+
+	double t = x - q * 1.5707963267923333e+00;
+	t = t - q * 2.5633441515945189e-12;
+
+	double t2 = t * t;
+	if (q & 1)
+		t = ((-1.36058866707554670912e-03 * t2 + 4.16566258031673830195e-02) * t2 - 4.99998875577611430384e-01) * t2 + 9.99999980750852337007e-01;
+	else
+		t = (((-1.94842039748219288187e-04 * t2 + 8.33179571459221545387e-03) * t2 - 1.66666423796176028737e-01) * t2 + 9.99999989793669848536e-01) * t;
+
+	if (q & 2) t = -t;
+
+	return t;
+}
+
+float LMP3D_sqrtf(float s)
+{
+	float n;
+	n = (1.0f + s)/2.0f;
+	n = (n + (s/n))/2.0f;
+	n = (n + (s/n))/2.0f;
+	n = (n + (s/n))/2.0f;
+	n = (n + (s/n))/2.0f;
+	return n;
 }
 
 
-
-
-void LMP3D_Math_Rotation_Position(float px,float py,float pz,float rotx,float roty,float rotz,float *posx,float *posy,float *posz)
+//code Quake III
+float isqrtf( float number )
 {
-    float tx,ty,tz,c,s;
+	long i;
+	float x2, y;
+	const float threehalfs = 1.5F;
 
+	x2 = number * 0.5F;
+	y = number;
+	i = * ( long * ) &y; // evil floating point bit level hacking
+	i = 0x5f375a86 - ( i >> 1 ); // what the fuck? original : 0x5f3759df , new : 0x5f375a86
+	y = * ( float * ) &i;
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
+// y = y * ( threehalfs - ( x2 * y * y ) ); // 2nd iteration, this can be removed
 
-    *posx -= px;
-    *posy -= py;
-    *posz -= pz;
-
-    ty = *posy;
-    tz = *posz;
-    c = cos(rotx);
-    s = sin(rotx);
-    *posy = ( c * ty ) - ( s * tz );
-    *posz = ( s * ty ) + ( c * tz );
-
-    tx = *posx;
-    ty = *posy;
-    c = cos(roty);
-    s = sin(roty);
-    *posz = ( c * tz ) - ( s * tx );
-    *posx = ( s * tz ) + ( c * tx );
-
-
-    tx = *posx;
-    tz = *posz;
-    c = cos(rotz);
-    s = sin(rotz);
-    *posy = ( c * ty ) - ( s * tx );
-    *posx = ( s * ty ) + ( c * tx );
-
-
-    *posx += px;
-    *posy += py;
-    *posz += pz;
-
-
-}
-
-float LMP3D_Math_LawOfCosines(float ax,float bx,float cx,float ay,float by,float cy)
-{
-    float a,b,c,angle;
-
-    a = LMP3D_Math_Hypotenuse2D( (ax - cx), (ay - cy) );
-    b = LMP3D_Math_Hypotenuse2D( (bx - cx), (by - cy) );
-    c = LMP3D_Math_Hypotenuse2D( (ax - bx), (ay - by) );
-
-    angle = (a*a) + (b*b) - (c*c);
-    angle = angle/(2*a*b);
-    angle = acosf(angle);
-
-    if(isnan(angle) == 1) angle = 0;
-
-    return angle;
-}
-
-float LMP3D_Math_Hypotenuse3D(float x,float y,float z)
-{
-    float h;
-    h = sqrtf( (x*x) + (z*z) );
-    h = (h*h) + (y*y);
-    return sqrtf(h);
+	return y;
 }

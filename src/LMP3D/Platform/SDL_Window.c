@@ -5,38 +5,22 @@
 
 #include <SDL/SDL.h>
 #include "LMP3D/Window.h"
-#include <GL/gl.h>
 
 static LMP3D_FPS _LMP3D_time;
 
 
 LMP3D_Buffer LMP3D_Window(char *name)
 {
-	//SDL_Joystick *joystick = NULL;
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
-
-    SDL_ShowCursor(0);
-    //SDL_JoystickEventState(SDL_ENABLE);
-    //joystick = SDL_JoystickOpen(0);
-
     SDL_WM_SetCaption(name, NULL);
 
     SDL_SetVideoMode(640,480, 24,SDL_OPENGL);
 
-
-    glClearColor(0.5,0.5,0.5,0);
-	glEnable(GL_TEXTURE_2D);
-
-
-    glEnable(GL_ALPHA_TEST);
-	//glAlphaFunc(GL_GREATER, 0.0f);
-	glEnable(GL_BLEND);
+	GL_Graphic_Init();
 
 	LMP3D_Buffer buffer;
 
 	return buffer;
 
-    //glEnable(GL_CULL_FACE);
 }
 
 void LMP3D_Fps(int fps)
@@ -53,10 +37,7 @@ void LMP3D_Fps(int fps)
     _LMP3D_time.begin = clock();
 }
 
-void LMP3D_FlipBuffer(LMP3D_Buffer *buffer)
-{
 
-}
 int LMP3D_VBlank()
 {
 	LMP3D_Fps(60);

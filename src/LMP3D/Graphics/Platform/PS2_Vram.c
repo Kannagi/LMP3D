@@ -1,8 +1,10 @@
-
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef PLAYSTATION2
+#include "LMP3D/LMP3D.h"
 
-#include "LMP3D/Platform/PS2_Register.h"
+#include "LMP3D/Platform/PS2.h"
 
 static int PS2_vram_pointer = 0;
 

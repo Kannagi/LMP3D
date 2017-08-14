@@ -21,11 +21,12 @@ typedef struct
 }LMP3D_Event;
 
 
+//For ALL
 enum {
 			Button_A,
 			Button_B,
-			Button_C,
-			Button_D,
+			Button_X,
+			Button_Y,
 			Button_L1,
 			Button_L2,
 			Button_L3,
@@ -38,8 +39,14 @@ enum {
 			Button_Right,
 			Button_Start,
 			Button_Select,
+			Button_Axis1X,
+			Button_Axis1Y,
+			Button_Axis2X,
+			Button_Axis2Y,
+			Button_Number,
 };
 
+//For PS2
 enum {
 			Button_Cross,
 			Button_Circle,
@@ -47,10 +54,19 @@ enum {
 			Button_Triangle,
 };
 
+//FOR GC
+enum {
+			Button_Z = 7,
+
+};
+
 
 void LMP3D_Event_Init(LMP3D_Event *event);
 void LMP3D_Event_Update(LMP3D_Event *event);
 
+#define LMP3D_KEY_DOWN   1
+#define LMP3D_KEY_DOWNW  2
+#define LMP3D_KEY_UP     3
 
 #endif
 

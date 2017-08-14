@@ -10,19 +10,21 @@
 
 void game(LMP3D_Buffer *buffer);
 
-
-
 int main(int argc, char** argv)
 {
 	LMP3D_Init();
 
 	LMP3D_Buffer buffer;
 
-    buffer = LMP3D_Window("Demo");
+	buffer = LMP3D_Window("Demo");
 
-    srand(time(NULL));
+	//srand(time(NULL));
 
-    game(&buffer);
+#ifdef DREAMCAST
+	main2();
+#endif
+
+	game(&buffer);
 
     return 0;
 }

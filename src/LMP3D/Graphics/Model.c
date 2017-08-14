@@ -41,18 +41,25 @@ void LMP3D_Model_Init(LMP3D_Model *obj)
 
     obj->position.x = 0;
 	obj->position.y = 0;
-	obj->position.z = 00;
+	obj->position.z = 0;
 
+    obj->rotate.x = 0;
+	obj->rotate.y = 0;
+	obj->rotate.z = 0;
+
+    obj->scale.x = 1;
+	obj->scale.y = 1;
+	obj->scale.z = 1;
 
 	obj->test = 0;
 }
-
+/*
 void LMP3D_Model_Draw(LMP3D_Model *obj)
 {
 
 	//LMP3D_Animation3D(obj);
 
-    LMP3D_Draw_Model_GL_VA(obj);
+    LMP3D_Draw_Model(obj);
 
     return;
 
@@ -82,6 +89,6 @@ void LMP3D_Model_Draw(LMP3D_Model *obj)
     }
 
 }
-
+*/
 
 

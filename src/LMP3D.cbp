@@ -4,7 +4,7 @@
 	<Project>
 		<Option title="LMP3D" />
 		<Option pch_mode="2" />
-		<Option default_target="PS2" />
+		<Option default_target="Dreamcast" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Linux">
@@ -44,7 +44,7 @@
 				<Option object_output="obj/PS2/" />
 				<Option type="1" />
 				<Option compiler="ps2_gcc_compiler" />
-				<Option parameters="&amp; pcsx2" />
+				<Option parameters="&amp; pcsx2 --elf=PS2_Demo.elf" />
 				<Compiler>
 					<Add option="-DPLAYSTATION2" />
 				</Compiler>
@@ -53,14 +53,18 @@
 				</Linker>
 			</Target>
 			<Target title="Dreamcast">
-				<Option output="bin/DC_demo" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/DC_demo" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="bin/" />
 				<Option object_output="obj/DC/" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="dc_gcc_compiler" />
+				<Option parameters="&amp; lxdream DC_demo" />
 				<Compiler>
 					<Add option="-DDREAMCAST" />
 				</Compiler>
+				<Linker>
+					<Add option="-lgl -lparallax   -lm -Wl,--start-group -lkallisti -lc -lgcc -Wl,--end-group" />
+				</Linker>
 			</Target>
 			<Target title="PSP">
 				<Option output="bin/PSP_demo" prefix_auto="1" extension_auto="1" />
@@ -93,13 +97,22 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/Graphics/Model.h" />
+		<Unit filename="LMP3D/Graphics/Platform/DC_Other.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="LMP3D/Graphics/Platform/GL_Camera.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Model.c">
+		<Unit filename="LMP3D/Graphics/Platform/GL_Clear_Flip.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Other.c">
+		<Unit filename="LMP3D/Graphics/Platform/GL_Draw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/GL_Graphic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/GL_Model.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/Graphics/Platform/GL_Texture.c">
@@ -108,10 +121,19 @@
 		<Unit filename="LMP3D/Graphics/Platform/PS2_Camera.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Model.c">
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Clear_Flip.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Other.c">
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Draw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Graphic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Graphics/Platform/PS2_Model.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/Graphics/Platform/PS2_Texture.c">
@@ -146,14 +168,29 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/Math.h" />
+		<Unit filename="LMP3D/Math_Function.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Platform/PL_Sample.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Platform/PS2.h" />
 		<Unit filename="LMP3D/Platform/PS2_Event.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/PS2_Register.h" />
+		<Unit filename="LMP3D/Platform/PS2_Init.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="LMP3D/Platform/PS2_Window.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/Platform/SDL_Event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/Platform/SDL_Init.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/Platform/SDL_Window.c">
@@ -172,6 +209,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="test.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

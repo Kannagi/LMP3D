@@ -36,8 +36,6 @@ void LMP3D_Texture_Upload(LMP3D_Texture *texture)
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-
 }
 
 
@@ -51,9 +49,9 @@ void LMP3D_Texture_Setup(LMP3D_Texture *texture)
 }
 
 
-void LMP3D_Texture_Delete(int id)
+void LMP3D_Texture_Delete(LMP3D_Texture *texture)
 {
-    GLuint tid = (GLuint)id;
+    GLuint tid = (GLuint)texture->id;
     glDeleteTextures(1,&tid);
 }
 

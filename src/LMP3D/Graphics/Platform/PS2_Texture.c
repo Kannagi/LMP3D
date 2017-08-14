@@ -6,18 +6,20 @@
 
 #include <kernel.h>
 #include "LMP3D/LMP3D.h"
-#include "LMP3D/Platform/PS2_Register.h"
+#include "LMP3D/Platform/PS2.h"
 
 
 
 
-void load_texture2(void *src,int width, int height, int psm, int dest, int dest_width)
+void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture)
 {
 	int i = 0;
 	unsigned long gif[64] __attribute__((aligned(64)));
 	int remaining;
 
-	remaining  = 0x4000;
+
+
+	remaining  = texture->size>>4;
 
 
 	// Setup the transfer
@@ -25,21 +27,21 @@ void load_texture2(void *src,int width, int height, int psm, int dest, int dest_
 	gif[i++] = 0;
 
 	gif[i++] = GS_SET_GIFTAG(4,0,0,0,0,1);
-	gif[i++] = 0x0E;
+	gif[i++] = GS_REG_AD;
 
 
-	gif[i++] = GS_SET_BITBLTBUF(0,0,0,dest>>6,dest_width>>6,psm);
-	gif[i++] = 0x50;
+	gif[i++] = GS_SET_BITBLTBUF(0,0,0,texture->address>>6,texture->w>>6,texture->psm);
+	gif[i++] = GS_REG_BITBLTBUF;
 
 
 	gif[i++] = GS_SET_TRXPOS(0,0,0,0,0);
-	gif[i++] = 0x51;
+	gif[i++] = GS_REG_TRXPOS;
 
-	gif[i++] = GS_SET_TRXREG(width,height);
-	gif[i++] = 0x52;
+	gif[i++] = GS_SET_TRXREG(texture->w,texture->h);
+	gif[i++] = GS_REG_TRXREG;
 
 	gif[i++] = GS_SET_TRXDIR(0);
-	gif[i++] = 0x53;
+	gif[i++] = GS_REG_TRXDIR;
 
 
 
@@ -52,7 +54,7 @@ void load_texture2(void *src,int width, int height, int psm, int dest, int dest_
 	gif[i++] = 0x00;
 
 
-	gif[i++] = GS_SET_DMATAG(remaining,0,3,0,(u32)src,0);
+	gif[i++] = GS_SET_DMATAG(remaining,0,3,0,(u32)texture->pixel,0);
 	gif[i++] = 0;
 
 
@@ -60,7 +62,7 @@ void load_texture2(void *src,int width, int height, int psm, int dest, int dest_
 	gif[i++] = 0;
 
 	gif[i++] = GS_SET_GIFTAG(1,1,0,0,0,1);
-	gif[i++] = 0x0E;
+	gif[i++] = GS_REG_AD;
 
 
 	gif[i++] = 1;
@@ -135,10 +137,10 @@ void LMP3D_Texture_Setup(LMP3D_Texture *texbuf)
 	gif[i++] = GS_SET_TEX0(texbuf->address>>6,texbuf->w>>6,texbuf->psm,
 							   info_width,info_height,info_components,info_function,
 							   clut.address>>6,clut.psm,clut.storage_mode,clut.start,clut.load_method);
-	gif[i++] = 0x06;
+	gif[i++] = GS_REG_TEX0_1;
 
 	gif[i++] = GS_SET_TEX1(lod.calculation,lod.max_level,lod.mag_filter,lod.min_filter,lod.mipmap_select,lod.l,(int)(lod.k*16.0f));
-	gif[i++] = 0x14;
+	gif[i++] = GS_REG_TEX1_1;
 
 
 	RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(gif_array,0);
@@ -160,18 +162,14 @@ void LMP3D_Texture_Upload(LMP3D_Texture *texture)
 	if(texture == NULL) return;
 
 	texture->address = PS2_vram_allocate(texture->w,texture->h, texture->psm);
-	load_texture2(texture->pixel,256,256,texture->psm,texture->address,texture->w);
-
-
+	LMP3D_Texture_Upload_VRAM(texture);
 }
 
-
-
-
-void LMP3D_Texture_Delete(int id)
+void LMP3D_Texture_Delete(LMP3D_Texture *texture)
 {
 
 }
+
 
 #endif
 
