@@ -38,6 +38,18 @@
 					<Add library="SDL" />
 				</Linker>
 			</Target>
+			<Target title="PS1">
+				<Option output="bin/PSX/PS1_demo.elf" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="bin/PSX/" />
+				<Option object_output="obj/PS1/" />
+				<Option type="1" />
+				<Option compiler="ps1_gcc_compiler" />
+				<Option parameters=" &amp; bash compilationPS1.sh" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DPLAYSTATION1" />
+				</Compiler>
+			</Target>
 			<Target title="PS2">
 				<Option output="bin/PS2_demo.elf" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="bin/" />
@@ -63,17 +75,29 @@
 					<Add option="-DDREAMCAST" />
 				</Compiler>
 				<Linker>
-					<Add option="-lgl -lparallax   -lm -Wl,--start-group -lkallisti -lc -lgcc -Wl,--end-group" />
+					<Add option="-lm -Wl,--start-group -lkallisti -lc -lgcc -Wl,--end-group" />
 				</Linker>
 			</Target>
-			<Target title="PSP">
-				<Option output="bin/PSP_demo" prefix_auto="1" extension_auto="1" />
+			<Target title="Wii">
+				<Option output="bin/NC_demo" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin/" />
-				<Option object_output="obj/PSP/" />
-				<Option type="0" />
-				<Option compiler="psp_gcc_compiler" />
+				<Option object_output="obj/NC" />
+				<Option type="1" />
+				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-DPLAYSTATION_PORTABLE" />
+					<Add option="-O3" />
+					<Add option="-DNEW_CONSOLES" />
+				</Compiler>
+			</Target>
+			<Target title="TestNewConsole">
+				<Option output="bin/NC_demo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/NC" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DNEW_CONSOLES" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -82,137 +106,229 @@
 			<Add option="-w" />
 			<Add directory="../LMP3D" />
 		</Compiler>
-		<Unit filename="LMP3D/Event.c">
+		<Unit filename="LMP3D/All/Event.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Event.h" />
-		<Unit filename="LMP3D/Graphics/Animation.c">
+		<Unit filename="LMP3D/All/Event.h" />
+		<Unit filename="LMP3D/All/Graphics/Camera.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Camera.c">
+		<Unit filename="LMP3D/All/Graphics/Camera.h" />
+		<Unit filename="LMP3D/All/Graphics/Model.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Camera.h" />
-		<Unit filename="LMP3D/Graphics/Model.c">
+		<Unit filename="LMP3D/All/Graphics/Model.h" />
+		<Unit filename="LMP3D/All/Graphics/Texture.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Model.h" />
-		<Unit filename="LMP3D/Graphics/Platform/DC_Other.c">
+		<Unit filename="LMP3D/All/Graphics/Texture.h" />
+		<Unit filename="LMP3D/All/Load.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Camera.c">
+		<Unit filename="LMP3D/All/Load.h" />
+		<Unit filename="LMP3D/All/Load/bcm.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Clear_Flip.c">
+		<Unit filename="LMP3D/All/Load/bcm.h" />
+		<Unit filename="LMP3D/All/Load/upng.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Draw.c">
+		<Unit filename="LMP3D/All/Load/upng.h" />
+		<Unit filename="LMP3D/All/Math.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Graphic.c">
+		<Unit filename="LMP3D/All/Math.h" />
+		<Unit filename="LMP3D/All/Matrix.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Model.c">
+		<Unit filename="LMP3D/All/Script.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/GL_Texture.c">
-			<Option compilerVar="CC" />
+		<Unit filename="LMP3D/All/Script.h" />
+		<Unit filename="LMP3D/All/Type.h" />
+		<Unit filename="LMP3D/All/Window.h" />
+		<Unit filename="LMP3D/DC/DC.h">
+			<Option target="Dreamcast" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Camera.c">
+		<Unit filename="LMP3D/DC/DC_Other.c">
 			<Option compilerVar="CC" />
+			<Option target="Dreamcast" />
 		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Clear_Flip.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Draw.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Graphic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Matrix.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Model.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Texture.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_VU.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Platform/PS2_Vram.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Texture.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="LMP3D/Graphics/Texture.h" />
 		<Unit filename="LMP3D/LMP3D.h" />
-		<Unit filename="LMP3D/Load.c">
+		<Unit filename="LMP3D/NEW_CONSOLES/PL_Sample.c">
 			<Option compilerVar="CC" />
+			<Option target="TestNewConsole" />
+			<Option target="Wii" />
 		</Unit>
-		<Unit filename="LMP3D/Load.h" />
-		<Unit filename="LMP3D/Load/bcm.c">
+		<Unit filename="LMP3D/PC/Graphics/GL_Camera.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Load/smd.c">
+		<Unit filename="LMP3D/PC/Graphics/GL_Clear_Flip.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Load/upng.c">
+		<Unit filename="LMP3D/PC/Graphics/GL_Draw.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Load/upng.h" />
-		<Unit filename="LMP3D/Math.c">
+		<Unit filename="LMP3D/PC/Graphics/GL_Graphic.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Math.h" />
-		<Unit filename="LMP3D/Math_Function.c">
+		<Unit filename="LMP3D/PC/Graphics/GL_Model.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Matrix.c">
+		<Unit filename="LMP3D/PC/Graphics/GL_Texture.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/PL_Sample.c">
+		<Unit filename="LMP3D/PC/Load/GL_Load_Model.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/PS2.h" />
-		<Unit filename="LMP3D/Platform/PS2_Event.c">
+		<Unit filename="LMP3D/PC/SDL_Event.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/PS2_Init.c">
+		<Unit filename="LMP3D/PC/SDL_Init.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/PS2_Window.c">
+		<Unit filename="LMP3D/PC/SDL_Window.c">
 			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="Windows" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/SDL_Event.c">
+		<Unit filename="LMP3D/PS1/Graphics/PS1_Camera.c">
 			<Option compilerVar="CC" />
+			<Option target="PS1" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/SDL_Init.c">
+		<Unit filename="LMP3D/PS1/Graphics/PS1_Clear_Flip.c">
 			<Option compilerVar="CC" />
+			<Option target="PS1" />
 		</Unit>
-		<Unit filename="LMP3D/Platform/SDL_Window.c">
+		<Unit filename="LMP3D/PS1/Graphics/PS1_GTE.c">
 			<Option compilerVar="CC" />
+			<Option target="PS1" />
 		</Unit>
-		<Unit filename="LMP3D/Script.c">
+		<Unit filename="LMP3D/PS1/Graphics/PS1_Other.c">
 			<Option compilerVar="CC" />
+			<Option target="PS1" />
 		</Unit>
-		<Unit filename="LMP3D/Script.h" />
-		<Unit filename="LMP3D/Type.h" />
-		<Unit filename="LMP3D/Window.c">
+		<Unit filename="LMP3D/PS1/Graphics/PS1_Sin_Cos.c">
 			<Option compilerVar="CC" />
+			<Option target="PS1" />
 		</Unit>
-		<Unit filename="LMP3D/Window.h" />
+		<Unit filename="LMP3D/PS1/Graphics/PS1_Texture.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/Graphics/PS1_Vram.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/Load/PS1_Load_Model.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/PS1.h">
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/PS1_Event.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/PS1_Init.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/PS1_Window.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Camera.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Clear_Flip.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Draw.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Graphic.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Matrix.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Model.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Texture.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_VU.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Graphics/PS2_Vram.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/Load/PS2_Load_Model.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/PS2.h">
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/PS2_Event.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/PS2_Init.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
+		<Unit filename="LMP3D/PS2/PS2_Window.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
 		<Unit filename="game.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mainps1.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="pvr.c">
+			<Option compilerVar="CC" />
+			<Option target="Dreamcast" />
+		</Unit>
 		<Unit filename="test.c">
 			<Option compilerVar="CC" />
+			<Option target="Dreamcast" />
 		</Unit>
 		<Extensions>
 			<code_completion />

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="PS2" />
+	<File name="game.c" open="0" top="0" tabpos="14">
+		<Cursor position="1501" topLine="54" />
+	</File>
+	<File name="main.c" open="1" top="0" tabpos="1">
+		<Cursor position="259" topLine="0" />
+	</File>
+	<File name="mainps1.c" open="1" top="1" tabpos="2">
+		<Cursor position="4863" topLine="285" />
+	</File>
+	<File name="pvr.c" open="0" top="0" tabpos="10">
+		<Cursor position="42500" topLine="1176" />
+	</File>
+	<File name="test.c" open="0" top="0" tabpos="11">
+		<Cursor position="2920" topLine="18" />
+	</File>
+</CodeBlocks_layout_file>

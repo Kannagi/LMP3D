@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
+//#include <time.h>
 
 #include "LMP3D/LMP3D.h"
-
-
 void GsDrawSpriteTest(int posx,int posy);
 
 void game(LMP3D_Buffer *buffer)
@@ -20,13 +18,11 @@ void game(LMP3D_Buffer *buffer)
 
 	model = LMP3D_Load_Model_bcm("zack.bcm");
 
-	LMP3D_Texture* texture = LMP3D_Load_Texture("font2.png");
+	LMP3D_Texture* texture = LMP3D_Load_Texture("FONT.PNG");
 	LMP3D_Texture_Upload(texture);
-	LMP3D_Texture_Free_pixel(texture);
+	LMP3D_Texture_Free_Pixel(texture);
 
-	LMP3D_Texture* texture2 = LMP3D_Load_Texture("ffccdif_1.png");
-	LMP3D_Texture_Upload(texture2);
-	LMP3D_Texture_Free_pixel(texture);
+
 
 	char string[100],strfps[50];
 	int vblank;
@@ -39,13 +35,12 @@ void game(LMP3D_Buffer *buffer)
 	p.y = 0;
 	p.z = 0;
 
-
 	int i,number = 1,tmpx,tmpy;
 
     while(event.exit == 0)
     {
+    	model->rotate.z += 0.01;
 		LMP3D_Event_Update(&event);
-
 
 		//camera
 		LMP3D_Camera_Perspective(camera);
@@ -55,6 +50,11 @@ void game(LMP3D_Buffer *buffer)
 
 
 
+
+/*
+		if(event.key[Button_Cross] == LMP3D_KEY_DOWN) addv += 2;
+		if(event.key[Button_Circle] == LMP3D_KEY_DOWN) addv -= 2;
+*/
 		if(event.key[Button_Up] == LMP3D_KEY_DOWNW) p.z += 8;
 		if(event.key[Button_Down] == LMP3D_KEY_DOWNW) p.z -= 8;
 
@@ -68,7 +68,8 @@ void game(LMP3D_Buffer *buffer)
 
 		if(event.key[Button_Start] == LMP3D_KEY_DOWN) model->test = 0;
 
-		LMP3D_Texture_Setup(texture2);
+		LMP3D_Texture_Setup(model->texture[0]);
+		//GsDrawSpriteTest(0,0);
 
 		for(i = 0;i <  number;i++)
 		{
@@ -76,9 +77,11 @@ void game(LMP3D_Buffer *buffer)
 			tmpx = (i%20)*30;
 			//tmpy = (i/30)*140;
 			tmpy = 0;
-			model->position.x = tmpx-260;
+			model->position.x = tmpx-0;
 			model->position.y = 100-tmpy;
 			model->position.z = 400+p.z;
+
+			model->scale.x = 1;
 
 			LMP3D_Model_Draw(model);
 		}
@@ -88,7 +91,7 @@ void game(LMP3D_Buffer *buffer)
 
 		LMP3D_Camera_Ortho();
 
-		//GsDrawSpriteTest(0,0);
+
 
 		LMP3D_Texture_Setup(texture);
 
@@ -96,19 +99,22 @@ void game(LMP3D_Buffer *buffer)
 		bitmap_font2(string,8,8);
 
 		//printf("buf %x %x %x\n",buffer->faddress1,buffer->faddress2,buffer->zaddress);
-		LMP3D_FlipBuffer(buffer);
 
-		t_end = clock();
+
+		//t_end = clock();
 		if(fps >= 60)
 		{
 			total += t_end-t_begin;
-			sprintf(strfps,"%d/%d",total,CLOCKS_PER_SEC/60);
+			//sprintf(strfps,"%d/%d",total,CLOCKS_PER_SEC);
 			total = 0;
 			fps = 0;
 		}
 		fps++;
+
+
+		LMP3D_FlipBuffer(buffer);
 		vblank = LMP3D_VBlank();
-		t_begin = clock();
+		//t_begin = clock();
 
 
 	}
