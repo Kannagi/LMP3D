@@ -11,11 +11,11 @@ Multi Platform 3D Library
 - PSP
 
 
-#Currently I am working on the PS1.
--<img src="sc2.jpg?raw=true" alt="PS1 Demo" width="480" height="360">
+# Currently I am working on the PS1.
+<img src="sc2.png?raw=true" alt="PS1 Demo" width="480" height="360">
 
-#Currently I am working on the PS2.
--<img src="sc.jpg?raw=true" alt="PS2 Demo" width="480" height="360">
+# Currently I am working on the PS2.
+<img src="sc.jpg?raw=true" alt="PS2 Demo" width="480" height="360">
 
 
 
