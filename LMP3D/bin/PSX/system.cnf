@@ -1,0 +1,4 @@
+BOOT = cdrom:DEMO.EXE;1
+TCB = 4
+EVENT = 16
+STACK = 801FFFF0
