@@ -1,131 +1,166 @@
-                    .global vu1Triangle_CodeStart
-                    .global vu1Triangle_CodeEnd
+	.global vu1Triangle_CodeStart
+	.global vu1Triangle_CodeEnd
 vu1Triangle_CodeStart:
-                    .p2align 8
-                    .vu 
-		    
+	.p2align 8
+	.vu 
 
-		    nop                             lq VF05, 5(VI00)
-		    nop                             lq VF06, 4(VI00)
+	nop                             lq VF05, 5(VI00)
+	nop                             lq VF06, 4(VI00)
 
-                    nop                             lq VF01, 0(VI00)
-                    nop                             lq VF02, 1(VI00)
-                    nop                             lq VF03, 2(VI00)
-                    nop                             lq VF04, 3(VI00)
-                    
-                    
-                    nop                             iaddiu VI01, VI00, 6
+	nop                             lq VF01, 0(VI00)
+	nop                             lq VF02, 1(VI00)
+	nop                             lq VF03, 2(VI00)
+	nop                             lq VF04, 3(VI00)
 
-                    nop				    lq  VF09, 0(VI01)   ; v1
-		    nop				    lq  VF12, 1(VI01)   ; vt1
-		    itof4 VF15, VF09	    	    iaddiu VI02, VI00, 1000
-		    itof15 VF18, VF12	    	    iaddiu VI03, VI00, 1010
 
-		    nop                             sq VF05, 0(VI02)
-                    nop                             mtir VI04, VF06w
+	nop                             iaddiu VI06, VI00, 6
 
-		    mulax ACC, VF01, VF15x          lq  VF10, 2(VI01)   ; v2
-                    madday ACC, VF02, VF15y         lq  VF13, 3(VI01)   ; vt2
-                    maddaz ACC, VF03, VF15z         nop
-                    maddw VF06, VF04, VF15w         nop
+	nop				    lq  VF09, 0(VI06)   ; v1
+	nop				    lq  VF12, 1(VI06)   ; vt1
+	itof4 VF15, VF09	    	    iaddiu VI02, VI00, 1003
+	itof15 VF18, VF12	    	    iaddiu VI03, VI00, 1013
 
-		    itof4 VF16, VF10                sq VF05, 0(VI03)
-		    itof15 VF19, VF13	    	    nop
+	nop                             sq VF05, 0(VI02)
+	nop                             mtir VI04, VF06w
 
+	mulax ACC, VF01, VF15x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF15y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF15z         nop
+	maddw VF06, VF04, VF15w         nop
+
+	itof4 VF16, VF10                sq VF05, 0(VI03)
+	itof15 VF19, VF13               iaddiu VI05,VI00, 2048
+	nop                             mfir.w vf31,VI05
+	itof0.w vf31, vf31	    	    iaddiu VI05,VI00, 1024
+	nop                             mfir.w vf05,VI05
+	itof0.w vf05, vf05	    	    nop
+	
 vertexLoop:
+	;Phase1 
+	nop                             div q, VF00w, VF06w 
 
-		    
-		    ;Phase1 
-		    nop                             div q, VF00w, VF06w 
+	mulax ACC, VF01, VF16x          lq  VF11, 4(VI06)   ; v3
+	madday ACC, VF02, VF16y         lq  VF14, 5(VI06)   ; vt3
+	maddaz ACC, VF03, VF16z         nop
+	maddw VF07, VF04, VF16w         nop
+	itof4 VF17, VF11                iaddi VI06, VI06, 6	
+	itof15 VF20, VF14               sq VF18, 1+0(VI02)   ; s vt1
 
-		    mulax ACC, VF01, VF16x          lq  VF11, 4(VI01)   ; v3
-                    madday ACC, VF02, VF16y         lq  VF14, 5(VI01)   ; vt3
-                    maddaz ACC, VF03, VF16z         nop
-                    maddw VF07, VF04, VF16w         nop
-		    itof4 VF17, VF11                iaddi VI01, VI01, 6	
-		    itof15 VF20, VF14               sq VF18, 1+0(VI02)   ; s vt1
+	;Phase2
+	mulq.xyz VF21, VF06, q          div q, VF00w, VF07w 
 
-		    ;Phase2
-		    mulq.xyz VF21, VF06, q          div q, VF00w, VF07w 
+	mulax ACC, VF01, VF17x          lq  VF09, 0(VI06)   ; v1
+	madday ACC, VF02, VF17y         lq  VF12, 1(VI06)   ; vt1
+	maddaz ACC, VF03, VF17z         nop
+	maddw VF08, VF04, VF17w         nop
+	itof4 VF15, VF09                nop
+	subw.xyz VF28,VF21,VF31	        nop
+	
+	ftoi4 VF22, VF21                sq  VF19, 1+3(VI02)   ; s vt2
+	
 
-		    mulax ACC, VF01, VF17x          lq  VF09, 0(VI01)   ; v1
-                    madday ACC, VF02, VF17y         lq  VF12, 1(VI01)   ; vt1
-                    maddaz ACC, VF03, VF17z         nop
-                    maddw VF08, VF04, VF17w         nop
-		    itof4 VF15, VF09                nop
-		    ftoi4 VF22, VF21                sq  VF19, 1+3(VI02)   ; s vt2
+	;Phase3
+	mulq.xyz VF23, VF07, q          div q, VF00w, VF08w 
 
-		    itof15 VF18, VF12	    	    nop
+	mulax ACC, VF01, VF15x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF15y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF15z         sq  VF22, 1+2(VI02)   ; s v1
+	maddw VF06, VF04, VF15w         nop
+	subw.xyz VF29,VF23,VF31	        nop
+	ftoi4 VF24, VF23                nop
+	
+	mulq.xyz VF25, VF08, q          nop
+	
+	clipw.xyz VF28,vf05	    	    nop
+	clipw.xyz VF29,vf05	    	    nop
+	subw.xyz VF30,VF25,VF31	        nop
+	itof4 VF16, VF10                iaddi VI04, VI04, -2
+	itof15 VF18, VF12	    	    nop
+	clipw.xyz VF30,vf05	    	    nop
+	
 
-		    ;Phase3
-		    mulq.xyz VF23, VF07, q          div q, VF00w, VF08w 
+	;End
+	ftoi4 VF26, VF25            sq VF20, 1+6(VI02)   ; s vt3
+	itof15 VF19, VF13	    	sq VF24, 1+5(VI02)   ; s v2
 
-		    mulax ACC, VF01, VF15x          lq  VF10, 2(VI01)   ; v2
-                    madday ACC, VF02, VF15y         lq  VF13, 3(VI01)   ; vt2
-                    maddaz ACC, VF03, VF15z         sq  VF22, 1+2(VI02)   ; s v1
-                    maddw VF06, VF04, VF15w         nop
-		    ftoi4.xyz VF24, VF23            nop
-		    itof4 VF16, VF10                iaddi VI04, VI04, -2
+	nop				    fcand VI01,0x3FFFF
+	nop                 ibne VI01, VI00, NextvertexLoop1
+	nop				    sq VF26, 1+8(VI02)   ; s v3
 
-		    mulq.xyz VF25, VF08, q          nop
 
-		    ;End
-		    ftoi4.xyz VF26, VF25            sq VF20, 1+6(VI02)   ; s vt3
-		    itof15 VF19, VF13	    	    nop
-		    nop				    sq VF24, 1+5(VI02)   ; s v2
-		    nop				    sq VF26, 1+8(VI02)   ; s v3
+	;nop                             ibeq VI04, VI00, vertexLoopOut
+	nop                             xgkick VI02
+	                         
 
-                    ;nop                             ibeq VI04, VI00, vertexLoopOut
-		    nop                             xgkick VI02                         
+	;Double Buffer----------------------------------------------
+NextvertexLoop1:
+	;Phase1 
+	nop                             div q, VF00w, VF06w 
 
-		    ;Double Buffer----------------------------------------------
+	mulax ACC, VF01, VF16x          lq  VF11, 4(VI06)   ; v3
+	madday ACC, VF02, VF16y         lq  VF14, 5(VI06)   ; vt3
+	maddaz ACC, VF03, VF16z         nop	
+	maddw VF07, VF04, VF16w         nop
+	itof4 VF17, VF11                iaddi VI06, VI06, 6	
+	itof15 VF20, VF14               sq VF18, 1+0(VI03)   ; s vt1
 
-		    ;Phase1 
-		    nop                             div q, VF00w, VF06w 
+	;Phase2
+	mulq.xyz VF21, VF06, q          div q, VF00w, VF07w 
 
-		    mulax ACC, VF01, VF16x          lq  VF11, 4(VI01)   ; v3
-                    madday ACC, VF02, VF16y         lq  VF14, 5(VI01)   ; vt3
-                    maddaz ACC, VF03, VF16z         nop	
-                    maddw VF07, VF04, VF16w         nop
-		    itof4 VF17, VF11                iaddi VI01, VI01, 6	
-		    itof15 VF20, VF14               sq VF18, 1+0(VI03)   ; s vt1
+	mulax ACC, VF01, VF17x          lq  VF09, 0(VI06)   ; v1
+	madday ACC, VF02, VF17y         lq  VF12, 1(VI06)   ; vt1
+	maddaz ACC, VF03, VF17z         nop
+	maddw VF08, VF04, VF17w         nop
+	itof4 VF15, VF09                nop
+	subw.xyz VF28,VF21,VF31	        nop
+	
+	ftoi4 VF22, VF21                sq  VF19, 1+3(VI03)   ; s vt2
+	
 
-		    ;Phase2
-		    mulq.xyz VF21, VF06, q          div q, VF00w, VF07w 
+	;Phase3
+	mulq.xyz VF23, VF07, q          div q, VF00w, VF08w 
 
-		    mulax ACC, VF01, VF17x          lq  VF09, 0(VI01)   ; v1
-                    madday ACC, VF02, VF17y         lq  VF12, 1(VI01)   ; vt1
-                    maddaz ACC, VF03, VF17z         nop
-                    maddw VF08, VF04, VF17w         nop
-		    itof4 VF15, VF09                nop
-		    ftoi4 VF22, VF21                sq  VF19, 1+3(VI03)   ; s vt2
+	mulax ACC, VF01, VF15x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF15y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF15z         sq  VF22, 1+2(VI03)   ; s v1
+	maddw VF06, VF04, VF15w         nop
+	subw.xyz VF29,VF23,VF31	        nop
+	ftoi4 VF24, VF23                nop
 
-		    itof15 VF18, VF12	    	    nop
+	mulq.xyz VF25, VF08, q          nop
 
-		    ;Phase3
-		    mulq.xyz VF23, VF07, q          div q, VF00w, VF08w 
 
-		    mulax ACC, VF01, VF15x          lq  VF10, 2(VI01)   ; v2
-                    madday ACC, VF02, VF15y         lq  VF13, 3(VI01)   ; vt2
-                    maddaz ACC, VF03, VF15z         sq  VF22, 1+2(VI03)   ; s v1
-                    maddw VF06, VF04, VF15w         nop
-		    ftoi4.xyz VF24, VF23            nop
-		    itof4 VF16, VF10                nop
+	clipw.xyz VF28,vf05	    	    nop
+	clipw.xyz VF29,vf05	    	    nop
+	subw.xyz VF30,VF25,VF31	        nop
+	itof4 VF16, VF10                nop
+	itof15 VF18, VF12	    	    nop
+	clipw.xyz VF30,vf05	    	    nop
 
-		    mulq.xyz VF25, VF08, q          nop
 
-		    ;End
-		    ftoi4.xyz VF26, VF25            sq VF20, 1+6(VI03)   ; s vt3
-		    itof15 VF19, VF13	    	    nop
-		    nop				    sq VF24, 1+5(VI03)   ; s v2
-		    nop				    sq VF26, 1+8(VI03)   ; s v3
+	;End
+	ftoi4 VF26, VF25            sq VF20, 1+6(VI03)   ; s vt3
+	itof15 VF19, VF13	    	sq VF24, 1+5(VI03)   ; s v2
 
-                    nop                             ibne VI04, VI00, vertexLoop
-		    nop                             xgkick VI03
+
+	nop				    fcand VI01,0x3FFFF
+	nop                 ibne VI01, VI00, NextvertexLoop2
+	nop				    sq VF26, 1+8(VI03)   ; s v3
+
+
+	nop                             ibne VI04, VI00, vertexLoop
+	nop                             xgkick VI03
+	
 vertexLoopOut:
 
-		    
- 
-                    nop[E]                          nop
-                    nop                             nop
+	nop[E]                          nop
+	nop                             nop
+	
+NextvertexLoop2:
+	nop                             ibne VI04, VI00, vertexLoop
+	nop                             nop
+	nop[E]                          nop
+	nop                             nop
+
+
 vu1Triangle_CodeEnd:
