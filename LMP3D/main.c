@@ -12,7 +12,7 @@ void game2(LMP3D_Buffer *buffer);
 int	game4(void);
 
 
-int main(int argc, char** argv)
+int main(void)
 {
 	LMP3D_Init();
 
@@ -20,7 +20,9 @@ int main(int argc, char** argv)
 
 	buffer = LMP3D_Window("Demo");
 
+	//LMP3D_TAR tar;
 
+	//LMP3D_Tar(&tar,"bin.tar","zert",LMP3D_TAR_DEBUG);
 	//srand(time(NULL));
 
 #ifdef DREAMCAST
@@ -32,6 +34,10 @@ int main(int argc, char** argv)
 #endif
 
 #ifdef Wii
+	game4();
+#endif
+
+#ifdef GC
 	game4();
 #endif
 	game(&buffer);

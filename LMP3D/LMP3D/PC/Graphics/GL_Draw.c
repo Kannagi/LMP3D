@@ -42,7 +42,7 @@ void MNS_draw(float l,float h,Vector2 position,float tl,float th,float *vt)
     glDisableClientState( GL_VERTEX_ARRAY );
 }
 
-void MNS_blit(Rect tile,Rectf *t,Vector2 p)
+void MNS_blit(Rectf tile,Rectf *t,Vector2 p)
 {
     float vt[8];
 
@@ -90,7 +90,7 @@ void MNS_blit(Rect tile,Rectf *t,Vector2 p)
 
 void MNS_blit2D(LMP3D_Texture texture,Rectf *vt,Vector2 p)
 {
-    Rect tile;
+    Rectf tile;
     tile.x = 640;
     tile.y = 480;
 
@@ -105,7 +105,7 @@ void MNS_blit2D(LMP3D_Texture texture,Rectf *vt,Vector2 p)
 
 void MNS_blit2D256(Rectf *vt,Vector2 p)
 {
-    Rect tile;
+    Rectf tile;
     tile.x = 640;
     tile.y = 480;
 

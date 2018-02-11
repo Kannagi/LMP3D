@@ -66,8 +66,10 @@ gpu_ctrl(4, 2); // DMA CPU->GPU mode
 
 
 
+extern int testperc;
+extern int testperc2;
 
-void PS1_TRS(IVector3 position,IVector3 rotate,IVector3 scale)
+void PS1_TRS(Vector3i position,Vector3i rotate,Vector3i scale)
 {
 	short cosAngle,sinAngle;
 	short m1[10];
@@ -75,7 +77,7 @@ void PS1_TRS(IVector3 position,IVector3 rotate,IVector3 scale)
 	short r[10];
 
 
-	position.z +=(1<<9);
+	position.z +=1<<9;
 
 	cosAngle = fastcos(rotate.x);
 	sinAngle = fastsin(rotate.x);
@@ -155,10 +157,10 @@ void PS1_TRS(IVector3 position,IVector3 rotate,IVector3 scale)
 
 void game2(LMP3D_Buffer *buffer)
 {
+	LMP3D_TAR tar;
+	LMP3D_Texture* texture = LMP3D_Load_Texture("cdrom:FFCCDIF.PNG;1",0,NULL);
 
-	LMP3D_Texture* texture = LMP3D_Load_Texture("cdrom:FFCCDIF.PNG;1");
-
-	LMP3D_Convert_Pixel(texture,LMP3D_FORMAT_RGB15);
+	LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555);
 	LMP3D_Texture_Upload(texture);
 
 	LMP3D_Texture_Free_Pixel(texture);
@@ -175,13 +177,13 @@ void game2(LMP3D_Buffer *buffer)
 
 	int vb,n = 1;
 
-	IVector3 position,scale,rotate;
+	Vector3i position,scale,rotate;
 
-	position.x = 100;
-	position.y = 0;
-	position.z = 0;
+	position.x = 0;
+	position.y = 80;
+	position.z = -440;
 
-	rotate.x = 0;
+	rotate.x = 1088;
 	rotate.y = 0;
 	rotate.z = 0;
 
@@ -192,8 +194,8 @@ void game2(LMP3D_Buffer *buffer)
 
 	int x = 0;
 
-
-	LMP3D_Model *model = LMP3D_Load_Model_bcm("cdrom:ZACK.BCM;1");
+	LMP3D_Model *model;
+	model = LMP3D_Load_Model("cdrom:ZACK.BCM;1",0,NULL);
 
 	while(1)
 	{
@@ -206,11 +208,30 @@ void game2(LMP3D_Buffer *buffer)
 		if(event.key[Button_Right] == LMP3D_KEY_DOWNW) position.x += 8;
 		if(event.key[Button_Left] == LMP3D_KEY_DOWNW) position.x -= 8;
 
+		rotate.z += 0x10;
+
+
+/*
+
+		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW)
+		{
+			scale.x += 16;
+			scale.y += 16;
+			scale.z += 16;
+		}
+		if(event.key[Button_Circle] == LMP3D_KEY_DOWNW)
+		{
+			scale.x -= 16;
+			scale.y -= 16;
+			scale.z -= 16;
+		}*/
+
 		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW) position.z += 16;
 		if(event.key[Button_Circle] == LMP3D_KEY_DOWNW) position.z -= 16;
-
+/*
 		if(event.key[Button_Triangle] == LMP3D_KEY_DOWNW) scale.x += 16;
 		if(event.key[Button_Square] == LMP3D_KEY_DOWNW) scale.x -= 16;
+*/
 
 
 		//if(event.key[Button_Start] == LMP3D_KEY_DOWN) buffer->switchBuffer = !buffer->switchBuffer;
@@ -243,7 +264,7 @@ void game2(LMP3D_Buffer *buffer)
 
 		if(fps >= 60)
 		{
-			printf("time %d/%d   %d\n",0x10800-0x20-vb,0x10800-0x20 ,n*12); //0X10800 max vb
+			printf("time %d/%d   %d  \n",0x10800-0x20-vb,0x10800-0x20 ,n*12); //0X10800 max vb
 
 			fps = 0;
 		}

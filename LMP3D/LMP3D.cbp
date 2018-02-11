@@ -4,7 +4,7 @@
 	<Project>
 		<Option title="LMP3D" />
 		<Option pch_mode="2" />
-		<Option default_target="Dreamcast" />
+		<Option default_target="TestNewConsole" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Linux">
@@ -23,6 +23,22 @@
 					<Add library="SDL" />
 				</Linker>
 			</Target>
+			<Target title="LinuxMingw">
+				<Option output="bin/demo.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/Mingw/" />
+				<Option type="0" />
+				<Option compiler="mingw__compiler" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DPC" />
+				</Compiler>
+				<Linker>
+					<Add library="opengl32" />
+					<Add library="glu32" />
+					<Add library="SDL" />
+				</Linker>
+			</Target>
 			<Target title="Windows">
 				<Option output="bin/demo" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin/" />
@@ -30,6 +46,7 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-O3" />
 					<Add option="-DPC" />
 				</Compiler>
 				<Linker>
@@ -58,6 +75,7 @@
 				<Option compiler="ps2_gcc_compiler" />
 				<Option parameters="&amp; pcsx2 --elf=PS2_Demo.elf" />
 				<Compiler>
+					<Add option="-O1" />
 					<Add option="-DPLAYSTATION2" />
 				</Compiler>
 				<Linker>
@@ -65,13 +83,14 @@
 				</Linker>
 			</Target>
 			<Target title="Dreamcast">
-				<Option output="bin/DC_demo" prefix_auto="0" extension_auto="0" />
+				<Option output="bin/DC_demo.elf" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="bin/" />
 				<Option object_output="obj/DC/" />
 				<Option type="1" />
 				<Option compiler="dc_gcc_compiler" />
-				<Option parameters="&amp; lxdream DC_demo" />
+				<Option parameters="&amp; lxdream DC_demo.elf" />
 				<Compiler>
+					<Add option="-O3" />
 					<Add option="-DDREAMCAST" />
 				</Compiler>
 				<Linker>
@@ -79,15 +98,34 @@
 				</Linker>
 			</Target>
 			<Target title="Wii">
-				<Option output="bin/NC_demo" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Wii_demo.elf" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="bin/" />
-				<Option object_output="obj/NC" />
+				<Option object_output="obj/Wii" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="wii_gcc_compiler" />
+				<Option parameters="&amp; dolphin-emu --exec=Wii_demo.elf" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-DNEW_CONSOLES" />
+					<Add option="-DWii" />
 				</Compiler>
+				<Linker>
+					<Add option="-lfat -lwiiuse -lbte -logc -lm" />
+				</Linker>
+			</Target>
+			<Target title="GC">
+				<Option output="bin/GC_demo.elf" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="bin/" />
+				<Option object_output="obj/GC" />
+				<Option type="1" />
+				<Option compiler="wii_gcc_compiler" />
+				<Option parameters="&amp; dolphin-emu --exec=GC_demo.elf" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-DGC" />
+				</Compiler>
+				<Linker>
+					<Add option="-logc -lm" />
+				</Linker>
 			</Target>
 			<Target title="TestNewConsole">
 				<Option output="bin/NC_demo" prefix_auto="1" extension_auto="1" />
@@ -130,6 +168,15 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="LMP3D/All/Load/bcm.h" />
+		<Unit filename="LMP3D/All/Load/bmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/All/Load/pcx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LMP3D/All/Load/tar.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="LMP3D/All/Load/upng.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -141,6 +188,7 @@
 		<Unit filename="LMP3D/All/Matrix.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="LMP3D/All/Matrix.h" />
 		<Unit filename="LMP3D/All/Script.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -159,55 +207,72 @@
 			<Option compilerVar="CC" />
 			<Option target="TestNewConsole" />
 			<Option target="Wii" />
+			<Option target="GC" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Graphics/GL_Camera.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Graphics/GL_Clear_Flip.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Graphics/GL_Draw.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Graphics/GL_Graphic.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Graphics/GL_Model.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Graphics/GL_Texture.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/Load/GL_Load_Model.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
+			<Option target="Windows" />
+		</Unit>
+		<Unit filename="LMP3D/PC/Load/GL_Load_Texture.c">
+			<Option compilerVar="CC" />
+			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/SDL_Event.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/SDL_Init.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PC/SDL_Window.c">
 			<Option compilerVar="CC" />
 			<Option target="Linux" />
+			<Option target="LinuxMingw" />
 			<Option target="Windows" />
 		</Unit>
 		<Unit filename="LMP3D/PS1/Graphics/PS1_Camera.c">
@@ -239,6 +304,10 @@
 			<Option target="PS1" />
 		</Unit>
 		<Unit filename="LMP3D/PS1/Load/PS1_Load_Model.c">
+			<Option compilerVar="CC" />
+			<Option target="PS1" />
+		</Unit>
+		<Unit filename="LMP3D/PS1/Load/PS1_Load_Texture.c">
 			<Option compilerVar="CC" />
 			<Option target="PS1" />
 		</Unit>
@@ -297,6 +366,10 @@
 			<Option compilerVar="CC" />
 			<Option target="PS2" />
 		</Unit>
+		<Unit filename="LMP3D/PS2/Load/PS2_Load_Texture.c">
+			<Option compilerVar="CC" />
+			<Option target="PS2" />
+		</Unit>
 		<Unit filename="LMP3D/PS2/PS2.h">
 			<Option target="PS2" />
 		</Unit>
@@ -312,21 +385,37 @@
 			<Option compilerVar="CC" />
 			<Option target="PS2" />
 		</Unit>
+		<Unit filename="LMP3D/WII/GC_Other.c">
+			<Option compilerVar="CC" />
+			<Option target="GC" />
+		</Unit>
+		<Unit filename="LMP3D/WII/Wii_Other.c">
+			<Option compilerVar="CC" />
+			<Option target="Wii" />
+		</Unit>
 		<Unit filename="game.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mainDC.c">
+			<Option compilerVar="CC" />
+			<Option target="Dreamcast" />
+		</Unit>
+		<Unit filename="maingc.c">
+			<Option compilerVar="CC" />
+			<Option target="GC" />
+		</Unit>
 		<Unit filename="mainps1.c">
 			<Option compilerVar="CC" />
 			<Option target="PS1" />
 		</Unit>
-		<Unit filename="pvr.c">
+		<Unit filename="mainwii.c">
 			<Option compilerVar="CC" />
-			<Option target="Dreamcast" />
+			<Option target="Wii" />
 		</Unit>
-		<Unit filename="test.c">
+		<Unit filename="pvr2.c">
 			<Option compilerVar="CC" />
 			<Option target="Dreamcast" />
 		</Unit>

@@ -15,9 +15,12 @@ void GL_Graphic_Init()
 
 
     glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glEnable(GL_BLEND);
+	glAlphaFunc(GL_EQUAL, 1.0f);
 
+/*
+	glEnable(GL_BLEND) ;
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
+*/
 
 
     //glEnable(GL_CULL_FACE);

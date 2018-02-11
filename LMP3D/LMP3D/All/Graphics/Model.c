@@ -5,90 +5,53 @@
 
 #include "LMP3D/LMP3D.h"
 
-void LMP3D_Model_Init(LMP3D_Model *obj)
+void LMP3D_Model_Init(LMP3D_Model *model)
 {
-    obj->v = NULL;
-    obj->vt = NULL;
-    obj->vn = NULL;
-    obj->va = NULL;
-    obj->f = NULL;
-    obj->groupe = NULL;
-    obj->texture = NULL;
-    obj->texture_begin = NULL;
-    obj->name = NULL;
-    obj->anim = NULL;
-    obj->id = NULL;
-    obj->bones = NULL;
-    obj->nodes = NULL;
+    model->v = NULL;
+    model->vt = NULL;
+    model->vn = NULL;
+    model->va = NULL;
+    model->f = NULL;
+    model->groupe = NULL;
+    model->texture = NULL;
+    model->texture_begin = NULL;
+    model->name = NULL;
+    model->anim = NULL;
+    model->id = NULL;
+    model->bones = NULL;
+    model->nodes = NULL;
 
-    obj->nv = 0;
-    obj->nf = 0;
-    obj->ngroupe = 0;
-    obj->ntexture = 0;
-    obj->uv = 1;
-    obj->time = 0;
-    obj->cadence = 0;
-    obj->play = 0;
-    obj->play_old = 0;
-    obj->boucle = 1;
-    obj->end = 0;
-    obj->nbones = 0;
+    model->nv = 0;
+    model->nf = 0;
+    model->ngroupe = 0;
+    model->ntexture = 0;
+    model->uv = 1;
+    model->time = 0;
+    model->cadence = 0;
+    model->play = 0;
+    model->play_old = 0;
+    model->boucle = 1;
+    model->end = 0;
+    model->nbones = 0;
 
-    obj->defaut.n = 0;
-    obj->defaut.ntime = 0;
-    obj->defaut.ncadence = 0;
+    model->defaut.n = 0;
+    model->defaut.ntime = 0;
+    model->defaut.ncadence = 0;
 
 
-    obj->position.x = 0;
-	obj->position.y = 0;
-	obj->position.z = 0;
+    model->position.x = 0;
+	model->position.y = 0;
+	model->position.z = 0;
 
-    obj->rotate.x = 0;
-	obj->rotate.y = 0;
-	obj->rotate.z = 0;
+    model->rotate.x = 0;
+	model->rotate.y = 0;
+	model->rotate.z = 0;
 
-    obj->scale.x = 1;
-	obj->scale.y = 1;
-	obj->scale.z = 1;
+    model->scale.x = 1;
+	model->scale.y = 1;
+	model->scale.z = 1;
 
-	obj->test = 0;
+	model->test = 0;
 }
-/*
-void LMP3D_Model_Draw(LMP3D_Model *obj)
-{
-
-	//LMP3D_Animation3D(obj);
-
-    LMP3D_Draw_Model(obj);
-
-    return;
-
-    if(obj->anim == NULL) return;
-
-	int n = obj->play;
-    if(obj->play != obj->play_old)
-    {
-        obj->play_old = obj->play;
-        obj->cadence = 0;
-        obj->time = 0;
-    }
-
-    obj->cadence++;
-    if(obj->cadence >= obj->anim[n]->ncadence)
-    {
-        obj->cadence = 0;
-        obj->time++;
-    }
-
-    obj->end = 0;
-    if(obj->time >= obj->anim[n]->ntime)
-    {
-        obj->cadence = 0;
-        obj->time = 0;
-        obj->end = 1;
-    }
-
-}
-*/
 
 

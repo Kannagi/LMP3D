@@ -3,12 +3,6 @@
 
 typedef struct
 {
-    int begin,end;
-
-}LMP3D_FPS;
-
-typedef struct
-{
     int width,height;
     int fpsm,zpsm;
     int faddress1,faddress2,zaddress;

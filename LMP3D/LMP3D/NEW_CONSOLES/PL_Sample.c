@@ -5,6 +5,48 @@
 
 #include "LMP3D/LMP3D.h"
 
+void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture)
+{
+	switch (texture->format)
+	{
+		case LMP3D_FORMAT_LUM:
+		break;
+
+		case LMP3D_FORMAT_LUMA:
+		break;
+
+		case LMP3D_FORMAT_RGB888:
+		break;
+
+		case LMP3D_FORMAT_RGBA8888:
+		break;
+
+		case LMP3D_FORMAT_RGB555:
+
+		break;
+
+		case LMP3D_FORMAT_RGBA1555:
+
+		break;
+
+		case LMP3D_FORMAT_8BPP:
+		break;
+
+		case LMP3D_FORMAT_4BPP:
+
+		break;
+
+		case LMP3D_FORMAT_2BPP:
+
+		break;
+
+		default:
+
+		break;
+	}
+
+}
+
 void LMP3D_Camera_LookAt(LMP3D_Camera camera)
 {
 
@@ -15,12 +57,17 @@ void LMP3D_Camera_Perspective(LMP3D_Camera camera)
 
 }
 
-
-
-void LMP3D_Camera_Ortho()
+void LMP3D_Convert_Model(LMP3D_Model *obj)
 {
 
 }
+
+
+void LMP3D_Camera_Ortho2D()
+{
+
+}
+
 
 //Clear Screen
 void LMP3D_Clear()
@@ -39,13 +86,10 @@ void LMP3D_Model_Draw(LMP3D_Model *obj)
 {
 
 }
-void LMP3D_Convert_Model(LMP3D_Model *obj)
-{
 
-}
 
 //----
-void bitmap_font2(unsigned char *texte,int tx,int ty)
+void bitmap_font2(char *texte,int tx,int ty)
 {
 
 }

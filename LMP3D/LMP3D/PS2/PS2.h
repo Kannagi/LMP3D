@@ -635,5 +635,5 @@ void PS2_VU_Init();
 
 #define RW_REGISTER_U32(REG) 	*((volatile u32 *)(REG))
 #define RW_REGISTER_U64(REG) 	*((volatile u64 *)(REG))
-
+#define CACHED_SEG(x)   ( (void*) ( (unsigned int)(x) | (0xC0000000) ) )
 

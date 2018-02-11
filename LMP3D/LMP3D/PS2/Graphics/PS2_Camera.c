@@ -18,7 +18,7 @@ void LMP3D_Camera_Perspective(LMP3D_Camera camera)
 }
 
 
-void LMP3D_Camera_Ortho()
+void LMP3D_Camera_Ortho2D()
 {
 
 }

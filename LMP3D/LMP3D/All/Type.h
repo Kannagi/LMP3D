@@ -9,7 +9,7 @@ typedef struct
 typedef struct
 {
     int x,y;
-}IVector2;
+}Vector2i;
 
 typedef struct
 {
@@ -19,7 +19,7 @@ typedef struct
 typedef struct
 {
     int x,y,z;
-}IVector3;
+}Vector3i;
 
 typedef struct
 {
@@ -29,7 +29,7 @@ typedef struct
 typedef struct
 {
     int x,y,z,w;
-}IVector4;
+}Vector4i;
 
 typedef struct
 {
@@ -39,7 +39,7 @@ typedef struct
 typedef struct
 {
     int x,y,h,w;
-}Rect;
+}Recti;
 
 typedef struct
 {

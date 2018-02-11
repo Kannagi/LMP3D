@@ -41,7 +41,7 @@ double LMP3D_sind(double x)
 
 float LMP3D_cosf(float x)
 {
-	x += PI/2.0f;
+	x += (float)PI/2.0f;
 	int q = (x * 6.3661977236758138e-1f) +0.5f; //floor
 
 	float t = x - q * 1.5707963267923333e+00f;

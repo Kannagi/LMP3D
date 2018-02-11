@@ -1,12 +1,21 @@
 #ifndef __LMP3D_Event__
 #define __LMP3D_Event__
 
+#define LMP3D_EVENT_MAX 20*4
+#define LMP3D_JOYPAD1 00
+#define LMP3D_JOYPAD2 20
+#define LMP3D_JOYPAD3 40
+#define LMP3D_JOYPAD4 60
+
+#ifdef PC
 
 #define LMP3D_EVENT_MAX 410
 #define LMP3D_JOYPAD1 330
 #define LMP3D_JOYPAD2 350
 #define LMP3D_JOYPAD3 370
 #define LMP3D_JOYPAD4 390
+
+#endif
 
 typedef struct
 {
@@ -56,7 +65,17 @@ enum {
 
 //FOR GC
 enum {
-			Button_Z = 8,
+			Button_Z = Button_R2,
+
+};
+
+//FOR Wii
+enum {
+			Button_C = Button_R1,
+			Button_1 = Button_X,
+			Button_2 = Button_Y,
+			Button_Plus = Button_Start,
+			Button_Less = Button_Select,
 
 };
 

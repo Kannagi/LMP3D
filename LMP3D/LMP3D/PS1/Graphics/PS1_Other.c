@@ -7,7 +7,7 @@
 
 #include "LMP3D/LMP3D.h"
 
-#define BUFFERMAX 5000
+#define BUFFERMAX 0x1000
 static unsigned int Bufferz[BUFFERMAX];
 
 static int Bufferaddr;

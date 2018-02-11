@@ -14,6 +14,8 @@ void LMP3D_Convert_Model(LMP3D_Model *model)
 	u16 *v  = malloc(model->nf*3 * 8 * sizeof(u16));
 	//obj->v  = malloc(obj->nf*3 * 8 * sizeof(float));
 
+	float *mv = model->v;
+	float *mvt = model->vt;
 	for(i = 0;i < model->nf*3;i++)
 	{
 		tv = i*8;
@@ -34,16 +36,16 @@ void LMP3D_Convert_Model(LMP3D_Model *model)
 
 
 
-		v[tv + 0] = ftoi4(model->v[l+0]);
-		v[tv + 1] = ftoi4(model->v[l+1]);
-		v[tv + 2] = ftoi4(model->v[l+2]);
+		v[tv + 0] = ftoi4(mv[l+0]);
+		v[tv + 1] = ftoi4(mv[l+1]);
+		v[tv + 2] = ftoi4(mv[l+2]);
 		v[tv + 3] = ftoi4(1.0f);
 
 
-		v[tv + 4] = ftoi15(-model->vt[l2+0]);
-		v[tv + 5] = ftoi15(-model->vt[l2+1]);
+		v[tv + 4] = ftoi15(-mvt[l2+0]);
+		v[tv + 5] = ftoi15(-mvt[l2+1]);
 		v[tv + 6] = ftoi15(1.0f);
-		v[tv + 7] = ftoi15(1.0f);
+		v[tv + 7] = 0;
 
 	}
 

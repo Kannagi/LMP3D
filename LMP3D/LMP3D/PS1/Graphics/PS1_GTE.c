@@ -54,6 +54,7 @@ void PS1_GTE_Init()
      );
 }
 
+
 void PS1_GTE_Perspective_Set()
 {
 	int perspective[5];
@@ -61,7 +62,7 @@ void PS1_GTE_Perspective_Set()
 	perspective[1] = (240/2)<<16;
 	perspective[2] = 1<<7;
 	perspective[3] = 1<<12;
-	perspective[4] = 1<<9;
+	perspective[4] = 0x1<<8;
 
 	asm volatile (
 

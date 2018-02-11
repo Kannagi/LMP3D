@@ -7,7 +7,6 @@
 /*
 JPEG File Interchange Format (.jpg)
 Portable Network Graphics (.png)
-Truevision Targa (.tga)
 Windows Bitmap (.bmp)
 ZSoft Paintbrush PCX (.pcx)
 
@@ -18,225 +17,61 @@ Format 3D
 
 */
 
-int LMP3D_Load_Palette(LMP3D_Texture *texture,unsigned char *palette)
-{
-    int i,l;
-    unsigned char *pixel = texture->pixel;
-    int taille = texture->size;
-    int n = 0,ok,black = 0;
-    //printf("%d %d = %d octet\n",image->w,image->h,taille);
 
-	if( ! ( (texture->pixelformat == LMP3D_FORMAT_RGB) || (texture->pixelformat == LMP3D_FORMAT_RGBA) ) ) return 0;
-
-    for(i = 0;i < 0x300;i++)
-        palette[i] = 0;
-
-    for(i = 0;i < taille;i += texture->pixelsize)
-    {
-        ok = 0;
-        for(l = 0;l < 0x300;l+=3)
-        {
-            if(palette[l+0] == pixel[i+0] && palette[l+1] == pixel[i+1] && palette[l+2] == pixel[i+2])
-            {
-                ok = 0;
-                break;
-            }else
-            {
-                ok = 1;
-            }
-        }
-
-        if(black == 0 && 0 == pixel[i+0] && 0 == pixel[i+1] && 0 == pixel[i+2])
-        {
-        	ok = 1;
-        	black = 1;
-        }
-
-        if(ok == 1)
-        {
-            palette[n+0] = pixel[i+0];
-            palette[n+1] = pixel[i+1];
-            palette[n+2] = pixel[i+2];
-            n +=3;
-            if(n >= 0x300) break;
-        }
-    }
-
-    return n;
-}
-
-
-int LMP3D_Convert_Pixel(LMP3D_Texture *texture,int psmfinal)
-{
-	int i,l=0,j,ncolor,n,r,g,b,a;
-	unsigned char palette[0x300];
-	void *pixel = NULL;
-	unsigned char *cpixel;
-	unsigned short *spixel;
-
-	if( ! ( (texture->pixelformat == LMP3D_FORMAT_RGB) || (texture->pixelformat == LMP3D_FORMAT_RGBA) ) ) return 0;
-
-	ncolor = LMP3D_Load_Palette(texture,palette);
-	printf("ncolor : %d\n",ncolor);
-
-	if( (psmfinal & LMP3D_FORMAT_8BPP ) && (ncolor <= 0x300) )
-	{
-		n = texture->w*texture->h;
-		cpixel = pixel = malloc(n);
-		a = 0;
-		for(i = 0;i < n;i++)
-		{
-			r = texture->pixel[l+0];
-			g = texture->pixel[l+1];
-			b = texture->pixel[l+2];
-
-			for(j = 0;j < ncolor;j+=3)
-            {
-                if(palette[j+0] == r && palette[j+1] == g && palette[j+2] == b)
-                    break;
-            }
-
-            j = j/3;
-
-			cpixel[i] = j;
-			l += texture->pixelsize;
-		}
-
-		texture->palette = malloc(ncolor);
-
-		for(i = 0;i < ncolor;i++)
-			texture->palette[i] = palette[i];
-
-	}
-
-	if(psmfinal & LMP3D_FORMAT_RGBA16 || psmfinal & LMP3D_FORMAT_RGB15 )
-	{
-		n = texture->w*texture->h*2;
-		spixel = pixel = malloc(n);
-		a = 0;
-
-		n = n>>1;
-		for(i = 0;i < n;i++)
-		{
-			r = texture->pixel[l+0]>>3;
-			g = texture->pixel[l+1]>>3;
-			b = texture->pixel[l+2]>>3;
-			if(texture->pixelformat == LMP3D_FORMAT_RGBA) a = (texture->pixel[l+3] != 0)<<15;
-			spixel[i] = (r) +(g<<5) + (b<<10) | a;
-			l += texture->pixelsize;
-		}
-	}
-
-	if(pixel == NULL) return 0;
-
-
-	free(texture->pixel);
-	texture->pixel = pixel;
-	texture->psm = 2;
-
-
-	texture->pixelformat = psmfinal;
-	LMP3D_Format_Init(texture);
-
-
-	return 1;
-
-}
-
-void LMP3D_Format_Init(LMP3D_Texture *texture)
-{
-	switch (texture->pixelformat)
-	{
-		case LMP3D_FORMAT_LUM:
-			texture->pixelsize = 1;
-			texture->bpp = 8;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-		case LMP3D_FORMAT_LUMA:
-			texture->pixelsize = 1;
-			texture->bpp = 8;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-		case LMP3D_FORMAT_RGB:
-			texture->pixelsize = 3;
-			texture->bpp = 24;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-
-		case LMP3D_FORMAT_RGBA:
-			texture->pixelsize = 4;
-			texture->bpp = 32;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-
-		case LMP3D_FORMAT_RGB15:
-			texture->pixelsize = 2;
-			texture->bpp = 16;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-		case LMP3D_FORMAT_RGBA16:
-			texture->pixelsize = 2;
-			texture->bpp = 16;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-		case LMP3D_FORMAT_8BPP:
-			texture->pixelsize = 1;
-			texture->bpp = 8;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-
-		case LMP3D_FORMAT_4BPP:
-			texture->pixelsize = -1;
-			texture->bpp = 4;
-			texture->size = (texture->w*texture->h*texture->pixelsize)>>1;
-		break;
-
-		case LMP3D_FORMAT_2BPP:
-			texture->pixelsize = -2;
-			texture->bpp = 2;
-			texture->size = (texture->w*texture->h*texture->pixelsize)>>2;
-		break;
-
-		default:
-			texture->pixelsize = 3;
-			texture->bpp = 24;
-			texture->size = texture->w*texture->h*texture->pixelsize;
-		break;
-	}
-}
-
-LMP3D_Texture* LMP3D_Load_Texture(const char *address)
+LMP3D_Texture* LMP3D_Load_Texture(const char *address,int offset,void *buffer)
 {
     LMP3D_Texture *texture;
 
-    texture = LMP3D_Load_png(address);
+	texture = LMP3D_Load_bmp(address,offset,buffer);
 	if(texture != NULL) return texture;
+
+	texture = LMP3D_Load_pcx(address,offset,buffer);
+	if(texture != NULL) return texture;
+
+	texture = LMP3D_Load_png(address,offset,buffer);
+	if(texture != NULL) return texture;
+
+	printf("Texture loading failed : %s\n",address);
 
     return NULL;
 }
 
 
-void LMP3D_Load_Texture_Array(LMP3D_Model *obj,char *folder)
+void LMP3D_Load_Texture_Array(LMP3D_Model *obj,const char *filename,char *folder,int offset,void *buffer)
 {
     int i;
     char string[100];
 
+    LMP3D_TAR tar;
+
     for(i = 0;i < obj->ntexture;i++)
     {
         sprintf(string,"%s%s",folder,obj->name[i]);
-        obj->texture[i] = LMP3D_Load_Texture(string);
-        if(obj->texture[i] != NULL)LMP3D_Texture_Upload(obj->texture[i]);
+
+        if(offset != 0)
+        {
+        	LMP3D_Tar(&tar,filename,string,LMP3D_TAR_OFFSET);
+			obj->texture[i] = LMP3D_Load_Texture(filename,tar.offset,NULL);
+
+        }else
+        {
+        	obj->texture[i] = LMP3D_Load_Texture(string,offset,buffer);
+        }
+
+        LMP3D_Texture_Upload(obj->texture[i]);
         LMP3D_Texture_Free_Pixel(obj->texture[i]);
     }
 }
 
+LMP3D_Model *LMP3D_Load_Model(const char *filename,int offset,void *buffer)
+{
+	LMP3D_Model *model;
 
+	model = LMP3D_Load_bcm(filename,offset,buffer);
+	if(model != NULL) return model;
+
+	return NULL;
+}
 /*
 MNS_Model3D *MNS_load_3D(char *nom_du_fichier)
 {

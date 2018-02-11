@@ -13,7 +13,7 @@ typedef struct
 typedef struct
 {
     //Mesh
-    float *v,*vt,*vn,*va;
+    void *v,*vt,*vn,*va;
     int nv,nf;
     unsigned short *f;
 
@@ -36,7 +36,7 @@ typedef struct
 
 
     LMP3D_Anim3D defaut,**anim; //Squelette
-    short *id; //attribut pour chaque vertex
+    unsigned char *id; //attribut pour chaque vertex
     short *bones; //relation entre bones parent/enfant
     short nbones; //nombre de bones
 
@@ -64,7 +64,6 @@ void LMP3D_Model_Draw(LMP3D_Model *model);
 
 void LMP3D_Animation3D(LMP3D_Model *model);
 
-LMP3D_Model *LMP3D_Load_Model_bcm(char *nom_du_fichier);
 
 
 #endif

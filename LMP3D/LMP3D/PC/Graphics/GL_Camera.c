@@ -10,8 +10,9 @@
 
 void xgluPerspective(float fovy, float aspect, float zNear, float zFar)
 {
+	/*
     float sine, cotangent, deltaZ;
-    float radians=(float)(fovy/2.0f*PI/180.0f);
+    float radians=(float)(fovy/2.0f)*(PI/180.0f);
 
     deltaZ=zFar-zNear;
     sine=LMP3D_sinf(radians);
@@ -20,17 +21,20 @@ void xgluPerspective(float fovy, float aspect, float zNear, float zFar)
         return;
     }
 
-    cotangent=(LMP3D_cosf(radians)/sine);
+    cotangent=(LMP3D_cosf(radians)/sine);*/
+    float deltaZ =zFar-zNear;
+
+    float ps = 640.0f/256.0f;
 
 	float matrix[16];
 
-	matrix[(0<<2)+0] = 4/aspect;
+	matrix[(0<<2)+0] = ps;
 	matrix[(0<<2)+1] = 0;
 	matrix[(0<<2)+2] = 0;
 	matrix[(0<<2)+3] = 0;
 
 	matrix[(1<<2)+0] = 0;
-	matrix[(1<<2)+1] = 4;
+	matrix[(1<<2)+1] = ps*1.50;
 	matrix[(1<<2)+2] = 0;
 	matrix[(1<<2)+3] = 0;
 
@@ -41,7 +45,7 @@ void xgluPerspective(float fovy, float aspect, float zNear, float zFar)
 
 	matrix[(3<<2)+0] = 0;
 	matrix[(3<<2)+1] = 0;
-	matrix[(3<<2)+2] = -2.0f * zNear * zFar / deltaZ;
+	matrix[(3<<2)+2] = -(2.0f * zNear * zFar )/ deltaZ;
 	matrix[(3<<2)+3] = 0;
 
 	glLoadMatrixf(matrix);
@@ -63,7 +67,7 @@ void LMP3D_Camera_Perspective(LMP3D_Camera camera)
     glMatrixMode( GL_MODELVIEW );
 }
 
-void LMP3D_Camera_Ortho()
+void LMP3D_Camera_Ortho2D()
 {
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);

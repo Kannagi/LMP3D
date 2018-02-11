@@ -1157,7 +1157,7 @@ upng_t* upng_new_from_bytes(const unsigned char* buffer, unsigned long size)
 	return upng;
 }
 
-upng_t* upng_new_from_file(const char *filename)
+upng_t* upng_new_from_file(const char *filename,int offset)
 {
 	upng_t* upng;
 	unsigned char *buffer;
@@ -1181,7 +1181,7 @@ upng_t* upng_new_from_file(const char *filename)
 	size = ftell(file);
 
 	//rewind(file);
-	fseek(file, 0, SEEK_SET);
+	fseek(file, offset, SEEK_SET);
 
 	/* read contents of the file into the vector */
 	buffer = (unsigned char *)malloc((unsigned long)size);
@@ -1285,21 +1285,19 @@ unsigned upng_get_size(const upng_t* upng)
 
 #include "LMP3D/LMP3D.h"
 
-LMP3D_Texture *LMP3D_Load_png(const char *adresse)
+LMP3D_Texture *LMP3D_Load_png(const char *adresse,int offset,void *buffer)
 {
 	upng_t* upng;
 
 	//upng_new_from_bytes(buffer,size);
-	upng = upng_new_from_file(adresse);
-	upng_decode(upng);
-
+	upng = upng_new_from_file(adresse,offset);
 
 	if (upng_get_error(upng) != UPNG_EOK) {
 		printf("error: %s %u %u\n",adresse, upng_get_error(upng), upng_get_error_line(upng));
 		return NULL;
 	}
 
-
+	upng_decode(upng);
 
 	LMP3D_Texture *texture = NULL;
 	texture = malloc(sizeof(LMP3D_Texture));
@@ -1312,49 +1310,38 @@ LMP3D_Texture *LMP3D_Load_png(const char *adresse)
 	switch (upng_get_components(upng))
 	{
 		case 1:
-		  texture->format = 6409;
-		  texture->bpp = 8;
-
-		  texture->pixelformat = LMP3D_FORMAT_LUM;
+			texture->format = LMP3D_FORMAT_LUM;
 		break;
 
 		case 2:
-		  texture->format = 6410;
-		  texture->bpp = 8;
-
-		  texture->pixelformat = LMP3D_FORMAT_LUMA;
+			texture->format = LMP3D_FORMAT_LUMA;
 		break;
 
 		case 3:
-		  texture->format = 6407;
-		  texture->bpp = 24;
-		  texture->pixelformat = LMP3D_FORMAT_RGB;
+			texture->format = LMP3D_FORMAT_RGB888;
 		break;
 
 		case 4:
-		  texture->format =  6408;
-		  texture->psm =  0;
-		  texture->bpp = 32;
-		  texture->pixelformat = LMP3D_FORMAT_RGBA;
+			texture->format = LMP3D_FORMAT_RGBA8888;
 		break;
 
 		default:
-			texture->bpp = 8;
+			texture->format = 0;
 		break;
 	}
 
 
-	texture->pixelsize = texture->bpp/8;
-	texture->size = texture->w*texture->h * texture->pixelsize;
-
+	LMP3D_Texture_Format_Init(texture);
 
 	texture->pixel = malloc(texture->size);
 
-	unsigned char *data = upng_get_buffer(upng);
+	const unsigned char *data = upng_get_buffer(upng);
 
 	memcpy(texture->pixel,data, texture->size);
 
 	upng_free(upng);
+
+	LMP3D_Texture_Format_Convert(texture);
 
 	return texture;
 }

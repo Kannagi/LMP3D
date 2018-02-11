@@ -10,7 +10,7 @@
 void LMP3D_Event_Update(LMP3D_Event *event)
 {
     SDL_Event sdlevent;
-    unsigned int i;
+    int i;
 
     event->clikright = 0;
     event->clikleft = 0;
@@ -69,7 +69,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 
             case SDL_KEYDOWN:
 
-                for(i=0;i<325;i++)
+                for(i=0;i<SDLK_LAST;i++)
                 {
                     if(sdlevent.key.keysym.sym == i)
                     {
@@ -87,7 +87,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 
             case SDL_KEYUP:
 
-                for(i=0;i<325;i++)
+                for(i=0;i<SDLK_LAST;i++)
                 {
                     if(sdlevent.key.keysym.sym == i)
                     {
@@ -188,15 +188,27 @@ void LMP3D_Event_Update(LMP3D_Event *event)
     }
 
 
-    event->key[Button_Up] = event->key['i'];
-	event->key[Button_Down] = event->key['k'];
+	event->key[Button_Start] = event->key['h'];
+	event->key[Button_Select] = event->key['j'];
+
+	event->key[Button_A] = event->key['s'];
+	event->key[Button_B] = event->key['d'];
+	event->key[Button_X] = event->key['f'];
+	event->key[Button_Y] = event->key['g'];
+
+    event->key[Button_Up] = event->key[SDLK_UP];
+	event->key[Button_Down] = event->key[SDLK_DOWN];
+	event->key[Button_Right] = event->key[SDLK_RIGHT];
+	event->key[Button_Left] = event->key[SDLK_LEFT];
 
 
-	event->key[Button_R1] = event->key['q'];
-	event->key[Button_L1] = event->key['s'];
-	event->key[Button_R2] = event->key['d'];
-	event->key[Button_L2] = event->key['f'];
+	event->key[Button_R1] = event->key['x'];
+	event->key[Button_L1] = event->key['c'];
+	event->key[Button_R2] = event->key['v'];
+	event->key[Button_L2] = event->key['b'];
 
+	event->key[Button_R3] = event->key['e'];
+	event->key[Button_L3] = event->key['r'];
 }
 
 #endif

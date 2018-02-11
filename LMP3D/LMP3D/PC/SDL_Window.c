@@ -23,29 +23,32 @@ LMP3D_Buffer LMP3D_Window(char *name)
 
 }
 
-void LMP3D_Fps(int fps)
+int LMP3D_Fps(int fps)
 {
-	static LMP3D_FPS time;
+	static time_end,time_begin;
 
     int time_dif,slp;
     slp = 1000/fps;
 
-    time.end = SDL_GetTicks();
-    time_dif = time.end - time.begin;
+    time_end = SDL_GetTicks();
+    time_dif = time_end - time_begin;
 
     if(time_dif <= 0) time_dif = 0;
     if(time_dif < slp) SDL_Delay(slp - time_dif);
 
-    time.begin = SDL_GetTicks();
+    time_begin = SDL_GetTicks();
+
+
+    return time_dif;
 }
 
 
 int LMP3D_VBlank()
 {
-	LMP3D_Fps(60);
+	int nvbl = LMP3D_Fps(60);
 	SDL_GL_SwapBuffers();
 
-	return 0;
+	return nvbl;
 }
 
 
