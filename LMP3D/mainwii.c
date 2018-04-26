@@ -301,6 +301,9 @@ void game4()
 
 		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_HOME) exit(0);
 
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_LEFT) x -= 0.1;
+		if (WPAD_ButtonsDown(0) & WPAD_BUTTON_RIGHT) x += 0.1;
+
 		//axisx = (RW_REGISTER_U32(0xCC006404)&0xFF00)>>8;
 		//x += (float)(axisx-0x80)*0.001;
 

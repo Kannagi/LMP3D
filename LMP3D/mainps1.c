@@ -20,32 +20,24 @@ extern short sincostbl[4096];
 
 void GsDrawList3()
 {
-
 	unsigned int linked_list2[0x100];
 
 	int i = 1;
-
-
+/*
 	//Texture 16 bits
 	linked_list2[i++] = GP0_TEXPAGE(0,1,0,2,0,1,0,0,0);
 	linked_list2[i++] = GP0_CMD_COLOR(GP0_RECTANGLE_TOB,128,128,128);
 	linked_list2[i++] = GP0_VERTEX(150,0);
 	linked_list2[i++] = GP0_TEXCOORD(0,0,0);
 	linked_list2[i++] = GP0_VERTEX(128,256);
-
+*/
 
 	//8bpp
-	linked_list2[i++] = GP0_TEXPAGE(7,0,0,1,0,1,0,0,0);
+	linked_list2[i++] = GP0_TEXPAGE(0,1,0,1,0,1,0,0,0);
 	linked_list2[i++] = GP0_CMD_COLOR(GP0_RECTANGLE_TOB,128,128,128);
 	linked_list2[i++] = GP0_VERTEX(0,0);
-	linked_list2[i++] = GP0_TEXCOORD(0,0,0x0001);
-	linked_list2[i++] = GP0_VERTEX(128,64);
-
-
-
-
-
-
+	linked_list2[i++] = GP0_TEXCOORD(0,0,0x0000+(240<<6));
+	linked_list2[i++] = GP0_VERTEX(256,256);
 
 	linked_list2[0] = (i-1)<<24;
 
@@ -154,13 +146,16 @@ void PS1_TRS(Vector3i position,Vector3i rotate,Vector3i scale)
 	PS1_GTE_ModelView_Set(r,&position);
 }
 
-
+extern int extPerspective[5];
 void game2(LMP3D_Buffer *buffer)
 {
 	LMP3D_TAR tar;
-	LMP3D_Texture* texture = LMP3D_Load_Texture("cdrom:FFCCDIF.PNG;1",0,NULL);
 
-	LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555);
+	LMP3D_Texture* texture = LMP3D_Load_Texture("cdrom:FFCCDIF.PCX;1",0,NULL,0);
+
+	LMP3D_Texture_Convert_Pal(texture,LMP3D_FORMAT_RGBA1555);
+
+	//LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555);
 	LMP3D_Texture_Upload(texture);
 
 	LMP3D_Texture_Free_Pixel(texture);
@@ -195,23 +190,30 @@ void game2(LMP3D_Buffer *buffer)
 	int x = 0;
 
 	LMP3D_Model *model;
-	model = LMP3D_Load_Model("cdrom:ZACK.BCM;1",0,NULL);
+	model = LMP3D_Load_Model("cdrom:ZACK.BCM;1",0,NULL,0);
+
+	char info[100];
+
+	extPerspective[2] = 1<<7;
+	extPerspective[3] = 1<<12;
+	extPerspective[4] = 1<<8;
 
 	while(1)
 	{
+		rotate.z += 0x10;
 
 		LMP3D_Event_Update(&event);
 		LMP3D_Camera_Perspective(camera);
-
+/*
 		if(event.key[Button_Up] == LMP3D_KEY_DOWNW) position.y -= 8;
 		if(event.key[Button_Down] == LMP3D_KEY_DOWNW) position.y += 8;
 		if(event.key[Button_Right] == LMP3D_KEY_DOWNW) position.x += 8;
 		if(event.key[Button_Left] == LMP3D_KEY_DOWNW) position.x -= 8;
-
-		rotate.z += 0x10;
-
-
+*/
+		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW) position.z += 16;
+		if(event.key[Button_Circle] == LMP3D_KEY_DOWNW) position.z -= 16;
 /*
+
 
 		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW)
 		{
@@ -224,10 +226,29 @@ void game2(LMP3D_Buffer *buffer)
 			scale.x -= 16;
 			scale.y -= 16;
 			scale.z -= 16;
-		}*/
+		}
 
-		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW) position.z += 16;
-		if(event.key[Button_Circle] == LMP3D_KEY_DOWNW) position.z -= 16;
+
+
+		if(event.key[Button_Up] == LMP3D_KEY_DOWNW) extPerspective[2] -= 8<<16;
+		if(event.key[Button_Down] == LMP3D_KEY_DOWNW) extPerspective[2] += 8<<16;
+
+		if(event.key[Button_Left] == LMP3D_KEY_DOWNW) extPerspective[3] -= 8<<16;
+		if(event.key[Button_Right] == LMP3D_KEY_DOWNW) extPerspective[3] += 8<<16;
+
+
+/*
+		if(event.key[Button_Triangle] == LMP3D_KEY_DOWNW) extPerspective[0] -= 16<<16;
+		if(event.key[Button_Square] == LMP3D_KEY_DOWNW) extPerspective[0] += 16<<16;
+*/
+		if(event.key[Button_R1] == LMP3D_KEY_DOWNW) extPerspective[4] -= 128;
+		if(event.key[Button_L1] == LMP3D_KEY_DOWNW) extPerspective[4] += 128;
+
+		if(event.key[Button_R2] == LMP3D_KEY_DOWNW) extPerspective[4] -= 1;
+		if(event.key[Button_L2] == LMP3D_KEY_DOWNW) extPerspective[4] += 1;
+
+
+		printf("%d %d %d %d %d\n",extPerspective[0],extPerspective[1],extPerspective[2],extPerspective[3],extPerspective[4]);
 /*
 		if(event.key[Button_Triangle] == LMP3D_KEY_DOWNW) scale.x += 16;
 		if(event.key[Button_Square] == LMP3D_KEY_DOWNW) scale.x -= 16;
@@ -235,17 +256,28 @@ void game2(LMP3D_Buffer *buffer)
 
 
 		//if(event.key[Button_Start] == LMP3D_KEY_DOWN) buffer->switchBuffer = !buffer->switchBuffer;
-
+/*
 
 		if(event.key[Button_R1] == LMP3D_KEY_DOWNW) rotate.x += 16;
 		if(event.key[Button_L1] == LMP3D_KEY_DOWNW) rotate.x -= 16;
 
 		if(event.key[Button_R2] == LMP3D_KEY_DOWNW) rotate.y += 16;
 		if(event.key[Button_L2] == LMP3D_KEY_DOWNW) rotate.z += 16;
-
-
+*/
+		LMP3D_VRAM_Info(info);
 
 		PS1_TRS(position,rotate,scale);
+
+
+		if(fps >= 60)
+		{
+			printf("time %d\n",vb-11500); //0X10800 max vb
+
+			printf("%s\n",info);
+
+			fps = 0;
+		}
+		fps++;
 
 		LMP3D_VBlank();
 
@@ -253,23 +285,9 @@ void game2(LMP3D_Buffer *buffer)
 
 		//GsDrawList3();
 
-		//for(i = 0;i < n;i++)
 		LMP3D_Model_Draw(model);
 
-
 		//TriArray(vec,model->vt,12);
-
-
-		//printf("scale %d\n",_sc); //0X10800 max vb
-
-		if(fps >= 60)
-		{
-			printf("time %d/%d   %d  \n",0x10800-0x20-vb,0x10800-0x20 ,n*12); //0X10800 max vb
-
-			fps = 0;
-		}
-		fps++;
-
 
 		PS1BufferDraw();
 

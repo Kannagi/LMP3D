@@ -8,6 +8,12 @@
 #include "LMP3D/LMP3D.h"
 void GsDrawSpriteTest(int posx,int posy);
 int memory();
+/*
+extern unsigned char *DATA_ROM;
+extern unsigned int size_DATA_ROM;
+*/
+
+unsigned char *DATA_ROM;
 void game(LMP3D_Buffer *buffer)
 {
 	LMP3D_TAR tar;
@@ -16,15 +22,43 @@ void game(LMP3D_Buffer *buffer)
 	LMP3D_Camera camera;
 	camera = LMP3D_Camera_Init();
 
-
 	LMP3D_Event_Init(&event);
 	LMP3D_Model *model;
 
-	LMP3D_Tar(&tar,"DATA","zack.bcm",LMP3D_TAR_OFFSET);
-	model = LMP3D_Load_Model("DATA",tar.offset,NULL);
+/*
+	int size;
+	FILE *file;
 
-	LMP3D_Tar(&tar,"DATA","font.png",LMP3D_TAR_OFFSET);
-	LMP3D_Texture *texture = LMP3D_Load_Texture("DATA",tar.offset,NULL);
+	file = fopen("DATA", "rb");
+
+		fseek(file, 0, SEEK_END);
+		size = ftell(file);
+	//rewind(file);
+	fseek(file, 0, SEEK_SET);
+	DATA_ROM = malloc(size);
+
+	fread(DATA_ROM, 1, size, file);
+	fclose(file);
+
+
+
+LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
+
+	model = LMP3D_Load_Model("",tar.offset,DATA_ROM,size);
+
+	LMP3D_Tar(&tar,"","font.png",LMP3D_TAR_OFFSET,DATA_ROM,size);
+
+	LMP3D_Texture *texture = LMP3D_Load_Texture("",tar.offset,DATA_ROM,tar.size);
+
+
+*/
+
+	LMP3D_Tar(&tar,"DATA","zack.bcm",LMP3D_TAR_OFFSET,NULL,0);
+
+	model = LMP3D_Load_Model("DATA",tar.offset,NULL,0);
+
+	LMP3D_Tar(&tar,"DATA","font.png",LMP3D_TAR_OFFSET,NULL,0);
+	LMP3D_Texture *texture = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
 	LMP3D_Texture_Upload(texture);
 	LMP3D_Texture_Free_Pixel(texture);
 
@@ -91,6 +125,7 @@ void game(LMP3D_Buffer *buffer)
 
 		LMP3D_Texture_Setup(texture);
 
+		//sprintf(string,"ms :%d\nnumber %d\nTri %d\n",vblank,number,model->nf*number);
 		sprintf(string,"Time %s\nVblank :%d\nnumber %d\nTri %d\nperf %d\n",strfps,vblank,number,model->nf*number,model->test);
 		bitmap_font2(string,8,8);
 
