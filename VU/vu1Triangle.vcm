@@ -1,0 +1,164 @@
+	.global vu1Triangle_CodeStart
+	.global vu1Triangle_CodeEnd
+
+; VF 01-04 Matrix
+; VF 05 in number faces
+; VF 06-08 out vertex Matrix
+; VF 09-11 vertex
+; VF 12-14 vertex texture
+; VF 15-16 (Tri Strip)
+; VF 17-20 (matrix animation)
+; VF 21-23 out vertex float
+; VF 24-26 out vertex fixed point
+; VF 28-30 out vertex float origine zero
+; VF 27 ,VF 31 clipping
+
+vu1Triangle_CodeStart:
+	.p2align 8
+	.vu 
+
+	nop                             iaddiu VI06, VI00, 6
+
+	nop                             lq  VF09, 0(VI06)   ; v1
+	nop                             lq  VF12, 1(VI06)   ; vt1
+
+	nop                             lq VF05, 5(VI00)
+
+	nop                             lq VF01, 1(VI00)
+	nop                             lq VF02, 2(VI00)
+	itof4 VF09, VF09                lq VF03, 3(VI00)
+	itof15 VF12, VF12               lq VF04, 4(VI00)
+
+	mulax ACC, VF01, VF09x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF09y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF09z         iaddiu VI02, VI00, 1003
+	maddw VF06, VF04, VF09w         iaddiu VI03, VI00, 1013
+
+	itof4 VF10, VF10                mtir VI04, VF05w
+	itof15 VF13, VF13               iaddiu VI05,VI00, 2048
+	nop                             mfir.w VF31,VI05
+	itof0.w VF31, VF31              iaddiu VI05,VI00, 1024
+	nop                             mfir.w VF27,VI05
+	itof0.w VF27, VF27              nop
+
+vertexLoop:
+	;Phase1 
+	nop                             div q, VF00w, VF06w 
+
+	mulax ACC, VF01, VF10x          lq  VF11, 4(VI06)   ; v3
+	madday ACC, VF02, VF10y         lq  VF14, 5(VI06)   ; vt3
+	maddaz ACC, VF03, VF10z         nop
+	maddw VF07, VF04, VF10w         nop
+	itof4 VF11, VF11                iaddiu VI06, VI06, 6
+	itof15 VF14, VF14               sq VF12, 1+0(VI02)   ; s vt1
+
+	;Phase2
+	mulq.xyz VF21, VF06, q          div q, VF00w, VF07w 
+
+	mulax ACC, VF01, VF11x          lq  VF09, 0(VI06)   ; v1
+	madday ACC, VF02, VF11y         lq  VF12, 1(VI06)   ; vt1
+	maddaz ACC, VF03, VF11z         nop
+	maddw VF08, VF04, VF11w         nop
+	itof4 VF09, VF09                sq  VF13, 1+3(VI02)   ; s vt2
+	subw.xyz VF28,VF21,VF31         nop
+
+	ftoi4 VF22, VF21                nop
+
+
+	;Phase3
+	mulq.xyz VF23, VF07, q          div q, VF00w, VF08w 
+
+	mulax ACC, VF01, VF09x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF09y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF09z         sq  VF22, 1+2(VI02)   ; s v1
+	maddw VF06, VF04, VF09w         nop
+	subw.xyz VF29,VF23,VF31         nop
+	ftoi4 VF24, VF23                nop
+
+	mulq.xyz VF25, VF08, q          nop
+
+	clipw.xyz VF28,VF27             nop
+	clipw.xyz VF29,VF27             nop
+	subw.xyz VF30,VF25,VF31         nop
+	itof4 VF10, VF10                iaddi VI04, VI04, -2
+	itof15 VF12, VF12               sq VF14, 1+6(VI02)   ; s vt3
+	clipw.xyz VF30,VF27             sq VF24, 1+5(VI02)   ; s v2
+
+
+	;End
+	ftoi4 VF26, VF25                 fcand VI01,0x3FFFF
+	itof15 VF13, VF13                ibne VI01, VI00, NextvertexLoop1
+	nop                              sq VF26, 1+8(VI02)   ; s v3
+
+
+	;nop                              ibeq VI04, VI00, vertexLoopOut
+	nop                              xgkick VI02
+							 
+
+	;Double Buffer----------------------------------------------
+NextvertexLoop1:
+	;Phase1 
+	nop                             div q, VF00w, VF06w 
+
+	mulax ACC, VF01, VF10x          lq  VF11, 4(VI06)   ; v3
+	madday ACC, VF02, VF10y         lq  VF14, 5(VI06)   ; vt3
+	maddaz ACC, VF03, VF10z         nop
+	maddw VF07, VF04, VF10w         nop
+	itof4 VF11, VF11                iaddiu VI06, VI06, 6
+	itof15 VF14, VF14               sq VF12, 1+0(VI03)   ; s vt1
+
+	;Phase2
+	mulq.xyz VF21, VF06, q          div q, VF00w, VF07w 
+
+	mulax ACC, VF01, VF11x          lq  VF09, 0(VI06)   ; v1
+	madday ACC, VF02, VF11y         lq  VF12, 1(VI06)   ; vt1
+	maddaz ACC, VF03, VF11z         nop
+	maddw VF08, VF04, VF11w         nop
+	itof4 VF09, VF09                sq  VF13, 1+3(VI03)   ; s vt2
+	subw.xyz VF28,VF21,VF31         nop
+
+	ftoi4 VF22, VF21                nop
+
+
+	;Phase3
+	mulq.xyz VF23, VF07, q          div q, VF00w, VF08w 
+
+	mulax ACC, VF01, VF09x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF09y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF09z         sq  VF22, 1+2(VI03)   ; s v1
+	maddw VF06, VF04, VF09w         nop
+	subw.xyz VF29,VF23,VF31         nop
+	ftoi4 VF24, VF23                nop
+
+	mulq.xyz VF25, VF08, q          nop
+
+
+	clipw.xyz VF28,VF27             nop
+	clipw.xyz VF29,VF27             nop
+	subw.xyz VF30,VF25,VF31         nop
+	itof4 VF10, VF10                nop
+	itof15 VF12, VF12               sq VF14, 1+6(VI03)   ; s vt3
+	clipw.xyz VF30,VF27             sq VF24, 1+5(VI03)   ; s v2
+
+
+	ftoi4 VF26, VF25                fcand VI01,0x3FFFF
+	itof15 VF13, VF13               ibne VI01, VI00, NextvertexLoop2
+	nop                             sq VF26, 1+8(VI03)   ; s v3
+
+
+	nop                             ibne VI04, VI00, vertexLoop
+	nop                             xgkick VI03
+
+vertexLoopOut:
+
+	nop[E]                          nop
+	nop                             nop
+
+NextvertexLoop2:
+	nop                             ibne VI04, VI00, vertexLoop
+	nop                             nop
+	nop[E]                          nop
+	nop                             nop
+
+
+vu1Triangle_CodeEnd:

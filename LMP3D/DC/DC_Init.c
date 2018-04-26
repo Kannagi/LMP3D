@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifdef DREAMCAST
+#include <kos.h>
+
+#include "LMP3D/LMP3D.h"
+#include "LMP3D/DC/DC.h"
+
+void LMP3D_Init()
+{
+	int flag[2];
+	flag[0] = 0x00000;
+
+	asm __volatile__(
+
+	"mov.l		@%0,r0\n	"
+	"lds		r0,FPSCR\n	" //GBR VBR SSR SPC SGR DBR
+
+	"sts		FPSCR,r0\n	" //GBR VBR SSR SPC SGR DBR
+	"mov.l		r0,@%0\n	"
+
+
+    :: "r"(flag) : "memory");
+
+	//printf("result :%x\n	",flag[0]);
+
+
+
+	DC_Init();
+}
+
+#endif
+
