@@ -46,7 +46,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 
 	//DOWNW
 	if(padbuf & CONT_X)
-		event->key[Button_A] = LMP3D_KEY_DOWNW;
+		event->key[Button_X] = LMP3D_KEY_DOWNW;
 
 	if(padbuf & CONT_Y)
 		event->key[Button_Y] = LMP3D_KEY_DOWNW;
@@ -80,7 +80,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 
 	//DOWN
 	if(new_pad & CONT_X)
-		event->key[Button_A] = LMP3D_KEY_DOWN;
+		event->key[Button_X] = LMP3D_KEY_DOWN;
 
 	if(new_pad & CONT_Y)
 		event->key[Button_Y] = LMP3D_KEY_DOWN;
@@ -114,7 +114,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 
 	//UP
 	if(end_pad & CONT_X)
-		event->key[Button_A] = LMP3D_KEY_UP;
+		event->key[Button_X] = LMP3D_KEY_UP;
 
 	if(end_pad & CONT_Y)
 		event->key[Button_Y] = LMP3D_KEY_UP;
