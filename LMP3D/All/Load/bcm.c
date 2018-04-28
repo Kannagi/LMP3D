@@ -34,7 +34,7 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	//printf("%f %d\n",bcm.Xmin,bcm.nv);
 
 	LMP3D_Model *model = malloc(sizeof(LMP3D_Model));
-    LMP3D_Model_Init(model);
+	LMP3D_Model_Init(model);
 
 	if(bcm.nv > 0)
 	{
@@ -115,10 +115,10 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 
 	char folder[100];
 
-    LMP3D_Folder_Out(filename,folder);
-    LMP3D_Load_Texture_Array(model,filename,folder,offset,buffer,size);
+	LMP3D_Folder_Out(filename,folder);
+	LMP3D_Load_Texture_Array(model,filename,folder,offset,buffer,size);
 
-    LMP3D_Convert_Model(model);
+	LMP3D_Convert_Model(model);
 
 	printf("%d\n",model->size);
 
