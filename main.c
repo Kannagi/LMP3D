@@ -1,17 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef __MINGW32__
-#undef main
-#endif
-
 #include "LMP3D/LMP3D.h"
-
+#include <sys/time.h>
+#include <stdint.h>
 void game(LMP3D_Buffer *buffer);
 void game2(LMP3D_Buffer *buffer);
 int	game4(void);
 void mainsoft(LMP3D_Buffer *buffer);
 void main2();
+
+
 
 int main(void)
 {
@@ -22,7 +21,6 @@ int main(void)
 	buffer = LMP3D_Window("Demo");
 
 
-	//srand(time(NULL));
 
 #ifdef WINDOWS95
 	mainsoft(&buffer);

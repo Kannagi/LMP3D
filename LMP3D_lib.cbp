@@ -8,10 +8,10 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Linux">
-				<Option output="bin/demo" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="bin/" />
+				<Option output="bin/LMP3D" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
 				<Option object_output="obj/Linux/" />
-				<Option type="1" />
+				<Option type="3" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
@@ -24,12 +24,11 @@
 				</Linker>
 			</Target>
 			<Target title="LinuxMingw">
-				<Option output="bin/demo" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="bin/" />
+				<Option output="bin/libLMP3D.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
 				<Option object_output="obj/Mingw/" />
-				<Option type="1" />
+				<Option type="2" />
 				<Option compiler="mingw__compiler" />
-				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-DPC" />
@@ -40,10 +39,10 @@
 				</Linker>
 			</Target>
 			<Target title="Windows">
-				<Option output="bin/demo" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="bin/" />
+				<Option output="bin/libdemo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
 				<Option object_output="obj/Windows/" />
-				<Option type="0" />
+				<Option type="2" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
@@ -55,10 +54,10 @@
 				</Linker>
 			</Target>
 			<Target title="PS1">
-				<Option output="bin/PSX/PS1_demo.elf" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="bin/PSX/" />
+				<Option output="bin/PSX/libLMP3D.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
 				<Option object_output="obj/PS1/" />
-				<Option type="1" />
+				<Option type="2" />
 				<Option compiler="ps1_gcc_compiler" />
 				<Option parameters=" &amp; bash compilationcd.sh" />
 				<Compiler>
@@ -68,10 +67,10 @@
 				</Compiler>
 			</Target>
 			<Target title="PS2">
-				<Option output="bin/PS2_demo.elf" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="bin/" />
+				<Option output="bin/PS2/libLMP3D.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
 				<Option object_output="obj/PS2/" />
-				<Option type="1" />
+				<Option type="2" />
 				<Option compiler="ps2_gcc_compiler" />
 				<Option parameters="&amp; pcsx2 --elf=PS2_Demo.elf" />
 				<Compiler>
@@ -84,10 +83,10 @@
 				</Linker>
 			</Target>
 			<Target title="Dreamcast">
-				<Option output="bin/DC_demo.elf" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="bin/" />
+				<Option output="bin/DC/libLMP3D.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
 				<Option object_output="obj/DC/" />
-				<Option type="1" />
+				<Option type="2" />
 				<Option compiler="dc_gcc_compiler" />
 				<Option parameters="&amp; lxdream DC_demo.elf" />
 				<Compiler>
@@ -166,10 +165,6 @@
 		<Linker>
 			<Add option="-s" />
 		</Linker>
-		<Unit filename="3Dsoftware.c">
-			<Option compilerVar="CC" />
-			<Option target="Win95" />
-		</Unit>
 		<Unit filename="LMP3D/All/Collision/Collision.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -525,33 +520,6 @@
 		<Unit filename="LMP3D/WIN95/SDL_Window.c">
 			<Option compilerVar="CC" />
 			<Option target="Win95" />
-		</Unit>
-		<Unit filename="game.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="gamewin95.c">
-			<Option compilerVar="CC" />
-			<Option target="Win95" />
-		</Unit>
-		<Unit filename="lovecraft.h" />
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="mainDC.c">
-			<Option compilerVar="CC" />
-			<Option target="Dreamcast" />
-		</Unit>
-		<Unit filename="maingc.c">
-			<Option compilerVar="CC" />
-			<Option target="GC" />
-		</Unit>
-		<Unit filename="mainps1.c">
-			<Option compilerVar="CC" />
-			<Option target="PS1" />
-		</Unit>
-		<Unit filename="mainwii.c">
-			<Option compilerVar="CC" />
-			<Option target="Wii" />
 		</Unit>
 		<Extensions>
 			<code_completion />
