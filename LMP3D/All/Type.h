@@ -13,6 +13,11 @@ typedef struct
 
 typedef struct
 {
+    short x,y;
+}Vector2s;
+
+typedef struct
+{
     float x,y,z;
 }Vector3;
 
@@ -20,6 +25,11 @@ typedef struct
 {
     int x,y,z;
 }Vector3i;
+
+typedef struct
+{
+    short x,y,z;
+}Vector3s;
 
 typedef struct
 {
@@ -33,6 +43,11 @@ typedef struct
 
 typedef struct
 {
+    short x,y,z,w;
+}Vector4s;
+
+typedef struct
+{
     Vector3 p,r;
 }Matrix3x2;
 
@@ -40,6 +55,11 @@ typedef struct
 {
     int x,y,h,w;
 }Recti;
+
+typedef struct
+{
+    short x,y,h,w;
+}Rects;
 
 typedef struct
 {
@@ -60,6 +80,16 @@ typedef char LMP3D_STRING[100];
 
 #define  PI 3.141592654
 
+inline Vector2i LMP3D_Type_Vector2i(int x,int y);
+inline Vector3i LMP3D_Type_Vector3i(int x,int y,int z);
+inline Recti LMP3D_Type_Recti(int x,int y,int w,int h);
 
+inline Vector2s LMP3D_Type_Vector2s(int x,int y);
+inline Vector3s LMP3D_Type_Vector3s(int x,int y,int z);
+inline Rects LMP3D_Type_Rects(int x,int y,int w,int h);
+
+inline Vector2 LMP3D_Type_Vector2(float x,float y);
+inline Vector3 LMP3D_Type_Vector3(float x,float y,float z);
+inline Rectf LMP3D_Type_Rectf(float x,float y,float w,float h);
 
 #endif

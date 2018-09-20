@@ -3,7 +3,6 @@
 
 #ifdef PLAYSTATION1
 #include <psx.h>
-#include <psxgpu.h>
 
 #include "LMP3D/LMP3D.h"
 
@@ -36,6 +35,7 @@ void LMP3D_Clear()
 
 void LMP3D_FlipBuffer(LMP3D_Buffer *buffer)
 {
+	PS1_BufferDraw();
 	if(buffer->switchBuffer == 0)
 	{
 		PS1_GsSetDispEnv(0,0);

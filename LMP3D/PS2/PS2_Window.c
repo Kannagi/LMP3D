@@ -12,8 +12,8 @@ LMP3D_Buffer LMP3D_Window(char *name)
 	LMP3D_Buffer buffer;
 	buffer.width = 640;
 	buffer.height = 256;
-	buffer.fpsm = GS_PSMCT32;
-	buffer.zpsm = GS_PSMZ16S;
+	buffer.fpsm = GS_PSMCT16;
+	buffer.zpsm = GS_PSMZ16;
 	buffer.faddress1 = PS2_vram_allocate(buffer.width,buffer.height, buffer.fpsm);
 	buffer.faddress2 = PS2_vram_allocate(buffer.width,buffer.height, buffer.fpsm);
 	buffer.zaddress  = PS2_vram_allocate(buffer.width,buffer.height, buffer.zpsm);

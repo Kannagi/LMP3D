@@ -9,132 +9,197 @@
 LMP3D_Camera LMP3D_Camera_Init()
 {
     LMP3D_Camera camera;
-    camera.position.x = 0;
-    camera.position.y = 0;
-    camera.position.z = 0;
-    camera.vision.x = 0;
-    camera.vision.y = 0;
-    camera.vision.z = -1;
-    camera.top.x = 0;
-    camera.top.y = 1;
-    camera.top.z = 0;
-    camera.angle = 72;
+    camera.position = LMP3D_Type_Vector3(0,0,0);
+    camera.vision   = LMP3D_Type_Vector3(0,0,-1);
+    camera.top      = LMP3D_Type_Vector3(0,1,0);
+    camera.angle    = LMP3D_Type_Vector3(PI/2,PI/2,-400);
+    camera.viewangle = 72;
     camera.min = 1.0f;
     camera.max = 10000;
-    camera.ratio = 640.0/480.0;
+    camera.ratio = 640.0f/480.0f;
+    camera.speed = 0.01f;
+    camera.speedz = 3.01f;
 
     return camera;
 }
 
-
-
-/*
-void LMP3D_Camera_vue_obj(LMP3D_Camera *camera,Vector3 *p,Vector3 *a,float v,float vit,int *touche)
+void LMP3D_Math_NormalizeFPU(float *normal)
 {
-    if(touche[0] == 1)
-        a->x += v;
+	register float mag = sqrtf( (normal[0]*normal[0]) + (normal[1]*normal[1]) + (normal[2]*normal[2]) );
+	if(mag != 1.0f)
+	{
+		mag = 1.0f/mag;
+		normal[0] *= mag;
+		normal[1] *= mag;
+		normal[2] *= mag;
+	}
+}
 
-    if(touche[0] == 2)
-        a->x -= v;
+float LMP3D_Math_Dot3FPU(float *x,float *y)
+{
+	return (x[0]*y[0]) + (x[1]*y[1]) + (x[2]*y[2]);
+}
 
-    if(touche[1] == 1)
-        a->y += v;
+float LMP3D_Math_Dot4FPU(float *x,float *y)
+{
+	return  (x[0]*y[0]) + (x[1]*y[1]) + (x[2]*y[2]) + (x[3]*y[3]);
+}
 
-    if(touche[1] == 2)
-        a->y -= v;
+void LMP3D_Math_CrossFPU(float *r,float *x,float *y)
+{
+	register float x0,x1,x2;
+	x0 = x[0];
+	x1 = x[1];
+	x2 = x[2];
+	r[0] =  (x1*y[2]) - (x2*y[1]);
+	r[1] =  (x2*y[0]) - (x0*y[2]);
+	r[2] =  (x0*y[1]) - (x1*y[0]);
+}
 
-    if(a->x > (PI*2)) a->x = a->x - (PI*2);
-    if(a->x < 0)      a->x = (PI*2) + a->x;
-    if(a->y > (PI*2)) a->y = a->y - (PI*2);
-    if(a->y < 0)      a->y = (PI*2) + a->y;
 
-    if(a->y >= PI) camera->top.y = -1;
+void LMP3D_Camera_LookAt(float *MatrixLookAt,Vector3 eye,Vector3 center,Vector3 up)
+{
+	float x[3], y[3], z[3];
+
+	float teye[3];
+	teye[0] = eye.x;
+	teye[1] = eye.y;
+	teye[2] = eye.z;
+
+	// Z = Eye - Center;
+	z[0] = eye.x - center.x;
+	z[1] = eye.y - center.y;
+	z[2] = eye.z - center.z;
+
+	//Z normalize
+	LMP3D_Math_NormalizeFPU(z);
+
+	/*  Y = Up;*/
+	y[0] = up.x;
+	y[1] = up.y;
+	y[2] = up.z;
+
+	/* X vector = Y cross Z */
+	LMP3D_Math_CrossFPU(x,y,z);
+
+	/* Recompute Y = Z cross X */
+	LMP3D_Math_CrossFPU(y,z,x);
+
+	LMP3D_Math_NormalizeFPU(x);
+	LMP3D_Math_NormalizeFPU(y);
+
+	MatrixLookAt[(0<<2)+0] = x[0];
+	MatrixLookAt[(0<<2)+1] = y[0];
+	MatrixLookAt[(0<<2)+2] = z[0];
+	MatrixLookAt[(0<<2)+3] = 0;
+
+	MatrixLookAt[(1<<2)+0] = x[1];
+	MatrixLookAt[(1<<2)+1] = y[1];
+	MatrixLookAt[(1<<2)+2] = z[1];
+	MatrixLookAt[(1<<2)+3] = 0;
+
+	MatrixLookAt[(2<<2)+0] = x[2];
+	MatrixLookAt[(2<<2)+1] = y[2];
+	MatrixLookAt[(2<<2)+2] = z[2];
+	MatrixLookAt[(2<<2)+3] = 0;
+
+	MatrixLookAt[(3<<2)+0] = -LMP3D_Math_Dot3FPU(x,teye);
+	MatrixLookAt[(3<<2)+1] = -LMP3D_Math_Dot3FPU(y,teye);
+	MatrixLookAt[(3<<2)+2] = -LMP3D_Math_Dot3FPU(z,teye);
+	MatrixLookAt[(3<<2)+3] = 1.0f;
+}
+
+void LMP3D_Camera_ViewObj(LMP3D_Camera *camera,Vector3 *position)
+{
+    if(camera->key[0] == 2)
+        camera->angle.x += camera->speed;
+
+    if(camera->key[1] == 2)
+        camera->angle.x -= camera->speed;
+
+    if(camera->key[2] == 2)
+        camera->angle.y += camera->speed;
+
+    if(camera->key[3] == 2)
+        camera->angle.y -= camera->speed;
+
+    if(camera->angle.x > (PI*2)) camera->angle.x = camera->angle.x - (PI*2);
+    if(camera->angle.x < 0)      camera->angle.x = (PI*2) + camera->angle.x;
+    if(camera->angle.y > (PI*2)) camera->angle.y = camera->angle.y - (PI*2);
+    if(camera->angle.y < 0)      camera->angle.y = (PI*2) + camera->angle.y;
+
+    if(camera->angle.y >= PI) camera->top.y = -1;
     else
     camera->top.y = 1;
 
-    if(touche[2] == 1) a->z += v;
-    if(touche[2] == 2) a->z -= v;
+    if(camera->key[4] == 2) camera->angle.z += camera->speedz;
+    if(camera->key[5] == 2) camera->angle.z -= camera->speedz;
 
-    camera->vision.x = -cos(a->x);
-    camera->vision.z =  sin(a->x);
-    if(touche[3] == 1)
+	float fsin = LMP3D_sinf(camera->angle.y);
+
+	camera->vision.x = LMP3D_cosf(camera->angle.x)*fsin;
+    camera->vision.y = LMP3D_cosf(camera->angle.y);
+    camera->vision.z = -LMP3D_sinf(camera->angle.x)*fsin;
+
+
+    if(camera->angle.z > 0)
     {
-        p->x += camera->vision.x*vit;
-        p->z += camera->vision.z*vit;
+    	camera->angle.z = -camera->angle.z;
     }
 
-    if(touche[3] == 2)
-    {
-        p->x -= camera->vision.x*vit;
-        p->z -= camera->vision.z*vit;
-    }
+    float distance = camera->angle.z;
 
-    if(touche[4] == 1)
-    {
-        camera->vision.x = cos(a->x-PI/2);
-        camera->vision.z = -sin(a->x-PI/2);
-        p->x += camera->vision.x*vit;
-        p->z += camera->vision.z*vit;
-    }
+	camera->position.x =  (distance * camera->vision.x) + position->x;
+	camera->position.y =  (distance * camera->vision.y) + position->y;
+	camera->position.z =  (distance * camera->vision.z) + position->z;
 
-    if(touche[4] == 2)
-    {
-        camera->vision.x = cos(a->x-PI/2);
-        camera->vision.z = -sin(a->x-PI/2);
-        p->x -= camera->vision.x*vit;
-        p->z -= camera->vision.z*vit;
-    }
+    camera->vision.x += camera->position.x;
+    camera->vision.y += camera->position.y;
+    camera->vision.z += camera->position.z;
 
-    camera->position.x = cos(a->x)*sin(a->y);
-    camera->position.y = cos(a->y);
-    camera->position.z = -sin(a->x)*sin(a->y);
-
-    camera->position.x = (camera->position.x*a->z) + p->x;
-    camera->position.y = (camera->position.y*a->z) + p->y;
-    camera->position.z = (camera->position.z*a->z) + p->z;
-
-    camera->vision.x  = p->x - camera->position.x;
-    camera->vision.y  = p->y - camera->position.y;
-    camera->vision.z  = p->z - camera->position.z;
-
-    if(touche[4] == 2)
-        a->x -= v;
-
-    if(touche[4] == 1)
-        a->x += v;
-
+    return;
 }
 
-void LMP3D_Camera_vue_sub(LMP3D_Camera *camera,Vector3 *a,float v,int *touche)
+void  LMP3D_Camera_ViewSub(LMP3D_Camera *camera)
 {
-    if(touche[0] == 1)
-        a->x += v;
+    if(camera->key[0] == 2)
+        camera->angle.x += camera->speed;
 
-    if(touche[0] == 2)
-        a->x -= v;
+    if(camera->key[1] == 2)
+        camera->angle.x -= camera->speed;
 
-    if(touche[2] == 1)
-        a->y += v;
+    if(camera->key[2] == 2)
+        camera->angle.y += camera->speed;
 
-    if(touche[2] == 2)
-        a->y -= v;
+    if(camera->key[3] == 2)
+        camera->angle.y -= camera->speed;
 
-    camera->vision.x = cos(a->x)*sin(a->y);
-    camera->vision.y = cos(a->y);
-    camera->vision.z = -sin(a->x)*sin(a->y);
+	float fsin = LMP3D_sinf(camera->angle.y);
 
-    if(touche[1] == 1)
+    camera->vision.x = LMP3D_cosf(camera->angle.x)*fsin;
+    camera->vision.y = LMP3D_cosf(camera->angle.y);
+    camera->vision.z = -LMP3D_sinf(camera->angle.x)*fsin;
+
+    float speedz = camera->speedz;
+
+    if(camera->key[4] == 2)
     {
-        camera->position.z =  camera->position.z + (a->z *camera->vision.z);
-        camera->position.x =  camera->position.x + (a->z *camera->vision.x);
-        camera->position.y =  camera->position.y + (a->z *camera->vision.y);
+        camera->position.z +=  (speedz * camera->vision.z);
+        camera->position.x +=  (speedz * camera->vision.x);
+        camera->position.y +=  (speedz * camera->vision.y);
+        camera->angle.z -= speedz*(camera->vision.x+camera->vision.y+camera->vision.z);
     }
 
-    if(touche[1] == 2)
+	if(camera->key[5] == 2)
     {
-        camera->position.z =  camera->position.z - (a->z *camera->vision.z);
-        camera->position.x =  camera->position.x - (a->z *camera->vision.x);
-        camera->position.y =  camera->position.y - (a->z *camera->vision.y);
+        camera->position.z -=  (speedz * camera->vision.z);
+        camera->position.x -=  (speedz * camera->vision.x);
+        camera->position.y -=  (speedz * camera->vision.y);
+        camera->angle.z += speedz*(camera->vision.x+camera->vision.y+camera->vision.z);
     }
+
+    camera->vision.x += camera->position.x;
+    camera->vision.y += camera->position.y;
+    camera->vision.z += camera->position.z;
 }
-*/
+

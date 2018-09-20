@@ -4,7 +4,7 @@
 #ifdef PC
 
 #include <GL/gl.h>
-#include <GL/glu.h>
+#include <SDL/SDL.h>
 
 #include "LMP3D/LMP3D.h"
 
@@ -15,7 +15,7 @@ void LMP3D_Clear()
 
 void LMP3D_FlipBuffer(LMP3D_Buffer *buffer)
 {
-
+	SDL_GL_SwapBuffers();
 }
 
 #endif

@@ -54,6 +54,25 @@
 		((unsigned long)l     << 19 ) |	\
 		((unsigned long)k     << 32 )
 
+#define GS_SET_TEX2(psm,cbp,cpsm,csm,csa,cld) \
+		((unsigned long)psm  << 20 ) |	\
+		((unsigned long)cbp  << 37 ) |	\
+		((unsigned long)cpsm << 51 ) |	\
+		((unsigned long)csm  << 55 ) |	\
+		((unsigned long)csa  << 56 ) |	\
+		((unsigned long)cld  << 61 )
+
+
+#define GS_SET_TEXCLUT(cbw,cou,cov) \
+		((u64)cbw  <<   0  ) | \
+		((u64)cou  <<   6  ) | \
+		((u64)cov  <<   12 )
+
+#define GS_SET_TEXA(ta0,aem,ta1) \
+		((u64)ta0  <<   0  ) | \
+		((u64)aem  <<   15 ) | \
+		((u64)ta1  <<   32 )
+
 #define GS_SET_BITBLTBUF(sbp,sbw,spsm,dbp,dbw,dpsm) \
 		((unsigned long)sbp  <<  0 ) |	\
 		((unsigned long)sbw  << 16 ) |	\
@@ -270,9 +289,13 @@
 #define GIF_P3TAG	0X100030A0
 
 //VIF0 VIF1 FIFO
-#define VIF1_ITOPS	0x10003CC0
-#define VIF1_ITOP	0x10003CD0
+#define VIF1_MASK	0x10003C70
 
+#define VIF1_TOPS	0x10003CC0
+#define VIF1_ITOP	0x10003CD0
+#define VIF1_TOP	0x10003CE0
+
+#define GIF_FIFO	0X10006000
 
 #define D0_CHCR 	0X10008000
 #define D0_MADR 	0X10008010
@@ -536,6 +559,7 @@
 #define ATEST_METHOD_EQUAL 	4
 #define ATEST_METHOD_GREATER_EQUAL 5
 #define ZTEST_METHOD_GREATER_EQUAL 2
+#define ZTEST_METHOD_GREATER 3
 
 //DMA
 #define DMA_CALL_TAG(Addr, iQuadCount)	((((u64)(Addr)) << 32) | (0x5 << 28) | iQuadCount)
@@ -554,13 +578,20 @@
 #define VIF_BASE		0x03
 #define VIF_ITOP        0x04
 #define VIF_STMOD		0x05
-#define VIF_STROW		0x30
+#define VIF_MSKPATH3	0x06
+#define VIF_MARK		0x07
+
+#define VIF_FLUSHE		0x10
 #define VIF_FLUSH		0x11
 #define VIF_FLUSHA		0x13
-#define VIF_FLUSHE		0x10
 #define VIF_MSCAL		0x14
 #define VIF_MSCALF		0x15
 #define VIF_MSCNT		0x17
+
+#define VIF_STMASK		0x20
+#define VIF_STROW		0x30
+#define VIF_STCOL		0x31
+
 #define VIF_MPG			0x4A
 #define VIF_DIRECT  	0x50
 #define VIF_DIRECTHL	0x51
@@ -631,9 +662,11 @@ typedef struct
 void PS2_Pad_Init();
 int PS2_vram_allocate(int width, int height, int psm);
 void PS2_VU_Init();
+void PS2_Graphic_Setup(LMP3D_Buffer buffer);
+void PS2_Graphic_Init(int width, int height, int psm,int fbaddr);
+void PS2_Init_Pad();
+void PS2_VU_Draw(float* matrix,LMP3D_Model *model);
 
 
-#define RW_REGISTER_U32(REG) 	*((volatile u32 *)(REG))
-#define RW_REGISTER_U64(REG) 	*((volatile u64 *)(REG))
 #define CACHED_SEG(x)   ( (void*) ( (unsigned int)(x) | (0xC0000000) ) )
 

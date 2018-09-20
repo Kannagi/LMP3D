@@ -4,7 +4,6 @@
 #ifdef PC
 
 #include <GL/gl.h>
-#include <GL/glu.h>
 
 #include "LMP3D/LMP3D.h"
 
@@ -52,6 +51,12 @@ void LMP3D_Texture_Free_VRAM(LMP3D_Texture *texture)
 {
     GLuint tid = (GLuint)texture->address;
     glDeleteTextures(1,&tid);
+}
+
+void LMP3D_VRAM_Info(char *info)
+{
+	//int vram = (PS2_vram_pointer&0xFFFFFF);
+	//sprintf(info,"vram :%x/0x100000\n",vram);
 }
 
 #endif

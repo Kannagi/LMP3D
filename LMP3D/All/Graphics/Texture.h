@@ -12,22 +12,25 @@ typedef struct
 
 }LMP3D_Texture;
 
-
 void LMP3D_Texture_Load(LMP3D_Texture *texture);    //Load Image to RAM
 void LMP3D_Texture_Upload(LMP3D_Texture *texture);  //Alloc Texture VRAM and send RAM to VRAM
 void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture);  //RAM to VRAM
 void LMP3D_Texture_Setup(LMP3D_Texture *texbuf);    //Select Texture
 
-
 void LMP3D_Texture_Free_Pixel(LMP3D_Texture *texture); //Free only pixel and pal
-void LMP3D_Texture_Free_RAM(LMP3D_Texture *image);     //Free Only RAM
-void LMP3D_Texture_Free_VRAM(LMP3D_Texture *texture);  //Free VRAM texture
+void LMP3D_Texture_Free(LMP3D_Texture *texture);     //Free
 
 void LMP3D_Texture_Format_Init(LMP3D_Texture *texture);
 void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture);
 
 int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal);
 int LMP3D_Texture_Convert_Pal(LMP3D_Texture *texture,int psmfinal);
+
+unsigned short LMP3D_Convert_Pixel(unsigned short pixel);
+void LMP3D_Texture_Convert_Internal(LMP3D_Texture *texture);
+unsigned int LMP3D_Texture_Setup_Get();
+unsigned int LMP3D_TexturePal_Setup_Get();
+int LMP3D_Texture_Palette_Count_Get(LMP3D_Texture *texture);
 
 
 #define LMP3D_FORMAT_RGBA8888	0x01

@@ -12,17 +12,22 @@ typedef struct
 
 }LMP3D_FILE;
 
+
 void *LMP3D_fopen(char *path,char *mode,void *buffer,int size)
 {
 	LMP3D_FILE *internalfile = malloc(sizeof(LMP3D_FILE));
 
-	internalfile->endian = 0;
+	internalfile->endian = LMP3D_ENDIANNESS;
 	internalfile->size = size;
 
 	if(buffer == NULL)
 	{
 		internalfile->mode = 0;
-		internalfile->file = fopen(path,mode);
+
+		char srtfile[100];
+		LMP3D_File_Path(path,srtfile);
+
+		internalfile->file = fopen(srtfile,mode);
 		if(internalfile->file == NULL)
 		{
 			free(internalfile);

@@ -16,7 +16,5 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size);
 
 LMP3D_Anim3D *LMP3D_Load_Anim3D(char *filename,int offset,void *buffer,int size);
 
-
-
 #endif
 

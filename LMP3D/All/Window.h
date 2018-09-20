@@ -10,9 +10,8 @@ typedef struct
 
 }LMP3D_Buffer;
 
-
-LMP3D_Buffer LMP3D_Window(char *name);
 int LMP3D_VBlank();
+LMP3D_Buffer LMP3D_Window(char *name);
 void LMP3D_FlipBuffer(LMP3D_Buffer *buffer);
 
 #endif

@@ -34,6 +34,9 @@
 #define CACHED_P3(x)   ( (void*) ( (unsigned int)(x) | (0xC0000000) ) )
 #define UNCACHED_P4(x) ( (void*) ( (unsigned int)(x) | (0xE0000000) ) )
 
+#define DC_P4 0xE0000000
+#define DC_P2 0xA0000000
+
 #define DMAOR 0xFFA00040
 
 #define FRQCR 0XFFC00000
@@ -59,9 +62,6 @@
 		((unsigned short)pll2en <<  9  ) |   \
 		((unsigned short)pll1en <<  10  ) |   \
 		((unsigned short)ck0en  <<  11  )
-
-
-#define DC_P4 0xA0000000
 
 #define PVRID	 				0X005F8000
 #define PVRVER	 				0X005F8004
@@ -137,7 +137,7 @@
 
 
 #define PALETTE_RAM				0x005F9000 //0X00
-#define PALETTE_RAM_END			0x005F9FFC
+#define PALETTE_RAM_END			0x005F9FFF
 /*
 #define PVR_SOFTRESET	 		0X005F8008
 #define PVR_STARTRENDER 		0X005F8014
@@ -182,11 +182,7 @@
 		((unsigned int)_dma <<  0  )
 
 
-#define RW_REGISTER_FLOAT(REG) 	*((volatile float *)(REG))
-#define RW_REGISTER_U8(REG) 	*((volatile u8  *)(REG))
-#define RW_REGISTER_U16(REG) 	*((volatile u16 *)(REG))
-#define RW_REGISTER_U32(REG) 	*((volatile int *)(REG))
-#define RW_REGISTER_U64(REG) 	*((volatile u64 *)(REG))
+
 
 #define u32 unsigned int
 #define TA_PARAMETER_CONTROL_WORD(para,group,obj) \
@@ -322,8 +318,19 @@
 #define TA_TEXTURE_4BPP    5
 #define TA_TEXTURE_8BPP    6
 
+
+#define TA_TEXTURE_NORMAL    0x00
+#define TA_TEXTURE_TWILLED   0x10
+#define TA_TEXTURE_VQ	     0x20
 void DC_Init();
 void DC_Finish();
-inline void DC_Matrix_Load(float *matrix);
+void DC_InitClip();
+void DC_Matrix_Load(float *matrix);
 void DC_SwapBuffers();
+float DC_Zorder(float z,int flag);
+unsigned int DC_vram_allocate(int width, int height, int psm);
+void DC_twiddle_encode(LMP3D_Texture *texture);
 
+
+void DC_DrawModel(LMP3D_Model *model);
+void DC_Init_Poly(LMP3D_Texture *texture,int para);

@@ -4,6 +4,7 @@
 #include <kos.h>
 
 
+#include "LMP3D/LMP3D.h"
 #include "LMP3D/DC/DC.h"
 
 #define PVR_OPB_COUNT   5
@@ -99,15 +100,15 @@ void DC_pvr_begin_queued_render()
     bkg.flags2 = 0x20800440;    /*   what they mean for sure... heh =) */
     bkg.dummy = 0;
     bkg.x1 =   0.0f;
-    bkg.y1 = 480.0f;
+    bkg.y1 = 320.0f;
     bkg.z1 = 1.0f;
     bkg.argb1 = pvr_state.bg_color;
     bkg.x2 =   0.0f;
     bkg.y2 =   0.0f;
     bkg.z2 = 1.0f;
     bkg.argb2 = pvr_state.bg_color;
-    bkg.x3 = 640.0f;
-    bkg.y3 = 480.0f;
+    bkg.x3 = 320.0f;
+    bkg.y3 = 240.0f;
     bkg.z3 = 1.0f;
     bkg.argb3 = pvr_state.bg_color;
     bkgdata = (uint32 *)&bkg;
@@ -119,17 +120,17 @@ void DC_pvr_begin_queued_render()
     vrl[0x11] = 0;
 
     /* Reset the ISP/TSP, just in case */
-    RW_REGISTER_U32(PVRRESET+DC_P4) = PVR_RESET_ISPTSP;
-    RW_REGISTER_U32(PVRRESET+DC_P4) = PVR_RESET_NONE;
+    RW_REGISTER_U32(PVRRESET+DC_P2) = PVR_RESET_ISPTSP;
+    RW_REGISTER_U32(PVRRESET+DC_P2) = PVR_RESET_NONE;
 
     /* Finish up rendering the current frame (into the other buffer) */
-	RW_REGISTER_U32(RENDER_POLYBASE+DC_P4) = tbuf->vertex;
+	RW_REGISTER_U32(RENDER_POLYBASE+DC_P2) = tbuf->vertex;
 
-	RW_REGISTER_U32(RENDER_ADDR1+DC_P4) = rbuf->frame;
-	RW_REGISTER_U32(RENDER_BGPLANE+DC_P4) = vert_end; /* Bkg plane location */
-	//RW_REGISTER_FLOAT(RENDER_FARCLIP+DC_P4) = 0.01f;
+	RW_REGISTER_U32(RENDER_ADDR1+DC_P2) = rbuf->frame;
+	RW_REGISTER_U32(RENDER_BGPLANE+DC_P2) = vert_end; /* Bkg plane location */
+	//RW_REGISTER_FLOAT(RENDER_FARCLIP+DC_P2) = 1.00f;
 
-    RW_REGISTER_U32(RENDER_START+DC_P4) = PVR_ISP_START_GO;   /* Start render */
+    RW_REGISTER_U32(RENDER_START+DC_P2) = PVR_ISP_START_GO;   /* Start render */
 
 	pvr_offset = PVR_GET(PVR_TA_VERTBUF_POS);
 }
@@ -148,12 +149,13 @@ void DC_SwapBuffers()
 		PVR_SET(PVR_TA_VERTBUF_START,   buf->vertex);
 		PVR_SET(PVR_TA_VERTBUF_END, buf->vertex + buf->vertex_size);
 
+		//RW_REGISTER_FLOAT(RENDER_NEARCLIP+DC_P2) = -100.000f;
 		PVR_SET(PVR_BGPLANE_Z, *((uint32*)&pvr_state.zclip));
 		PVR_SET(PVR_PCLIP_X, pvr_state.pclip_x);
 		PVR_SET(PVR_PCLIP_Y, pvr_state.pclip_y);
 
-		RW_REGISTER_U32(PVRRESET+DC_P4) = PVR_RESET_TA;
-		RW_REGISTER_U32(PVRRESET+DC_P4) = PVR_RESET_NONE;
+		RW_REGISTER_U32(PVRRESET+DC_P2) = PVR_RESET_TA;
+		RW_REGISTER_U32(PVRRESET+DC_P2) = PVR_RESET_NONE;
 
 		PVR_SET(PVR_TA_INIT,        PVR_TA_INIT_GO);        /* Confirm settings */
 		(void)PVR_GET(PVR_TA_INIT);
@@ -178,7 +180,7 @@ void DC_pvr_allocate_buffers(pvr_init_params_t *params)
                             | ((pvr_state.tw - 1) << 0);
 
     /* Set clipping parameters */
-    pvr_state.zclip = 0.0001f;
+    pvr_state.zclip = 1.000f;
     pvr_state.pclip_left = 0;
     pvr_state.pclip_right = vid_mode->width - 1;
     pvr_state.pclip_top = 0;
@@ -254,13 +256,13 @@ void DC_pvr_allocate_buffers(pvr_init_params_t *params)
 
 	outaddr += buf->opb_size;   /* Do we _really_ need this twice? */
 
-
+	outaddr = 0x2A2300;
 	/* Tile Matrix */
-	buf->tile_matrix = outaddr;
+	buf->tile_matrix = 0x2A2300;
 	outaddr +=(18 + 6 * pvr_state.tw * pvr_state.th) * 4;;
 
 	/* Output buffer */
-	fbuf->frame = outaddr;
+	fbuf->frame = 0x2A4000;
 	fbuf->frame_size = pvr_state.w * pvr_state.h * 2;
 	outaddr += fbuf->frame_size;
 
@@ -268,10 +270,12 @@ void DC_pvr_allocate_buffers(pvr_init_params_t *params)
 	fbuf = &pvr_state.frame_buffers[1];
 
 	/* Output buffer */
-	fbuf->frame = outaddr;
+	fbuf->frame = 0x2A4000+0x96000;
 	fbuf->frame_size = pvr_state.w * pvr_state.h * 2;
 	outaddr += fbuf->frame_size;
 
+	LMP3D_VRAM_Set(0x3D0000);
+	//printf("%x\n",outaddr);
 /*
 	printf("%x\n",outaddr);
 
@@ -382,33 +386,33 @@ void DC_Init_defaults(pvr_init_params_t *params)
     pvr_state.view_target = 0;
 
     // Sync all the hardware registers with our pipeline state.
-	RW_REGISTER_U32(PVRRESET+DC_P4) = PVR_RESET_TA;
-	RW_REGISTER_U32(PVRRESET+DC_P4) = PVR_RESET_NONE;
+	RW_REGISTER_U32(PVRRESET+DC_P2) = PVR_RESET_TA;
+	RW_REGISTER_U32(PVRRESET+DC_P2) = PVR_RESET_NONE;
 
 	/* Set buffer pointers */
-	RW_REGISTER_U32(TA_TILEBASE+DC_P4) = pvr_state.ta_buffers.opb;
-	RW_REGISTER_U32(TA_LISTEND +DC_P4) = pvr_state.ta_buffers.opb - pvr_state.ta_buffers.opb_size;
+	RW_REGISTER_U32(TA_TILEBASE+DC_P2) = pvr_state.ta_buffers.opb;
+	RW_REGISTER_U32(TA_LISTEND +DC_P2) = pvr_state.ta_buffers.opb - pvr_state.ta_buffers.opb_size;
 
-	RW_REGISTER_U32(TA_POLYBASE+DC_P4) = pvr_state.ta_buffers.vertex;
-	RW_REGISTER_U32(TA_POLYEND +DC_P4) = pvr_state.ta_buffers.vertex + pvr_state.ta_buffers.vertex_size;
-
-
-	RW_REGISTER_U32(TA_TILESIZE+DC_P4) = pvr_state.tsize_const;
-	RW_REGISTER_U32(TA_TILECFG+DC_P4) = pvr_state.list_reg_mask;
+	RW_REGISTER_U32(TA_POLYBASE+DC_P2) = pvr_state.ta_buffers.vertex;
+	RW_REGISTER_U32(TA_POLYEND +DC_P2) = pvr_state.ta_buffers.vertex + pvr_state.ta_buffers.vertex_size;
 
 
-	RW_REGISTER_U32(TA_LISTBASE+DC_P4) = pvr_state.ta_buffers.opb;
+	RW_REGISTER_U32(TA_TILESIZE+DC_P2) = pvr_state.tsize_const;
+	RW_REGISTER_U32(TA_TILECFG+DC_P2) = pvr_state.list_reg_mask;
 
-	RW_REGISTER_U32(RENDER_POLYBASE+DC_P4) = pvr_state.ta_buffers.vertex;
-	RW_REGISTER_U32(RENDER_TILEBASE+DC_P4) = pvr_state.ta_buffers.tile_matrix;
 
-	RW_REGISTER_U32(TA_INIT+DC_P4) = PVR_TA_INIT_GO;
+	RW_REGISTER_U32(TA_LISTBASE+DC_P2) = pvr_state.ta_buffers.opb;
+
+	RW_REGISTER_U32(RENDER_POLYBASE+DC_P2) = pvr_state.ta_buffers.vertex;
+	RW_REGISTER_U32(RENDER_TILEBASE+DC_P2) = pvr_state.ta_buffers.tile_matrix;
+
+	RW_REGISTER_U32(TA_INIT+DC_P2) = PVR_TA_INIT_GO;
 
     PVR_SET(PVR_SCALER_CFG, 0x401);
 
     PVR_SET(PVR_BGPLANE_Z, *((uint32*)&pvr_state.zclip));
-	RW_REGISTER_U32(RENDER_HCLIP+DC_P4) = (680-1)<<16;
-	RW_REGISTER_U32(RENDER_VCLIP+DC_P4) = (480-1)<<16;
+	//RW_REGISTER_U32(RENDER_HCLIP+DC_P2) = (680-1)<<16;
+	//RW_REGISTER_U32(RENDER_VCLIP+DC_P2) = (480-1)<<16;
 
 
 	PVR_SET(PVR_RENDER_MODULO, (pvr_state.w * 2) / 8);
@@ -421,6 +425,8 @@ void DC_Init_defaults(pvr_init_params_t *params)
 
 void DC_Init()
 {
+	//vid_set_mode(DM_640x480_NTSC_IL_MB,PM_RGB555);
+
 	// Enable opaque and translucent polygons with size 16
     pvr_init_params_t params = { PVR_BINSIZE_16, PVR_BINSIZE_0, PVR_BINSIZE_16, PVR_BINSIZE_0, PVR_BINSIZE_0 };
 

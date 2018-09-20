@@ -3,18 +3,24 @@
 
 #ifdef PLAYSTATION2
 
-
+#include <kernel.h>
 
 #include "LMP3D/LMP3D.h"
+#include "LMP3D/PS2/PS2.h"
 
-void LMP3D_Camera_LookAt(LMP3D_Camera camera)
-{
-
-}
-
+static float matrixProjection[16];
 void LMP3D_Camera_Perspective(LMP3D_Camera camera)
 {
+	float matrixLookAt[16];
+	LMP3D_MatrixPerspective(matrixProjection,camera.viewangle,camera.ratio,camera.min,camera.max);
+	LMP3D_Camera_LookAt(matrixLookAt,camera.position,camera.vision,camera.top);
 
+	LMP3D_MatrixMultiply(matrixProjection,matrixLookAt,matrixProjection);
+}
+
+float *LMP3D_MatrixProjection_Get()
+{
+	return matrixProjection;
 }
 
 

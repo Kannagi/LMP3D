@@ -10,7 +10,7 @@
 void LMP3D_Event_Update(LMP3D_Event *event)
 {
     SDL_Event sdlevent;
-    int i;
+    unsigned int i;
 
     event->clikright = 0;
     event->clikleft = 0;
@@ -74,10 +74,6 @@ void LMP3D_Event_Update(LMP3D_Event *event)
                     if(sdlevent.key.keysym.sym == i)
                     {
                         event->key[i] = 1;
-/*
-                        event->key[MNSK_KEYA] = i;
-                        event->key_ext[MNSK_KEYA] = i;
-*/
                     }
 
                 }

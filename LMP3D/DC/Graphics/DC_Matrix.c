@@ -11,7 +11,7 @@
 #define PAD_R1 0x10000
 #define PAD_L1 0x20000
 
-inline void DC_Matrix_Load(float *matrix)
+void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Load(float *matrix)
 {
 	asm (
 
@@ -43,7 +43,7 @@ inline void DC_Matrix_Load(float *matrix)
 
 
 
-void LMP3D_MatrixMultiply(float* dest,float* src1,float* src2)
+void __attribute__((optimize("-O0"), noinline)) LMP3D_MatrixMultiply(float* dest,float* src1,float* src2)
 {
 	DC_Matrix_Load(src2);
 
@@ -109,7 +109,8 @@ void LMP3D_MatrixMultiply(float* dest,float* src1,float* src2)
 }
 
 
-void LMP3D_MatrixProjection(float* matrix)
+
+void __attribute__((optimize("-O0"), noinline)) LMP3D_MatrixPerspective(float* matrix,float fovy, float aspect, float zNear, float zFar)
 {
 	matrix[(0<<2)+0] = 640.0f;
 	matrix[(0<<2)+1] = 0;
@@ -117,21 +118,22 @@ void LMP3D_MatrixProjection(float* matrix)
 	matrix[(0<<2)+3] = 0;
 
 	matrix[(1<<2)+0] = 0;
-	matrix[(1<<2)+1] = 640.0f*1.3333;
+	matrix[(1<<2)+1] = -640.0f*1.3333;
 	matrix[(1<<2)+2] = 0;
 	matrix[(1<<2)+3] = 0;
 
-	matrix[(2<<2)+0] = 320;
-	matrix[(2<<2)+1] = 240;
-	matrix[(2<<2)+2] = 1;
-	matrix[(2<<2)+3] = 1;
+	float deltaZ=zFar-zNear;
+
+	matrix[(2<<2)+0] = -320;
+	matrix[(2<<2)+1] = -240;
+	matrix[(2<<2)+2] = -((zFar + zNear) / deltaZ);
+	matrix[(2<<2)+3] = -1.0f;
 
 	matrix[(3<<2)+0] = 0;
 	matrix[(3<<2)+1] = 0;
-	matrix[(3<<2)+2] = 10000;
+	matrix[(3<<2)+2] = ((2.0f * zNear * zFar )/ deltaZ)*10000.0f;
 	matrix[(3<<2)+3] = 0.0f;
 }
-
 
 
 void LMP3D_MatrixOrthogonal(float* matrix)
@@ -155,6 +157,39 @@ void LMP3D_MatrixOrthogonal(float* matrix)
 	matrix[(3<<2)+1] = 240;
 	matrix[(3<<2)+2] = 1;
 	matrix[(3<<2)+3] = 1.0f;
+}
+
+static int DC_mode = 0;
+static float matrixProjection[16];
+void LMP3D_Camera_Perspective(LMP3D_Camera camera)
+{
+	float matrixLookAt[16];
+	LMP3D_MatrixPerspective(matrixProjection,camera.viewangle,camera.ratio,camera.min,camera.max);
+	LMP3D_Camera_LookAt(matrixLookAt,camera.position,camera.vision,camera.top);
+
+	LMP3D_MatrixMultiply(matrixProjection,matrixLookAt,matrixProjection);
+	DC_mode = 0;
+}
+
+float *LMP3D_MatrixProjection_Get()
+{
+	return matrixProjection;
+}
+
+void LMP3D_Camera_Ortho2D()
+{
+	DC_Finish();
+	DC_mode = 1;
+}
+
+void LMP3D_Texture_Setup(LMP3D_Texture *texture)
+{
+	if(texture == NULL) return;
+
+	if(DC_mode == 0)
+		DC_Init_Poly(texture,TA_PARA_POLYGON);
+	else
+		DC_Init_Poly(texture,TA_PARA_SPRITE);
 }
 
 #endif

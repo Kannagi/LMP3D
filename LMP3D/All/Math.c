@@ -152,6 +152,7 @@ unsigned int LMP3D_sqrti12(const unsigned int s)
 	return n<<6;
 }
 
+
 //code Quake III
 float invsqrtf( float number )
 {

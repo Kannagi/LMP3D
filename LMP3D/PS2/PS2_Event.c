@@ -15,9 +15,10 @@ int PS2_initializePad(int port, int slot);
 
 void PS2_Init_Pad()
 {
+	padInit(0);
+
 	int ret;
 	static char paddata[256] __attribute__((aligned(64)));
-	padInit(0);
 
 	_port = 0; // 0 -> Connector 1, 1 -> Connector 2
 	_slot = 0; // Always zero if not using multitap

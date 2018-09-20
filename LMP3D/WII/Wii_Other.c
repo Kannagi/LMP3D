@@ -50,10 +50,6 @@ void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture)
 
 }
 
-void LMP3D_Camera_LookAt(LMP3D_Camera camera)
-{
-
-}
 
 void LMP3D_Camera_Perspective(LMP3D_Camera camera)
 {

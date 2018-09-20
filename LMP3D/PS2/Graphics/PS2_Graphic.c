@@ -5,12 +5,9 @@
 #include <kernel.h>
 
 #include "LMP3D/LMP3D.h"
-
-
 #include "LMP3D/PS2/PS2.h"
 
 /*
-
 	LMP3D_VIDEO_MODE0 640x256 interlaced 60 HZ (NTSC)
 	LMP3D_VIDEO_MODE1 640x240 interlaced 50 HZ (PAL)
 
@@ -74,16 +71,17 @@ void PS2_Graphic_Setup(LMP3D_Buffer buffer)
 	gif[i++] = 0x4E;
 
 
-	gif[i++] = GS_SET_XYOFFSET((2048-320)<<4,(2048-256)<<4);
+	gif[i++] = GS_SET_XYOFFSET((2048-320)<<4,(2048-128)<<4);
 	gif[i++] = 0x18;
 
 
-	gif[i++] = GS_SET_SCISSORX(0,buffer.width-1,0,buffer.height-1);
+	gif[i++] = GS_SET_SCISSORX(0,(buffer.width-1),0,(buffer.height-1));
 	gif[i++] = 0x40;
 
 
 	gif[i++] = GS_SET_PRMODECONT(1);
 	gif[i++] = 0x1A;
+
 
 
 	RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(gif_array,0);
@@ -95,11 +93,6 @@ void PS2_Graphic_Setup(LMP3D_Buffer buffer)
 	while( (RW_REGISTER_U32(D2_CHCR)) & ((unsigned int)1<<8));
 
 }
-
-
-
-
-
 
 #endif
 

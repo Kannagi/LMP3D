@@ -34,7 +34,7 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	//printf("%f %d\n",bcm.Xmin,bcm.nv);
 
 	LMP3D_Model *model = malloc(sizeof(LMP3D_Model));
-	LMP3D_Model_Init(model);
+    LMP3D_Model_Init(model);
 
 	if(bcm.nv > 0)
 	{
@@ -90,13 +90,13 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 		LMP3D_fread(model->groupvertex,sizeof(unsigned int),bcm.ngroup,file);
 		LMP3D_fread(model->groupface,sizeof(unsigned int),bcm.ngroup,file);
 	}
-
+/*
 	if(bcm.flags1 & BCM_ANIM)
 	{
 		model->id = malloc(bcm.nv*sizeof(unsigned char));
 		LMP3D_fread(model->id,sizeof(unsigned char),bcm.nv,file);
 	}
-
+*/
 	LMP3D_fclose(file);
 
 	model->nf = bcm.nf;
@@ -113,31 +113,19 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	model->Ymax = bcm.Ymax;
 	model->Zmax = bcm.Zmax;
 
+
 	char folder[100];
+	folder[0] = 0;
 
-	LMP3D_Folder_Out(filename,folder);
-	LMP3D_Load_Texture_Array(model,filename,folder,offset,buffer,size);
+	if(filename != NULL)
+		LMP3D_Folder_Out(filename,folder);
 
-	LMP3D_Convert_Model(model);
+    LMP3D_Load_Texture_Array(model,filename,folder,offset,buffer,size);
+
+    LMP3D_Convert_Model(model);
 
 	printf("%d\n",model->size);
 
 	return model;
 }
 
-void LMP3D_Convert_Model_Index16ToIndex32(LMP3D_Model *model)
-{
-	unsigned int i;
-
-	if(model->flag & LMP3D_MODEL_INDEX_U32)
-	{
-		unsigned int *i_index = model->index;
-		unsigned short *index = malloc(model->nf*3  * sizeof(unsigned short));
-		for(i = 0;i < model->nf*3;i++)
-		{
-			index[i] = i_index[i];
-		}
-	}
-
-	model->flag ^= LMP3D_MODEL_INDEX_U32;
-}

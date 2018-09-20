@@ -3,7 +3,6 @@
 
 #ifdef PLAYSTATION1
 #include <psx.h>
-#include <psxgpu.h>
 
 #include "LMP3D/LMP3D.h"
 
@@ -54,24 +53,27 @@ void PS1_GTE_Init()
      );
 }
 
-int extPerspective[5];
+//int extPerspective[5];
 void PS1_GTE_Perspective_Set()
 {
 	int perspective[5];
 	perspective[0] = (320/2)<<16;
 	perspective[1] = (240/2)<<16;
-	perspective[2] = 0<<7;
-	perspective[3] = 0<<12;
-	perspective[4] = 00<<8;
+	perspective[2] = 0<<8;
+	perspective[3] = 0<<24;
+	perspective[4] = 1<<9;
+/*
 
+	perspective[2] = extPerspective[2];
+	perspective[3] = extPerspective[3];
+/*
+	perspective[0] = extPerspective[0];
+	//perspective[1] = extPerspective[1];
+	perspective[2] = extPerspective[2];
+	perspective[3] = extPerspective[3];*/
+	//perspective[4] = extPerspective[4];
 
-	perspective[0] += extPerspective[0];
-	perspective[1] += extPerspective[1];
-	perspective[2] += extPerspective[2];
-	perspective[3] += extPerspective[3];
-	perspective[4] += extPerspective[4];
-
-	asm volatile (
+	asm (
 
 	//Perspective
 	"lw	$t0,0(%0)\n	"
@@ -89,10 +91,10 @@ void PS1_GTE_Perspective_Set()
      :: "r"(perspective) :"memory" );
 }
 
+
 void PS1_GTE_MulMat(void *m1,void *m2,void *mr)
 {
-	asm volatile (
-
+	asm (
 
 	//MATRIX A
 	"lw	$t0,0(%0)\n	"

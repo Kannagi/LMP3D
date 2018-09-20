@@ -3,7 +3,7 @@
 
 #ifdef PLAYSTATION1
 #include <psx.h>
-#include <psxgpu.h>
+
 
 #include "LMP3D/LMP3D.h"
 

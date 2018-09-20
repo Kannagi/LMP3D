@@ -18,10 +18,12 @@ unsigned int LMP3D_sqrti8(const unsigned int s);
 unsigned int LMP3D_sqrti12(const unsigned int s);
 
 #ifndef PI
-#define PI 3.14159265358979323846
+#define PI 3.14159265358979323846f
 #endif
 
-
+#ifndef DPI
+#define DPI 3.14159265358979323846
+#endif
 
 #endif
 

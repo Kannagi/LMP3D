@@ -3,7 +3,7 @@
 
 #ifdef PLAYSTATION1
 #include <psx.h>
-#include <psxgpu.h>
+
 
 #include "LMP3D/LMP3D.h"
 
@@ -14,7 +14,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 	static unsigned short old_pad = 0;
 	static unsigned short new_pad;
 	static unsigned short end_pad;
-	int i,ret;
+	int i;
 
 	for(i = 0;i < Button_Number;i++)
 	{

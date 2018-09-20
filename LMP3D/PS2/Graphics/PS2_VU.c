@@ -10,10 +10,9 @@
 #include "LMP3D/PS2/PS2.h"
 #include "PS2_vu1Triangle.c"
 
-
 int pdkVu1Size(u32* start, u32* end)
 {
-	int size = (end-start)/2;
+	int size = (end-start)>>1;
 
 	// if size is odd we have make it even in order for the transfer to work
 	// (quadwords, because of that its VERY important to have an extra nop nop
@@ -29,24 +28,23 @@ void pdkVu1UploadProg(int Dest, void* start, void* end)
 {
 	int   count = 0;
 	u8 tempDma[1024] ALIGNED(16);
-	void* chain = (u64*)&tempDma; // uncached
+	void* chain = (u64*)&tempDma;
 
 	// get the size of the code as we can only send 256 instructions in each MPGtag
-
 	count = pdkVu1Size( start, end );
 
 	while( count > 0 )
 	{
 		u32 current_count = count > 256 ? 256 : count;
 
-		*((u64*) chain)++ = DMA_REF_TAG( (u32)start, current_count/2 );
+		*((u64*) chain)++ = DMA_REF_TAG( (u32)start, current_count>>1 );
 		*((u32*) chain)++ = VIF_CODE( VIF_NOP,0,0 );
 		*((u32*) chain)++ = VIF_CODE( VIF_MPG,current_count&0xff,Dest );
-
 		start += current_count*2;
 		count -= current_count;
 		Dest += current_count;
 	}
+
 
 	*((u64*) chain)++ = DMA_END_TAG( 0 );
 	*((u32*) chain)++ = VIF_CODE(VIF_NOP,0,0);
@@ -54,7 +52,7 @@ void pdkVu1UploadProg(int Dest, void* start, void* end)
 
 	// Send it to vif1
 	FlushCache(0);
-
+	//asm __volatile__("sync.l");
 
 	RW_REGISTER_U32(D1_MADR) = 0;
 	RW_REGISTER_U32(D1_TADR) = (u32)tempDma;
@@ -73,130 +71,15 @@ void PS2_VU_Init()
 	void *end = vu1Triangle + size_vu1Triangle;
 	pdkVu1UploadProg(0,&vu1Triangle,end);
 
-	RW_REGISTER_U32(VIF1_ITOPS) = 980; //GIF
-	RW_REGISTER_U32(VIF1_ITOP)  = 0;   //VU1
+	//RW_REGISTER_U32(VIF1_ITOPS) = 980; //GIF
+	//RW_REGISTER_U32(VIF1_ITOP)  = 0;   //VU1
 
 }
 
-void drawvu0(float* matrix,void *data,int n)
+void PS2_VU1_MatrixGif(float *matrix)
 {
-	int i = 0,l;
-	float *in = data;
-	u64 output[2][32*1024] __attribute__((aligned(16)));
-	u32 out[12];
-
-	void *kickBuffer,*currentBuffer;
-	//n = n/2;
-	//for(l  = 0;l < 2;l++)
-	{
-		currentBuffer = (char*)&output[l];
-
-
-		kickBuffer = currentBuffer;
-
-
-
-		*((u64*)currentBuffer)++ = DMA_CNT_TAG(3);
-		*((u64*)currentBuffer)++ = 0;
-
-		*((u64*)currentBuffer)++ = GS_SET_GIFTAG(1,0,0,0,0,1);
-		*((u64*)currentBuffer)++ = 0x0E;
-
-		*((u64*)currentBuffer)++ = GS_SET_PRIM(GS_PRIM_TRIANGLE,0, 1, 0, 0,0, 1, 0, 0);
-		*((u64*)currentBuffer)++ = 0x00;
-
-		*((u64*)currentBuffer)++ = GS_SET_GIFTAG(3*n*3,0,0,0,0,1);
-		*((u64*)currentBuffer)++ = GS_REG_AD;
-
-
-		*((u64*)currentBuffer)++ = DMA_CNT_TAG( (n*9));
-		*((u64*)currentBuffer)++ = 0;
-
-
-
-		for(i  = 0;i < n*3;i++)
-		{
-			asm __volatile__ (
-			"lqc2		vf1, 0x00(%0)	\n"
-			"lqc2		vf2, 0x10(%0)	\n"
-			"lqc2		vf3, 0x20(%0)	\n"
-			"lqc2		vf4, 0x30(%0)	\n"
-
-			"lqc2		vf6, 0x00(%2)	\n"
-			"lqc2		vf8, 0x10(%2)	\n"
-			"vmulax		ACC,vf1, vf6x	\n"
-			"vmadday	ACC,vf2, vf6y	\n"
-			"vmaddaz	ACC,vf3, vf6z	\n"
-			"vmaddw		vf5,vf4, vf6w	\n"
-
-
-			"vdiv		Q, vf0w, vf5w	\n"
-			"vwaitq						\n"
-			"vmulq.xyz	vf6, vf5, Q		\n"
-			"vftoi4		vf7, vf6		\n"
-			"vftoi4		vf9, vf8		\n"
-
-			"sqc2		vf7, 0x20(%1)	\n"
-			"sqc2		vf7, 0x00(%1)	\n"
-			"sqc2		vf7, 0x10(%1)	\n"
-			: : "r" (matrix), "r" (out), "r" (in));
-			in += 0x20;
-			*((u64*)currentBuffer)++ = GS_SET_RGBAQ(128, 128, 128, 0x80,0);
-			*((u64*)currentBuffer)++ = 1;
-
-			//*((u64*)currentBuffer)++ = (out[0]) + ( (out[1])<<16) + ((u64)out[2]<<32);
-
-			//*((u64*)currentBuffer)++ = 0;//(out[0]) + ( (2048+(i*10))<<16);
-			*((u64*)currentBuffer)++ = (out[0]) + ( (out[1])<<16) + ((u64)out[2]<<32);
-			*((u64*)currentBuffer)++ = 3;
-
-			//*((u64*)currentBuffer)++ = (out[8]) + ( (out[9])<<16) + ((u64)out[10]<<32);
-			*((u64*)currentBuffer)++ = (out[8]) + ( (out[9])<<16) + ((u64)out[10]<<32);
-			*((u64*)currentBuffer)++ = 5;
-
-			//printf("%d : %d %d %d\n",i,out[8]>>4,out[9]>>4,out[10]>>4);
-
-		}
-
-		*((u64*)currentBuffer)++ = DMA_END_TAG(2);
-		*((u64*)currentBuffer)++ = 0;
-
-		*((u64*)currentBuffer)++ = GS_SET_GIFTAG(1,1,0,0,0,1);
-		*((u64*)currentBuffer)++ = 0X0E;
-
-		*((u64*)currentBuffer)++ = 1;
-		*((u64*)currentBuffer)++ = 0X61;
-
-
-
-		while( (RW_REGISTER_U32(D2_CHCR)) &0x100);
-
-
-		RW_REGISTER_U32(D2_QWC ) = 0;
-		RW_REGISTER_U32(D2_MADR) = 0;
-		RW_REGISTER_U32(D2_TADR) = (u32)kickBuffer;
-		RW_REGISTER_U32(D2_CHCR) = EE_SET_CHCR(1,1,0,1,0,1,0);
-
-		FlushCache(0);
-
-	}
-
-
-	while( (RW_REGISTER_U32(D2_CHCR)) &0x100);
-}
-
-int addv = 2;
-
-
-void drawvu1(float* matrix,LMP3D_Model *model)
-{
-
-	void *data = model->v;
 	void *currentBuffer,*kickBuffer;
-	int i,result,n1,n2,n3,n4,n,l;
-	u32 adress = 0;
-	int switchBuffer = 0;
-	u64 dmaBuffer [2][256] __attribute__((aligned(16)));
+	u64 dmaBuffer [256] __attribute__((aligned(16)));
 	u64 primv = GS_SET_PRIM(GS_PRIM_TRIANGLE,GS_IIP_FLAT,GS_TME_TEXTURE_ON, GS_FGE_FOGGING_OFF, GS_ABE_ALPHA_OFF,
 							GS_AA1_ANTIALIASING_OFF, GS_FST_STQ,
 							GS_CTXT_0, GS_FIX_0);
@@ -204,200 +87,199 @@ void drawvu1(float* matrix,LMP3D_Model *model)
 	u64 giftag[2];
 	giftag[0] = GS_SET_GIFTAG(3, 1, 1, primv,0, 3);
 	giftag[1] = 0x512;
-/*
-	float vec[4];
-	u32 out[12];
 
-	vec[0] = model->position.x+5;
-	vec[1] = model->position.y+6;
-	vec[2] = model->position.z+7;
-	vec[3] = 1.0f;
+	kickBuffer = dmaBuffer;
+	currentBuffer = (kickBuffer);
 
-	printf("av %f %f %f\n",vec[0],vec[1],vec[2]);
+	*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)matrix , 4);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_STCYL,0,0x0101 );
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,4,1);
 
-	asm __volatile__ (
-	"lqc2		vf1, 0x00(%0)	\n"
-	"lqc2		vf2, 0x10(%0)	\n"
-	"lqc2		vf3, 0x20(%0)	\n"
-	"lqc2		vf4, 0x30(%0)	\n"
+	*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)&giftag, 1);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,1003);
 
-	"lqc2		vf6, 0x00(%2)	\n"
-	"vmulax		ACC,vf1, vf6	\n"
-	"vmadday	ACC,vf2, vf6	\n"
-	"vmaddaz	ACC,vf3, vf6	\n"
-	"vmaddw		vf5,vf4, vf6	\n"
+	*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)&giftag, 1);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,1013);
 
+	*((u64*)currentBuffer)++ = DMA_END_TAG(0);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+	*((u32*)currentBuffer)++ = VIF_CODE(VIF_FLUSH,0,0);
 
-	"vdiv		Q, vf0w, vf5w	\n"
-	"vwaitq						\n"
-	"vmulq.xyz	vf6, vf5, Q		\n"
-	//"vftoi4		vf6, vf6		\n"
+	FlushCache(0);
 
+	RW_REGISTER_U32(D1_MADR) = 0;
+	RW_REGISTER_U32(D1_TADR) = (u32)kickBuffer;
+	RW_REGISTER_U32(D1_QWC ) = 0;
+	RW_REGISTER_U32(D1_CHCR) = EE_SET_CHCR(1,1,0,1,0,1,0);
 
-	"sqc2		vf6, 0x00(%2)	\n"
-	: : "r" (matrix), "r" (out), "r" (vec): "memory");
+	while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
+}
 
-	printf("ap %f %f %f\n",vec[0],vec[1],vec[2]);
-*/
-	//printf("ap %x %x %x\n",out[0],out[1],out[2]);
+void PS2_VU_Draw(float* matrix,LMP3D_Model *model)
+{
+	void *data = model->v;
+	void *dataIndex = model->index;
+	void *datavt = model->vt;
+	void *currentBuffer,*kickBuffer;
+	int i;
+	int switchBuffer = 0;
+	u64 dmaBuffer [2][2048] __attribute__((aligned(16)));
 
-	result = model->nf&0xFFFE;
-	int vu1nf = 166; //(42*3)+40 or 166*6 =996
+	int nindex1,nvertex1;
+	int nindex2,nvertex2;
+	u32 adress=0,adress2=0;
+	int db = 2;
+	int dnvertex1,snindex1,snvertex1;
+	int dnvertex2,snindex2,snvertex2;
+
+	LMP3D_Texture_Setup(model->texture[0]);
+
+	PS2_VU1_MatrixGif(matrix);
+
 	i = 0;
 
-	while(result >= 0)
+
+	for(i = 0;i < model->ngroup;i+=2)
 	{
 		kickBuffer = &dmaBuffer[switchBuffer];
-		currentBuffer = UNCACHED_SEG(kickBuffer);
+
+		currentBuffer =  UNCACHED_SEG(kickBuffer);
 
 		switchBuffer = !switchBuffer;
+		if(i == model->ngroup-1) db = 1;
 
+		nvertex1 = model->groupvertex[i];
+		nindex1 = model->groupface[i];
 
-		result -= vu1nf;
+		dnvertex1 = nvertex1>>2;
 
-		if(result >= 0)
-		{
-			n = vu1nf;
-		}else
-		{
-			n = vu1nf + result;
+		snvertex1 = (nvertex1 + (nvertex1&1) );
+		snindex1  = (nindex1 + (nindex1&1) );
 
-			n4 = n-42-42-42;
-			n3 = n-42-42;
-			n2 = n-42;
-			n1 = n;
+		if(nvertex1&3) dnvertex1++;
 
-			if(n1 >= 42) n1 = 42;
-			if(n2 >= 42) n2 = 42;
-			if(n3 >= 42) n3 = 42;
+		nindex2 = model->groupface[i+1];
+		nvertex2 = model->groupvertex[i+1];
 
+		dnvertex2 = nvertex2>>2;
 
-			//printf("%d %d %d %d %d\n",n,n1,n2,n3,n4);
-		}
+		snindex2  = (nindex2 + (nindex2&1) );
+		snvertex2 = (nvertex2 + (nvertex2&1) );
 
-		//if(i == 2) break;
-
-
-		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)matrix , 4);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_STCYL,0,0x0101 );
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,4,1);
+		if(nvertex2&3) dnvertex2++;
 
 		*((u64*)currentBuffer)++ = DMA_CNT_TAG(1);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_STCYL,0,0x0101 );
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,5);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,1,0);
+
+		*((u16*)currentBuffer)++ = db;
+		*((u16*)currentBuffer)++ = 0;
+		*((u16*)currentBuffer)++ = 0;
+		*((u16*)currentBuffer)++ = 0;
 
 		*((u64*)currentBuffer)++ = 0;
-		*((u32*)currentBuffer)++ = 0;
-		*((u32*)currentBuffer)++ = n;
 
 
-		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)&giftag, 1);
+		*((u64*)currentBuffer)++ = DMA_CNT_TAG(1);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,1003);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,1,5);
 
-		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)&giftag, 1);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,1013);
+		*((u16*)currentBuffer)++ = nindex2;
+		*((u16*)currentBuffer)++ = dnvertex2;
+		*((u16*)currentBuffer)++ = nindex1;
+		*((u16*)currentBuffer)++ = dnvertex1;
 
-		if(n == vu1nf)
+		*((u64*)currentBuffer)++ = 0;
+
+		if(i == 0)
 		{
-
-			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress , 120);
+			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(data+adress)  , snvertex1>>1);
 			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,240,6);
-
-			*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCAL,0,0);
-/*
-			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(120*8) , 60);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,120,6+120);
-*/
-
-			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(1920) , 126);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0 );
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,252,6+(240));
-
-			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(1920+2016) , 126);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,252,6+(240+252) );
-
-			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(1920+2016+2016) , 126);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,252,6+(240+252+252) );
-
-
-			adress += 1920+(2016*3);
-
-
-		}else
-		{
-			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress , n1*3);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,n1*6,6);
-
-			*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-			*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCAL,0,0);
-
-			if(n2 > 0)
-			{
-				*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(2016) , n2*3);
-				*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0 );
-				*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,n2*6,6+(252));
-			}
-
-			if(n3 > 0)
-			{
-				*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(2016+2016) , n3*3);
-				*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-				*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,n3*6,6+(252+252) );
-			}
-
-			if(n4 > 0)
-			{
-				*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)data+adress+(2016+2016+2016) , n4*3);
-				*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-				*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,n4*6,6+(252+252+252) );
-			}
-
-			//printf("%x\n",RW_REGISTER_U32(0x10003C40));
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snvertex1,6);
 		}
 
+		*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCAL,0,0);
+
+		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(datavt+adress)  , snvertex1>>1);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snvertex1,166);
+
+		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(dataIndex+adress2) , snindex1>>1);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snindex1,326);
+
+		*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCNT,0,512);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+
+		//-----------
+		if(db == 2)
+		{
+			adress2 += 178*4*2;
+			adress += 160*4*2;
+
+			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(data+adress) , snvertex2>>1);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snvertex2,504);
+
+			*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCNT,0,896);
+
+			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(datavt+adress) , snvertex2>>1);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snvertex2,504+160);
+
+			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(dataIndex+adress2) , snindex2>>1);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snindex2,824);
+
+			*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCNT,0,512);
+		}
+
+		//-----------
+
+		adress2 += 178*4*2;
+		adress += 160*4*2;
 
 
+		if(i+2 < model->ngroup)
+		{
+			nvertex1 = model->groupvertex[i];
+			snvertex1 = (nvertex1 + (nvertex1&1) );
 
+			*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)(data+adress)  , snvertex1>>1);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_16,snvertex1,6);
+
+			*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+			*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCNT,0,896);
+		}
+
+		//-----------
+
+		//printf("%d %d\n",RW_REGISTER_U32(VIF1_TOP),RW_REGISTER_U32(VIF1_TOPS));
 		*((u64*)currentBuffer)++ = DMA_END_TAG(0);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
 		*((u32*)currentBuffer)++ = VIF_CODE(VIF_FLUSHE,0,0);
 
-
-		l = 0;
-		while( (RW_REGISTER_U32(D1_CHCR)) &0x100)l++;
-		if(l > model->test) model->test = l;
-
-/*
-
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_FLUSHE,0,0);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
-		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);*/
-
 		FlushCache(0);
+		while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
 
 		RW_REGISTER_U32(D1_MADR) = 0;
 		RW_REGISTER_U32(D1_TADR) = (u32)kickBuffer;
 		RW_REGISTER_U32(D1_QWC ) = 0;
 		RW_REGISTER_U32(D1_CHCR) = EE_SET_CHCR(1,1,0,1,0,1,0);
-
-
-		i++;
 	}
 
-
 	while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
-
 }
 
 #endif

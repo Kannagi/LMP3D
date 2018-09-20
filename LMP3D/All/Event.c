@@ -20,7 +20,3 @@ void LMP3D_Event_Init(LMP3D_Event *event)
 
 	event->exit = 0;
 }
-
-
-
-

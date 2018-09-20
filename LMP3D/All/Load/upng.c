@@ -1288,8 +1288,6 @@ unsigned upng_get_size(const upng_t* upng)
 	return upng->size;
 }
 
-
-
 LMP3D_Texture *LMP3D_Load_png(char *adresse,int offset,void *buffer,int size)
 {
 	upng_t* upng;
@@ -1336,7 +1334,7 @@ LMP3D_Texture *LMP3D_Load_png(char *adresse,int offset,void *buffer,int size)
 	}
 
 	LMP3D_Texture_Format_Init(texture);
-	texture->pixel = upng_get_buffer(upng);
+	texture->pixel = (void*)upng_get_buffer(upng);
 /*
 	texture->pixel = malloc(texture->size);
 

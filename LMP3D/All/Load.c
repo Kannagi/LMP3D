@@ -19,13 +19,25 @@ LMP3D_Texture* LMP3D_Load_Texture(char *address,int offset,void *buffer,int size
     LMP3D_Texture *texture;
 
 	texture = LMP3D_Load_bmp(address,offset,buffer,size);
-	if(texture != NULL) return texture;
+	if(texture != NULL)
+	{
+		LMP3D_Texture_Convert_Internal(texture);
+		return texture;
+	}
 
 	texture = LMP3D_Load_pcx(address,offset,buffer,size);
-	if(texture != NULL) return texture;
+	if(texture != NULL)
+	{
+		LMP3D_Texture_Convert_Internal(texture);
+		return texture;
+	}
 
 	texture = LMP3D_Load_png(address,offset,buffer,size);
-	if(texture != NULL) return texture;
+	if(texture != NULL)
+	{
+		LMP3D_Texture_Convert_Internal(texture);
+		return texture;
+	}
 
 	printf("Texture loading failed : %s\n",address);
 

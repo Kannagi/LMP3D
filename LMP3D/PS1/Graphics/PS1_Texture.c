@@ -3,7 +3,7 @@
 
 #ifdef PLAYSTATION1
 #include <psx.h>
-#include <psxgpu.h>
+
 
 #include "LMP3D/LMP3D.h"
 
@@ -18,7 +18,6 @@ void gpuSendSync0(unsigned int v)
 
 void PS1_Upload_VRAM(unsigned int *buffer,unsigned short w,unsigned short h,int destX,int destY)
 {
-	printf("dest : %d %d\n",destX,destY);
 	unsigned int hwords_to_transfer = w*h;
 	unsigned int words_to_transfer = hwords_to_transfer >> 1;
 	unsigned int blocks_to_transfer = words_to_transfer >> 4; /* full blocks */
@@ -38,7 +37,7 @@ void PS1_Upload_VRAM(unsigned int *buffer,unsigned short w,unsigned short h,int 
 	RW_REGISTER_U32(DICR) &= ~(1 << (16+2)); /* disable dma interrupts for DMA2 */
 	RW_REGISTER_U32(DPCR) |= 0x800; /* enable DMA2 */
 
-	printf("VRAM : %d   %d,%d\n",blocks_to_transfer,destX,destY);
+	//printf("VRAM : %d   %d,%d\n",blocks_to_transfer,destX,destY);
 	if(blocks_to_transfer)
 	{
 		RW_REGISTER_U32(D2_MADR) = (unsigned int)buffer;
@@ -68,7 +67,7 @@ void PS1_Upload_VRAM(unsigned int *buffer,unsigned short w,unsigned short h,int 
 
 void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture)
 {
-	unsigned int *buffer = texture->pixel;
+	void *buffer = texture->pixel;
 	int destX = (texture->address&0x0F)<<6, destY = (texture->address&0x70)<<2;
 	if(texture->address&0x80)
 	{
@@ -86,13 +85,12 @@ void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture)
 
 void LMP3D_Texture_Upload_VRAM_Pal(LMP3D_Texture *texture)
 {
-	unsigned int *buffer = texture->palette;
+	void *buffer = texture->palette;
 	int destX=0, destY=0;
 	if(texture->addresspal&0x80)
 	{
-		destX = (texture->addresspal&0x3C)>>2;
-		destY = 240 + destX;
-		destX = (texture->addresspal&0x03)<<8;
+		destY = 240 + (texture->addresspal&0x0F);
+		destX = (texture->addresspal&0x30)<<7;
 	}else
 		return;
 
@@ -114,17 +112,37 @@ void LMP3D_Texture_Upload(LMP3D_Texture *texture)
 
 }
 
+static unsigned int ps1_gpo_texpage;
+static unsigned int ps1_gpo_texcoord;
+
+
+unsigned int LMP3D_Texture_Setup_Get()
+{
+	return ps1_gpo_texpage;
+}
+
+unsigned int LMP3D_TexturePal_Setup_Get()
+{
+	return ps1_gpo_texcoord;
+}
+
 //Select Texture
 void LMP3D_Texture_Setup(LMP3D_Texture *texture)
 {
+	int tx = (texture->address&0x3F);
+	int ty = 0;
+	if(texture->address&0x40) ty = 1;
+
+	ps1_gpo_texpage = GP0_TEXPAGE(tx,ty,0,texture->psm,0,1,0,0,0);
+
+
+	int destY = 240 + (texture->addresspal&0x0F);
+	int destX = (texture->addresspal&0x30)<<7;
+	int dest = destX+(destY<<6);
+	ps1_gpo_texcoord = dest;
 
 }
 
-//Delete Texture
-void LMP3D_Texture_Delete(LMP3D_Texture *texture)
-{
-
-}
 
 #endif
 

@@ -7,6 +7,7 @@
 #include "LMP3D/PS2/PS2.h"
 
 static int PS2_vram_pointer = 0;
+int PS2_vram_size(int width, int height, int psm);
 
 int PS2_vram_allocate(int width, int height, int psm)
 {
@@ -15,15 +16,16 @@ int PS2_vram_allocate(int width, int height, int psm)
 	// Calculate the size and increment the pointer
 	size = PS2_vram_size(width,height,psm);
 
+
 	PS2_vram_pointer += size;
 
-	// If the pointer overflows the vram size
-	if (PS2_vram_pointer > 0X100000)
-	{
+	//printf("%x %d %d\n",PS2_vram_pointer,width,height);
 
+	// If the pointer overflows the vram size
+	if(PS2_vram_pointer > 0X100000)
+	{
 		PS2_vram_pointer -= size;
 		return -1;
-
 	}
 
 	return PS2_vram_pointer - size;
@@ -47,7 +49,7 @@ void PS2_vram_clear(void)
 }
 
 
-int PS2_vram_size(int width, int height, int psm, int alignment)
+int PS2_vram_size(int width, int height, int psm)
 {
 	int size;
 
@@ -74,6 +76,22 @@ int PS2_vram_size(int width, int height, int psm, int alignment)
 
 	return size;
 
+}
+
+void LMP3D_VRAM_Set(unsigned int address)
+{
+	PS2_vram_pointer = address;
+}
+
+unsigned int LMP3D_VRAM_Get()
+{
+	return PS2_vram_pointer;
+}
+
+void LMP3D_VRAM_Info(char *info)
+{
+	int vram = (PS2_vram_pointer&0xFFFFFF);
+	sprintf(info,"vram :0x%x/0x100000\n",vram);
 }
 
 #endif

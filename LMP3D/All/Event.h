@@ -1,40 +1,33 @@
 #ifndef __LMP3D_Event__
 #define __LMP3D_Event__
 
+
+
+#if defined(PC) || defined(WINDOWS95)
+
+#define LMP3D_EVENT_MAX 410
+#define LMP3D_JOYPAD1 330
+#define LMP3D_JOYPAD2 350
+#define LMP3D_JOYPAD3 370
+#define LMP3D_JOYPAD4 390
+
+#else
+
 #define LMP3D_EVENT_MAX 20*4
 #define LMP3D_JOYPAD1 00
 #define LMP3D_JOYPAD2 20
 #define LMP3D_JOYPAD3 40
 #define LMP3D_JOYPAD4 60
 
-#ifdef PC
-
-#define LMP3D_EVENT_MAX 410
-#define LMP3D_JOYPAD1 330
-#define LMP3D_JOYPAD2 350
-#define LMP3D_JOYPAD3 370
-#define LMP3D_JOYPAD4 390
-
 #endif
 
-
-#ifdef WINDOWS95
-
-#define LMP3D_EVENT_MAX 410
-#define LMP3D_JOYPAD1 330
-#define LMP3D_JOYPAD2 350
-#define LMP3D_JOYPAD3 370
-#define LMP3D_JOYPAD4 390
-
-#endif
 
 typedef struct
 {
     char clikright;
     char clikleft;
-    char mousex;
-    char mousey;
     char exit;
+    int mousex,mousey;
 
     char key[LMP3D_EVENT_MAX];
 

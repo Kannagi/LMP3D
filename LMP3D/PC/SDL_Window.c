@@ -6,7 +6,7 @@
 #include <SDL/SDL.h>
 #include "LMP3D/LMP3D.h"
 
-
+void GL_Graphic_Init();
 
 
 LMP3D_Buffer LMP3D_Window(char *name)
@@ -25,10 +25,11 @@ LMP3D_Buffer LMP3D_Window(char *name)
 
 int LMP3D_Fps(int fps)
 {
-	static time_end,time_begin;
+	static int time_end,time_begin;
 
     int time_dif,slp;
     slp = 1000/fps;
+    slp +=1;
 
     time_end = SDL_GetTicks();
     time_dif = time_end - time_begin;
@@ -46,7 +47,7 @@ int LMP3D_Fps(int fps)
 int LMP3D_VBlank()
 {
 	int nvbl = LMP3D_Fps(60);
-	SDL_GL_SwapBuffers();
+
 
 	return nvbl;
 }

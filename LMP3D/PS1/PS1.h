@@ -3,44 +3,44 @@
 
 
 #define GP0_CMD_COLOR(cmd,r,g,b) \
-		((u32)r    <<  0  ) |	\
-		((u32)g    <<  8  ) |	\
-		((u32)b    <<  16 ) |	\
-		((u32)cmd  <<  24 )
+		(r    <<  0  ) |	\
+		(g    <<  8  ) |	\
+		(b    <<  16 ) |	\
+		(cmd  <<  24 )
 
 #define GP0_VERTEX(x,y) \
-		((u32)x    <<  0  ) |	\
-		((u32)y    <<  16 )
+		(x    <<  0  ) |	\
+		(y    <<  16 )
 
 #define GP0_TEXCOORD(x,y,arg) \
-		((u32)x    <<  0  ) |	\
-		((u32)y    <<  8  ) |	\
-		((u32)arg  <<  16 )
+		(x    <<  0  ) |	\
+		(y    <<  8  ) |	\
+		(arg  <<  16 )
 
 #define GP0_TEXPAGE(tpx,tpy,sm,tpc,dbit,dda,td,trx,try) \
-		((u32)tpx  <<  0  ) |	\
-		((u32)tpy  <<  4  ) |	\
-		((u32)sm   <<  5  ) |	\
-		((u32)tpc  <<  7  ) |	\
-		((u32)dbit <<  9  ) |	\
-		((u32)dda  <<  10 ) |	\
-		((u32)td   <<  11 ) |	\
-		((u32)trx  <<  12 ) |	\
-		((u32)try  <<  13 ) |	\
-		((u32)0xE1 <<  24 )
+		(tpx  <<  0  ) |	\
+		(tpy  <<  4  ) |	\
+		(sm   <<  5  ) |	\
+		(tpc  <<  7  ) |	\
+		(dbit <<  9  ) |	\
+		(dda  <<  10 ) |	\
+		(td   <<  11 ) |	\
+		(trx  <<  12 ) |	\
+		(try  <<  13 ) |	\
+		(0xE1 <<  24 )
 
 
 #define DMA_CHCR_SET(td,mas,ce,ts,dmaws,cpuws,dmast,smst,unk1,unk2) \
-		((u32)td    <<  0  ) |	\
-		((u32)mas   <<  1  ) |	\
-		((u32)ce    <<  8  ) |	\
-		((u32)ts    <<  9  ) |	\
-		((u32)dmaws <<  16 ) |	\
-		((u32)cpuws <<  20 ) |	\
-		((u32)dmast <<  24 ) |	\
-		((u32)smst  <<  28 ) |	\
-		((u32)unk1  <<  29 ) |	\
-		((u32)unk2  <<  30 )
+		(td    <<  0  ) |	\
+		(mas   <<  1  ) |	\
+		(ce    <<  8  ) |	\
+		(ts    <<  9  ) |	\
+		(dmaws <<  16 ) |	\
+		(cpuws <<  20 ) |	\
+		(dmast <<  24 ) |	\
+		(smst  <<  28 ) |	\
+		(unk1  <<  29 ) |	\
+		(unk2  <<  30 )
 
 #define SCRATCHPAD	0x1F800000
 
@@ -276,9 +276,14 @@
 				 ".equ C0_STATUS   ,$12 \n	"
 
 #define RW_REGISTER_U32(REG) 	*((volatile u32 *)(REG))
+#define RW_REGISTER_32(REG) 	*((volatile int *)(REG))
 
 void PS1_GTE_Init();
 void PS1_GTE_Perspective_Set();
 void PS1_GTE_MulMat(void *m1,void *m2,void *mr);
 void PS1_GTE_ModelView_Set(void *rotate,void *translate);
 unsigned int PS1_vram_allocate(int width, int height, int psm);
+void PS1_BufferDraw();
+void PS1_GsSetDispEnv(int x,int y);
+void PS1_GsSetDrawEnv(int x,int y,int w,int h);
+void PS1_Buffer_Init();

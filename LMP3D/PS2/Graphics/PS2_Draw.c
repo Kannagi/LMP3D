@@ -56,7 +56,7 @@ void GsDrawSprite(int posx,int posy,int tile)
 
 
 	RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(gif_array,0);
-	RW_REGISTER_U32(D2_QWC ) = i/2;
+	RW_REGISTER_U32(D2_QWC ) = i>>1;
 
 	RW_REGISTER_U32(D2_CHCR) = EE_SET_CHCR(1,0,0,0,0,1,0);
 
@@ -107,7 +107,7 @@ void GsDrawSpriteTest(int posx,int posy)
 
 
 	RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(gif_array,0);
-	RW_REGISTER_U32(D2_QWC ) = i/2;
+	RW_REGISTER_U32(D2_QWC ) = i>>1;
 
 	RW_REGISTER_U32(D2_CHCR) = EE_SET_CHCR(1,0,0,0,0,1,0);
 
