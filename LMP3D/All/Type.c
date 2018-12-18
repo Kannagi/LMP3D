@@ -4,7 +4,7 @@
 
 #include "LMP3D/LMP3D.h"
 
-inline Vector2i LMP3D_Type_Vector2i(int x,int y)
+ Vector2i LMP3D_Type_Vector2i(int x,int y)
 {
 	Vector2i vector;
 
@@ -13,7 +13,7 @@ inline Vector2i LMP3D_Type_Vector2i(int x,int y)
 	return vector;
 }
 
-inline Vector3i LMP3D_Type_Vector3i(int x,int y,int z)
+ Vector3i LMP3D_Type_Vector3i(int x,int y,int z)
 {
 	Vector3i vector;
 
@@ -23,7 +23,7 @@ inline Vector3i LMP3D_Type_Vector3i(int x,int y,int z)
 	return vector;
 }
 
-inline Recti LMP3D_Type_Recti(int x,int y,int w,int h)
+ Recti LMP3D_Type_Recti(int x,int y,int w,int h)
 {
 	Recti rect;
 
@@ -35,7 +35,7 @@ inline Recti LMP3D_Type_Recti(int x,int y,int w,int h)
 }
 
 
-inline Vector2s LMP3D_Type_Vector2s(int x,int y)
+ Vector2s LMP3D_Type_Vector2s(int x,int y)
 {
 	Vector2s vector;
 
@@ -44,7 +44,7 @@ inline Vector2s LMP3D_Type_Vector2s(int x,int y)
 	return vector;
 }
 
-inline Vector3s LMP3D_Type_Vector3s(int x,int y,int z)
+ Vector3s LMP3D_Type_Vector3s(int x,int y,int z)
 {
 	Vector3s vector;
 
@@ -54,7 +54,7 @@ inline Vector3s LMP3D_Type_Vector3s(int x,int y,int z)
 	return vector;
 }
 
-inline Rects LMP3D_Type_Rects(int x,int y,int w,int h)
+ Rects LMP3D_Type_Rects(int x,int y,int w,int h)
 {
 	Rects rect;
 
@@ -74,7 +74,7 @@ inline Vector2 LMP3D_Type_Vector2(float x,float y)
 	return vector;
 }
 
-inline Vector3 LMP3D_Type_Vector3(float x,float y,float z)
+ Vector3 LMP3D_Type_Vector3(float x,float y,float z)
 {
 	Vector3 vector;
 
@@ -84,7 +84,7 @@ inline Vector3 LMP3D_Type_Vector3(float x,float y,float z)
 	return vector;
 }
 
-inline Rectf LMP3D_Type_Rectf(float x,float y,float w,float h)
+ Rectf LMP3D_Type_Rectf(float x,float y,float w,float h)
 {
 	Rectf rect;
 
