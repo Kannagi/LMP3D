@@ -16,17 +16,11 @@ Any contribution is welcome.
 
 Playstation 1 / Playstation 2 / Dreamcast:
 - Skeleton animation
-- Manage 8bpp / 4bpp colors
-- Camera
-- Optimize 3D rendering
-- 2D function (Sprite and Tilemap)
 
 Playstation 1:
 - improve the perspective
 - PSXSDK is way too long to handle the joypad
 
-Dreamcast:
-- Manage VQ compressed /Twilled texture format
 
 # Currently I am working on the PS1.
 <img src="sc2.png?raw=true" alt="PS1 Demo" width="480" height="360">
