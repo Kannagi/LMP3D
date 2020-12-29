@@ -1,0 +1,73 @@
+	nop					lq VF01, 0(VI00)
+	nop					lq VF02, 1(VI00)
+	nop					lq VF03, 2(VI00)
+	nop					iaddiu VI01, VI00, 4048<<4
+	nop					iaddiu VI02, VI00, 6
+	
+	
+
+	;position/flip
+	nop					mtir VI07, VF02x  ;posx
+	nop					mtir VI08, VF02y  ;posy
+	nop					mtir VI09, VF02z  ;flagw
+	nop					mtir VI10, VF02w  ;flagh
+	
+	;rect
+	nop					mtir VI03, VF01x   
+	nop					mtir VI04, VF01y
+	nop					mtir VI05, VF01z
+	nop					mtir VI06, VF01w
+	
+	nop					mtir VI15, VF03x  ;w
+	
+	;-----UV1
+	nop					iadd VI11, VI03,VI09  ; (rectx+flagw)
+	nop					iadd VI12, VI04,VI10  ; (recty+flagh)
+	
+	;XYZ1
+	nop					mfir.z VF12z,VI01 
+	nop					iaddiu VI07, VI00, (2048+320)<<4
+	nop					iaddiu VI08, VI00, (2048+128)<<4
+	nop					mfir.x VF12x,VI07 
+	nop					mfir.y VF12y,VI08
+	
+	;---(uv)
+	nop					mfir.x VF10x,VI11
+	nop					mfir.y VF10y,VI12
+	
+	
+	;------UV2
+	nop					iadd VI13, VI03,VI05  ; (rectx+rectw)
+	nop					isub VI13, VI13,VI09  ;  -flagw
+	
+	nop					iadd VI14, VI04,VI06  ; (recty+recth)
+	nop					isub VI14, VI14,VI10  ; -flagh
+	
+	;XYZ2
+	nop					iadd VI11, VI07,VI05  ; (posx+rect.w)
+	nop					iadd VI12, VI08,VI06  ; (posy+rect.h)
+	
+	;------
+	nop					iaddiu VI12, VI00, (2048+320+100)<<4
+	nop					iaddiu VI13, VI00, (2048+128+0)<<4
+	
+	nop					mfir.z VF13z,VI01 
+	nop					mfir.x VF13x,VI13 
+	nop					mfir.y VF13y,VI14
+	;---
+	nop					mfir.x VF11x,VI11
+	nop					mfir.y VF11y,VI12
+	
+	;-----
+	;nop					sq  VF10, 1+0+0(VI02)	; s vt1
+	nop					sq  VF12, 1+0+0(VI02)	; s v1
+	
+	;nop					sq  VF11, 1+2+0(VI02)	; s vt2
+	nop					sq  VF13, 1+0+1(VI02)	; s v2
+	
+	nop					iaddiu VI12, VI00, (2048+320+0)<<4
+	nop					iaddiu VI13, VI00, (2048+128+100)<<4
+	nop					mfir.z VF11z,VI01 
+	nop					mfir.x VF11x,VI13 
+	nop					mfir.y VF11y,VI14
+	nop					sq  VF13, 1+0+2(VI02)	; s v2

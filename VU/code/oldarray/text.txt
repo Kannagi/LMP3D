@@ -1,0 +1,46 @@
+	.global vu1Triangle_CodeStart
+	.global vu1Triangle_CodeEnd
+
+; VF 01-04 Matrix
+; VF 05 in number faces
+; VF 06-08 out vertex Matrix
+; VF 09-11 vertex
+; VF 12-14 vertex texture
+; VF 15-16 (Tri Strip)
+; VF 17-20 (matrix animation)
+; VF 21-23 out vertex float
+; VF 24-26 out vertex fixed point
+; VF 28-30 out vertex float origine zero
+; VF 27 ,VF 31 clipping
+
+vu1Triangle_CodeStart:
+	.p2align 8
+	.vu 
+
+	nop                             iaddiu VI06, VI00, 6
+
+	nop                             lq  VF09, 0(VI06)   ; v1
+	nop                             lq  VF12, 1(VI06)   ; vt1
+
+	nop                             lq VF05, 5(VI00)
+
+	nop                             lq VF01, 1(VI00)
+	nop                             lq VF02, 2(VI00)
+	itof4 VF09, VF09                lq VF03, 3(VI00)
+	itof15 VF12, VF12               lq VF04, 4(VI00)
+
+	mulax ACC, VF01, VF09x          lq  VF10, 2(VI06)   ; v2
+	madday ACC, VF02, VF09y         lq  VF13, 3(VI06)   ; vt2
+	maddaz ACC, VF03, VF09z         iaddiu VI02, VI00, 1003
+	maddw VF06, VF04, VF09w         iaddiu VI03, VI00, 1013
+
+	itof4 VF10, VF10                mtir VI04, VF05w
+	itof15 VF13, VF13               iaddiu VI05,VI00, 2048
+	nop                             mfir.w VF31,VI05
+	itof0.w VF31, VF31              iaddiu VI05,VI00, 1024
+	nop                             mfir.w VF27,VI05
+	itof0.w VF27, VF27              nop
+
+vertexLoop:
+	;Phase1 
+	nop                             div q, VF00w, VF06w 
