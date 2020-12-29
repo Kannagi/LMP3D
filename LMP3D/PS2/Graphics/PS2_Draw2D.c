@@ -9,38 +9,63 @@
 
 #include "LMP3D/PS2/PS2.h"
 
+static u64 dmaBuffer[16] __attribute__((aligned(16)));
+static int buffer_sprite[16];
+static u64 giftag[2];
+
+#define PS2_VU_Func_Sprite	 		(0x30>>3)
+
+void PS2_VU_Init2D()
+{
+
+	//-------------------
+	void *currentBuffer;
+	int i;
+
+	u64 primv = GS_SET_PRIM(GS_PRIM_SPRITE,GS_IIP_FLAT,GS_TME_TEXTURE_ON, GS_FGE_FOGGING_OFF, GS_ABE_ALPHA_OFF,
+							GS_AA1_ANTIALIASING_OFF, GS_FST_UV,
+							GS_CTXT_0, GS_FIX_0);
+
+	giftag[0] = GS_SET_GIFTAG(2, 1, 1, primv,0, 2);
+	giftag[1] = 0x53;
+	//5 : XYZ2
+	//4 : XYZF2
+	//3 : UV
+	//2 : ST
+	//1 : RGBAQ
+
+	for(i = 0;i < 2;i++)
+	{
+		currentBuffer = (dmaBuffer);
+
+		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)buffer_sprite , 4);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_STCYL,0,0x0101 );
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,3,0);
+
+		*((u64*)currentBuffer)++ = DMA_REF_TAG( (u32)giftag, 1);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_UNPACK_V4_32,1,6);
+
+		*((u64*)currentBuffer)++ = DMA_CNT_TAG(0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_NOP,0,0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_MSCAL,0,PS2_VU_Func_Sprite);
+
+		*((u64*)currentBuffer)++ = DMA_END_TAG(0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_FLUSHE,0,0);
+		*((u32*)currentBuffer)++ = VIF_CODE(VIF_FLUSHA,0,0);
+	}
+
+
+	FlushCache(0);
+}
+
 static int LMP3D_mode2D = 0;
 void LMP3D_Draw_Config(int flag)
 {
 	LMP3D_mode2D = flag;
 }
 
-void PS2_Gif_Init(unsigned long gif_array[2][16])
-{
-	int i;
-	unsigned long *gif;
-
-	for(i = 0;i < 2;i++)
-	{
-		gif = UNCACHED_SEG(gif_array[i]);
-
-		gif[0] = GS_SET_GIFTAG(1,0,0,0,0,1);
-		gif[1] = GS_REG_AD;
-
-		gif[2] = GS_SET_PRIM(GS_PRIM_SPRITE,GS_IIP_FLAT,GS_TME_TEXTURE_ON,GS_FGE_FOGGING_OFF,
-								GS_ABE_ALPHA_OFF,GS_AA1_ANTIALIASING_OFF, GS_FST_UV, GS_CTXT_0, GS_FIX_0);
-		gif[3] = GS_REG_PRIM;
-
-		gif[4] = GS_SET_GIFTAG(2,1,0,0,1,2);
-		gif[5] = 0x0053;
-/*
-		gif[10] = GS_SET_GIFTAG(1,1,0,0,0,1);
-		gif[11] = GS_REG_AD;
-
-		gif[12] = 1;
-		gif[13] = 0X61;*/
-	}
-}
+//-------------------------------------------------------------
 
 void LMP3D_Draw_Sprite(LMP3D_Texture *texture,Vector2i position,Recti *rectin,int flag)
 {
@@ -87,8 +112,6 @@ void LMP3D_Draw_Sprite(LMP3D_Texture *texture,Vector2i position,Recti *rectin,in
 	if(flag & LMP3D_FLIPH) flagw = rect.w;
 	if(flag & LMP3D_FLIPV) flagh = rect.h;
 
-
-
 	gif = UNCACHED_SEG(gif_array);
 
 	gif[i++] = GS_SET_GIFTAG(1,0,0,0,0,1);
@@ -131,23 +154,19 @@ void LMP3D_Draw_Sprite(LMP3D_Texture *texture,Vector2i position,Recti *rectin,in
 
 	while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
 
-	int r = -200;
-	while(r++);
+
 }
 
 void LMP3D_Draw_Text(int px,int py,char *text)
 {
-	int i=0,l = 0;
+	int i=0;
+	u32 *buffer_sp = UNCACHED_SEG(buffer_sprite);
+	void *kickBuffer = dmaBuffer;
 
 	char c;
 	int tx,ty;
 	int x = px;
 	int y = py;
-
-	unsigned long *gif;
-	unsigned long gif_array[2][16] __attribute__((aligned(64)));
-
-	PS2_Gif_Init(gif_array);
 
 	int tilew = 16;
 
@@ -158,9 +177,19 @@ void LMP3D_Draw_Text(int px,int py,char *text)
 		tilew = 32;
 	}
 
+	buffer_sp[2] = 0x100;
+	buffer_sp[3] = 0x100;
+	buffer_sp[6] = 0;
+	buffer_sp[7] = 0;
+	buffer_sp[8] = tilew;
+
+	buffer_sp[9]  = (2048-320)<<4;
+	buffer_sp[10] = (2048-128)<<4;
+
 	while(1)
 	{
 		c = text[i++];
+
 		if(c == ' ')
 		{
 			x += tilew;
@@ -176,54 +205,45 @@ void LMP3D_Draw_Text(int px,int py,char *text)
 		if(c == 0)
 			break;
 
-
 		tx = (c&0x0F)<<8;
 		ty = (c&0xF0)<<4;
 
-		gif = UNCACHED_SEG(gif_array[l]);
+		while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
 
-		gif[6] = GS_SET_UV(tx,ty);
-		gif[7] = GS_SET_XYZ((2048-320+x)<<4, (2048-128+y)<<4, 4048<<4);
+		buffer_sp[0] = tx;
+		buffer_sp[1] = ty;
 
-		gif[8] = GS_SET_UV((tx+0X100),(ty+0X100));
-		gif[9] = GS_SET_XYZ((2048-320+x+tilew)<<4, (2048-128+y+16)<<4, 4048<<4);
+		buffer_sp[4] = (x)<<4;
+		buffer_sp[5] = (y)<<4;
 
-		//FlushCache(0);
-		//asm __volatile__("sync.l");
-		//while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
+		RW_REGISTER_U32(D1_MADR) = 0;
+		RW_REGISTER_U32(D1_TADR) = (u32)kickBuffer;
+		RW_REGISTER_U32(D1_QWC ) = 0;
+		RW_REGISTER_U32(D1_CHCR) = EE_SET_CHCR(1,1,0,1,0,1,0);
 
-		RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(gif_array[l],0);
-		RW_REGISTER_U32(D2_TADR) = 0;
-		RW_REGISTER_U32(D2_QWC ) = 5;
-
-		RW_REGISTER_U32(D2_CHCR) = EE_SET_CHCR(1,0,0,0,0,1,0);
-
-		while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
-
-		int r = -200;
-		while(r++);
-
-		l = !l;
 
 		x += tilew;
 	}
 
+	buffer_sp[9]  = 0;(2048-320)<<4;
+	buffer_sp[10] = 0;(2048-128)<<4;
 
-	while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
+
+	while( (RW_REGISTER_U32(D1_CHCR)) & 0x100);
 
 }
 
 
 void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 {
-	int i=0,flag,switchbuffer = 0;
-
-	unsigned long *gif;
-	unsigned long buffer[2][16] __attribute__((aligned(64)));
-
-	PS2_Gif_Init(buffer);
-
+	int i=0,flag;
 	int w = 0;
+
+	u32 *buffer_sp = UNCACHED_SEG(buffer_sprite);
+	void *kickBuffer = dmaBuffer;
+
+	buffer_sp[9]  = (2048-320)<<4;
+	buffer_sp[10] = (2048-128)<<4;
 
 	for(i = 0;i < n;i++)
 	{
@@ -237,7 +257,7 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 		if(LMP3D_mode2D & 1)
 		{
 			position.x = position.x<<1;
-			w = rect.w;
+			w = rect.w<<4;
 		}
 
 		if(position.x >= 640) continue;
@@ -247,39 +267,42 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 
 		LMP3D_Texture_Setup(texture);
 
-		int posx = (2048-320+position.x)<<4;
-		int posy = (2048-128+position.y)<<4;
-
 		rect.x = rect.x<<4;
 		rect.y = rect.y<<4;
 		rect.w = rect.w<<4;
 		rect.h = rect.h<<4;
-		w = w<<4;
+
+		int posx = (position.x)<<4;
+		int posy = (position.y)<<4;
 
 		int flagw = 0,flagh = 0;
 		if(flag & LMP3D_FLIPH) flagw = rect.w;
 		if(flag & LMP3D_FLIPV) flagh = rect.h;
 
-		gif = UNCACHED_SEG(buffer[switchbuffer]);
 
-		gif[6] = GS_SET_UV((rect.x+flagw),(rect.y+flagh));
-		gif[7] = GS_SET_XYZ(posx, posy, 4048<<4);
+		while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
 
-		gif[8] = GS_SET_UV((rect.x+rect.w-flagw),(rect.y+rect.h-flagh));
-		gif[9] = GS_SET_XYZ((posx+rect.w+w),(posy+rect.h), 4048<<4);
+		buffer_sp[0] = rect.x;
+		buffer_sp[1] = rect.y;
+		buffer_sp[2] = rect.w;
+		buffer_sp[3] = rect.h;
 
-		while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
+		buffer_sp[4] = posx;
+		buffer_sp[5] = posy;
+		buffer_sp[6] = flagw;
+		buffer_sp[7] = flagh;
 
-		RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(buffer[switchbuffer],0);
-		RW_REGISTER_U32(D2_QWC ) = 5;
+		buffer_sp[8] = w;
 
-		RW_REGISTER_U32(D2_CHCR) = EE_SET_CHCR(1,0,0,0,0,1,0);
-
-		switchbuffer = !switchbuffer;
+		RW_REGISTER_U32(D1_MADR) = 0;
+		RW_REGISTER_U32(D1_TADR) = (u32)kickBuffer;
+		RW_REGISTER_U32(D1_QWC ) = 0;
+		RW_REGISTER_U32(D1_CHCR) = EE_SET_CHCR(1,1,0,1,0,1,0);
 
 	}
 
-	while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
+
+	while( (RW_REGISTER_U32(D1_CHCR)) & 0x100);
 
 }
 
@@ -287,19 +310,23 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 {
 	int i=0,flag;
 
-	unsigned long *gif;
-	unsigned long gif_array[2][16] __attribute__((aligned(64)));
+	u32 *buffer_sp = UNCACHED_SEG(buffer_sprite);
+	void *kickBuffer = dmaBuffer;
 
 	LMP3D_Texture *texture = tilemap->texture;
-	PS2_Gif_Init(gif_array);
 
-	int x,y,switchbuffer=0;
+	int x,y;
 
 	int h = tilemap->h;
 	int w = tilemap->w;
 	int ntilex = 41;
 
 	int windowW = 640;
+	buffer_sp[9]  = 0;
+	buffer_sp[10] = 0;
+
+	buffer_sp[2] = 0x100;
+	buffer_sp[3] = 0x100;
 
 	if(LMP3D_mode2D & 1)
 	{
@@ -338,8 +365,6 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 
 	int tile;
 
-
-
 	for(y = 0;y < 17;y++)
 	{
 		for(x = 0;x < ntilex;x++)
@@ -355,30 +380,33 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 			}
 
 			flag = flag&0x03;
+			int flagw = 0,flagh = 0;
 
 			int rectx = (tile&0x0F)<<8;
 			int recty = (tile&0xF0)<<4;
 
-			int flagw = 0,flagh = 0;
 			if(flag & LMP3D_FLIPH) flagw = 0X100;
 			if(flag & LMP3D_FLIPV) flagh = 0X100;
 
-			gif = UNCACHED_SEG(gif_array[switchbuffer]);
 
-			gif[6] = GS_SET_UV((rectx+flagw),(recty+flagh));
-			gif[7] = GS_SET_XYZ(px,py, 4048<<4);
+			while( (RW_REGISTER_U32(D1_CHCR)) &0x100);
 
-			gif[8] = GS_SET_UV((rectx+0X100-flagw),(recty+0X100-flagh));
-			gif[9] = GS_SET_XYZ((px+0x100+tilew),(py+0x100), 4048<<4);
+			buffer_sp[0] = rectx;
+			buffer_sp[1] = recty;
 
-			while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
+			buffer_sp[4] = px;
+			buffer_sp[5] = py;
+			buffer_sp[6] = flagw;
+			buffer_sp[7] = flagh;
 
-			RW_REGISTER_U32(D2_MADR) = EE_SET_ADR(gif_array[switchbuffer],0);
-			RW_REGISTER_U32(D2_QWC ) = 5;
+			buffer_sp[8] = tilew;
 
-			RW_REGISTER_U32(D2_CHCR) = EE_SET_CHCR(1,1,0,0,0,1,0);
+			RW_REGISTER_U32(D1_MADR) = 0;
+			RW_REGISTER_U32(D1_TADR) = (u32)kickBuffer;
+			RW_REGISTER_U32(D1_QWC ) = 0;
+			RW_REGISTER_U32(D1_CHCR) = EE_SET_CHCR(1,1,0,1,0,1,0);
 
-			switchbuffer = !switchbuffer;
+
 			i++;
 			px += 0x100+tilew;
 
@@ -388,7 +416,7 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 		i += w-x;
 	}
 
-	while( (RW_REGISTER_U32(D2_CHCR)) & 0x100);
+	while( (RW_REGISTER_U32(D1_CHCR)) & 0x100);
 }
 
 #endif

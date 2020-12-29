@@ -1,40 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "LMP3D/LMP3D.h"
 
 int LMP3D_Texture_Palette_Get(LMP3D_Texture *texture,unsigned char *palette)
 {
-    int i,l;
-    unsigned char *pixel = texture->pixel;
-    unsigned char r,g,b;
-    int taille = texture->size;
-    int n = 0,black = 0,pal;
-    //printf("%d %d = %d octet\n",image->w,image->h,taille);
+	int i,l;
+	unsigned char *pixel = texture->pixel;
+	unsigned char r,g,b;
+	int taille = texture->size;
+	int n = 0,black = 0,pal;
+	//printf("%d %d = %d octet\n",image->w,image->h,taille);
 
 	if( ! ( (texture->format == LMP3D_FORMAT_RGB888) || (texture->format == LMP3D_FORMAT_RGBA8888) ) ) return 0;
 
-    for(i = 0;i < 0x300;i++)
-        palette[i] = 0;
+	for(i = 0;i < 0x300;i++)
+		palette[i] = 0;
 
-    for(i = 0;i < taille;i += texture->pixelsize)
-    {
-    	r = pixel[i+0];
-    	g = pixel[i+1];
-    	b = pixel[i+2];
+	for(i = 0;i < taille;i += texture->pixelsize)
+	{
+		r = pixel[i+0];
+		g = pixel[i+1];
+		b = pixel[i+2];
 
 
 		pal = 1;
-        for(l = 0;l < 0x300;l+=3)
-        {
-            if(palette[l+0] == r && palette[l+1] == g && palette[l+2] == b)
-            {
-            	pal = 0;
-            	break;
-            }
-        }
+		for(l = 0;l < 0x300;l+=3)
+		{
+			if(palette[l+0] == r && palette[l+1] == g && palette[l+2] == b)
+			{
+				pal = 0;
+				break;
+			}
+		}
 
-        if(pal == 1)
+		if(pal == 1)
 		{
 			if(n < 0x300)
 			{
@@ -57,58 +58,58 @@ int LMP3D_Texture_Palette_Get(LMP3D_Texture *texture,unsigned char *palette)
 
 				n +=3;
 				black = 1;
-				if(n >= 0x303) return n;
+				if(n >= 0x300) return n;
 			}
 		}
 
 
-    }
+	}
 
-    return n;
+	return n;
 }
 
 int LMP3D_Texture_Palette_Count_Get(LMP3D_Texture *texture)
 {
-    int i,l;
-    unsigned char *pixel = texture->palette;
-    unsigned char r,g,b;
-    int taille = texture->palsize;
-    int n = 0,pal;
+	int i,l;
+	unsigned char *pixel = texture->palette;
+	unsigned char r,g,b;
+	int taille = texture->palsize;
+	int n = 0,pal;
 
 	if(texture->palette == NULL) return 0;
 
 	unsigned char palette[0x300];
 
-    for(i = 0;i < 0x300;i++)
-        palette[i] = 0;
+	for(i = 0;i < 0x300;i++)
+		palette[i] = 0;
 
-    for(i = 0;i < taille;i += 3)
-    {
-    	r = pixel[i+0];
-    	g = pixel[i+1];
-    	b = pixel[i+2];
+	for(i = 0;i < taille;i += 3)
+	{
+		r = pixel[i+0];
+		g = pixel[i+1];
+		b = pixel[i+2];
 
 
 		pal = 1;
-        for(l = 0;l < 0x300;l+=3)
-        {
-            if(palette[l+0] == r && palette[l+1] == g && palette[l+2] == b)
-            {
-            	pal = 0;
-            	break;
-            }
-        }
+		for(l = 0;l < 0x300;l+=3)
+		{
+			if(palette[l+0] == r && palette[l+1] == g && palette[l+2] == b)
+			{
+				pal = 0;
+				break;
+			}
+		}
 
-        if(pal == 1)
+		if(pal == 1)
 		{
 			palette[n+0] = r;
 			palette[n+1] = g;
 			palette[n+2] = b;
 			n++;
 		}
-    }
+	}
 
-    return n;
+	return n;
 }
 
 int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
@@ -181,7 +182,7 @@ int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
 		return 1;
 	}
 
-	if( (texture->format == LMP3D_FORMAT_8BPP) && (psmfinal == LMP3D_FORMAT_BGRA1555 ) )
+	if( (texture->format == LMP3D_FORMAT_8BPP) && (psmfinal == LMP3D_FORMAT_RGBA1555 ) )
 	{
 		n = texture->w*texture->h;
 		spixel = cpixel = pixel = malloc(n<<1);
@@ -193,12 +194,24 @@ int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
 			id = texture->pixel[i];
 			id = id*3;
 
-			r = texture->palette[id+0]>>3;
-			g = texture->palette[id+1]>>3;
-			b = texture->palette[id+2]>>3;
+			r = texture->palette[id+0];
+			g = texture->palette[id+1];
+			b = texture->palette[id+2];
 
-			spixel[l] = (b +(g<<5) + (r<<10)) ;
-			spixel[l] = LMP3D_Convert_Pixel(spixel[l]);
+
+			if( (r == 0xFF) && (g == 0) && (b == 0xFF)  )
+			{
+				spixel[l] = 0;
+			}
+			else
+			{
+				r = r>>3;
+				g = g>>3;
+				b = b>>3;
+
+				spixel[l] = (r +(g<<5) + (b<<10))|0x8000;
+			}
+
 			l++;
 		}
 
@@ -230,10 +243,10 @@ int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
 			b = texture->pixel[l+2];
 
 			for(j = 0;j < ncolor;j+=3)
-            {
-                if(palette[j+0] == r && palette[j+1] == g && palette[j+2] == b)
-                    break;
-            }
+			{
+				if(palette[j+0] == r && palette[j+1] == g && palette[j+2] == b)
+					break;
+			}
 
 			cpixel[i] = j/3;
 			l += texture->pixelsize;
@@ -327,11 +340,9 @@ int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
 	}
 
 	if(pixel == NULL) return 0;
-
 	free(texture->pixel);
 	texture->pixel = pixel;
 	texture->format = psmfinal;
-
 	LMP3D_Texture_Format_Init(texture);
 
 	LMP3D_Texture_Format_Convert(texture);
@@ -344,15 +355,13 @@ int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
 int LMP3D_Texture_Convert_Pal(LMP3D_Texture *texture,int psmfinal)
 {
 	int i,l=0,n;//,ncolor = 0;
-	void *pixel = NULL;
 	unsigned char r,g,b;
-	unsigned short *spixel;
+	unsigned short spixel[0x200];
+	unsigned short upixel;
 
 	if(texture->palette == NULL) return 0;
 
 	n = LMP3D_Texture_Palette_Count_Get(texture);
-
-	spixel = pixel = malloc(n<<1);
 
 	if(psmfinal == LMP3D_FORMAT_RGBA1555 || psmfinal == LMP3D_FORMAT_RGB555 || psmfinal == LMP3D_FORMAT_RGB565 )
 	{
@@ -371,24 +380,23 @@ int LMP3D_Texture_Convert_Pal(LMP3D_Texture *texture,int psmfinal)
 		{
 			for(i = 0;i < n;i++)
 			{
+
 				r = texture->palette[l+0];
 				g = texture->palette[l+1];
 				b = texture->palette[l+2];
-				r = r>>3;
-				g = g>>3;
-				b = b>>3;
-/*
-				if(r == 255 && g == 0 && b == 255)
+
+				if( (r == 0xFF) && (g == 0) && (b == 0xFF)  )
 				{
-					spixel[i] = 0x0;
-				}else
+					spixel[l] = 0;
+				}
+				else
 				{
 					r = r>>3;
 					g = g>>3;
-					b = b>>3;*/
-					spixel[i] = (r +(g<<5) + (b<<10) );
-				//}
-				spixel[i] = LMP3D_Convert_Pixel(spixel[i]);
+					b = b>>3;
+
+					spixel[i] = (r +(g<<5) + (b<<10)) | 0x8000;
+				}
 
 				l += 3;
 			}
@@ -413,22 +421,34 @@ int LMP3D_Texture_Convert_Pal(LMP3D_Texture *texture,int psmfinal)
 		{
 			for(i = 0;i < n;i++)
 			{
-				r = texture->palette[l+2]>>3;
-				g = texture->palette[l+1]>>3;
-				b = texture->palette[l+0]>>3;
+				r = texture->palette[l+2];
+				g = texture->palette[l+1];
+				b = texture->palette[l+0];
 
-				spixel[i] = (r +(g<<5) + (b<<10) );
-				spixel[i] = LMP3D_Convert_Pixel(spixel[i]);
+				if( (r == 0xFF) && (g == 0) && (b == 0xFF)  )
+				{
+					spixel[l] = 0;
+				}
+				else
+				{
+					r = r>>3;
+					g = g>>3;
+					b = b>>3;
+
+					spixel[i] = (r +(g<<5) + (b<<10)) | 0x8000;
+				}
 
 				l += 3;
 			}
 		}
 
 	}
-
-	free(texture->palette);
-	texture->palette = pixel;
-	texture->palsize =n<<1;
+	memcpy(texture->palette,spixel,0x200);
+	//texture->palsize =n<<1;
+	if(n <=32)
+		texture->palsize = 32;
+	else
+		texture->palsize = 512;
 
 	return 1;
 
@@ -437,6 +457,7 @@ int LMP3D_Texture_Convert_Pal(LMP3D_Texture *texture,int psmfinal)
 void LMP3D_Texture_Format_Init(LMP3D_Texture *texture)
 {
 	int format = texture->format&0x7F;
+
 
 	switch (format)
 	{
@@ -467,6 +488,12 @@ void LMP3D_Texture_Format_Init(LMP3D_Texture *texture)
 
 
 		case LMP3D_FORMAT_RGB555:
+			texture->pixelsize = 2;
+			texture->bpp = 16;
+			texture->size = (texture->w*texture->h)<<1;
+		break;
+
+		case LMP3D_FORMAT_RGB565:
 			texture->pixelsize = 2;
 			texture->bpp = 16;
 			texture->size = (texture->w*texture->h)<<1;
@@ -509,21 +536,21 @@ void LMP3D_Texture_Format_Init(LMP3D_Texture *texture)
 
 void LMP3D_Texture_Free(LMP3D_Texture *image)
 {
-    if(image->pixel != NULL) free(image->pixel);
-    if(image->palette != NULL) free(image->palette);
-    if(image != NULL) free(image);
+	if(image->pixel != NULL) free(image->pixel);
+	if(image->palette != NULL) free(image->palette);
+	if(image != NULL) free(image);
 
-    image->pixel = NULL;
-    image->palette = NULL;
-    image = NULL;
+	image->pixel = NULL;
+	image->palette = NULL;
+	image = NULL;
 }
 
 void LMP3D_Texture_Free_Pixel(LMP3D_Texture *image)
 {
-    if(image->pixel != NULL) free(image->pixel);
-    if(image->palette != NULL) free(image->palette);
+	if(image->pixel != NULL) free(image->pixel);
+	if(image->palette != NULL) free(image->palette);
 
-    image->pixel = NULL;
-    image->palette = NULL;
+	image->pixel = NULL;
+	image->palette = NULL;
 }
 

@@ -57,16 +57,16 @@ void LMP3D_Convert_Model(LMP3D_Model *model)
 		h = h>>8;
 		for(i = 0;i < model->nf*3;i++)
 		{
-
-			tv = i*3;
-			l = index[i]*3;
 			l2 = index[i]<<1;
+			l = l2+index[i];
 
 			v[tv + 0] = (iv[l+0]);
 			v[tv + 1] = (iv[l+1]);
 			v[tv + 2] = (iv[l+2]);
+			tv += 3;
 
-			vt[i]  = ( ( (ivt[l2+0])>>(7+w))&0x00FF ) | ( (ivt[l2+1]<<h)&0xFF00 ) ;
+			vt[i]  = ( ( (ivt[l2+0])>>(7+w))&0x00FF ) | ( (ivt[l2+1]<<h)&0xFF00 );
+
 			j++;
 
 			if(j == 1)
@@ -84,15 +84,14 @@ void LMP3D_Convert_Model(LMP3D_Model *model)
 		h--;
 		for(i = 0;i < model->nf*3;i++)
 		{
-			tv = i*3;
 			l = index[i]*3;
 			l2 = index[i]*2;
 
 			v[tv + 0] = (short)(mv[l+0]*16.0f);
 			v[tv + 1] = (short)(mv[l+1]*16.0f);
 			v[tv + 2] = (short)(mv[l+2]*16.0f);
+			tv += 3;
 
-			//printf("%d %d\n",(int)(model->vt[l2+0]*255.0f),(( int)(model->vt[l2+1]*255.0f)));
 			vt[i]  = (int)(mvt[l2+0]*w) | ( ((int)(mvt[l2+1]*h))<<8);
 			j++;
 
@@ -117,6 +116,7 @@ void LMP3D_Convert_Model(LMP3D_Model *model)
 
 	model->vn = NULL;
 	model->index = NULL;
+
 
 	model->size = (model->nf*3*2) + (model->nf*3*4);
 }

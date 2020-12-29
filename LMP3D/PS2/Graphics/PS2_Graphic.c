@@ -19,13 +19,42 @@
 
 */
 
+/*
+GRAPH_MODE graph_mode[22] =
+{
+
+	{   0,   0,	0,	0,	0 }, // AUTO
+	{ 652,  26, 2560,  224, 0x02 }, // NTSC-NI
+	{ 680,  37, 2560,  256, 0x03 }, // PAL-NI
+	{ 232,  35, 1440,  480, 0x50 }, // 480P
+	{ 320,  64, 1312,  576, 0x53 }, // 576P only in bios>=220
+	{ 420,  40, 1280,  720, 0x52 }, // 720P
+	{ 300, 120, 1920,  540, 0x51 }, // 1080I
+	{ 280,  18, 1280,  480, 0x1A }, // VGA   640x480@60
+	{ 330,  18, 1280,  480, 0x1B }, // VGA   640x480@72
+	{ 360,  18, 1280,  480, 0x1C }, // VGA   640x480@75
+	{ 260,  18, 1280,  480, 0x1D }, // VGA   640x480@85
+	{ 450,  25, 1600,  600, 0x2A }, // VGA   800x600@56
+	{ 465,  25, 1600,  600, 0x2B }, // VGA   800x600@60
+	{ 465,  25, 1600,  600, 0x2C }, // VGA   800x600@72
+	{ 510,  25, 1600,  600, 0x2D }, // VGA   800x600@75
+	{ 500,  25, 1600,  600, 0x2E }, // VGA   800x600@85
+	{ 580,  30, 2048,  768, 0x3B }, // VGA  1024x768@60
+	{ 266,  30, 1024,  768, 0x3C }, // VGA  1024x768@70
+	{ 260,  30, 1024,  768, 0x3D }, // VGA  1024x768@75
+	{ 290,  30, 1024,  768, 0x3E }, // VGA  1024x768@85
+	{ 350,  40, 1280, 1024, 0x4A }, // VGA 1280x1024@60
+	{ 350,  40, 1280, 1024, 0x4B }, // VGA 1280x1024@75
+
+};
+*/
 void PS2_Graphic_Init(int width, int height, int psm,int fbaddr)
 {
 	// Reset GS.
 	RW_REGISTER_U64(GS_CSR) = (unsigned long)1<<9;
 
 	// Clear GS CSR.
-	RW_REGISTER_U64(GS_CSR) = 0;
+	RW_REGISTER_U64(GS_CSR) = 0x10;
 
 
 	// Unmask GS VSYNC Interrupt.
@@ -41,10 +70,15 @@ void PS2_Graphic_Init(int width, int height, int psm,int fbaddr)
 	RW_REGISTER_U64(GS_BGCOLOR) = GS_SET_BGCOLOR(0,0,0);
 
 	// Set the screen up
-	RW_REGISTER_U64(GS_DISPLAY1) = GS_SET_DISPLAYX(652,26,3,0,(2560-1),(height-1));
-	RW_REGISTER_U64(GS_DISPLAY2) = GS_SET_DISPLAYX(652,26,3,0,(2560-1),(height-1));
 
+	RW_REGISTER_U64(GS_DISPLAY1) = GS_SET_DISPLAYX(652,26,3,0,(2560-1),((height*1)-1));
+	RW_REGISTER_U64(GS_DISPLAY2) = GS_SET_DISPLAYX(652,26,3,0,(2560-1),((height*1)-1));
 
+/*
+	RW_REGISTER_U64(GS_DISPLAY1) = GS_SET_DISPLAYX(300,120,2,0,(1920-1),(height-1));
+	RW_REGISTER_U64(GS_DISPLAY2) = GS_SET_DISPLAYX(300,120,2,0,(1920-1),(height-1));
+
+*/
 	RW_REGISTER_U64(GS_DISPFB1) = GS_SET_DISPFB1(fbaddr>>11,width>>6,psm,0,0);
 	RW_REGISTER_U64(GS_DISPFB2) = GS_SET_DISPFB2(fbaddr>>11,width>>6,psm,0,0);
 
@@ -71,7 +105,7 @@ void PS2_Graphic_Setup(LMP3D_Buffer buffer)
 	gif[i++] = 0x4E;
 
 
-	gif[i++] = GS_SET_XYOFFSET((2048-320)<<4,(2048-128)<<4);
+	gif[i++] = GS_SET_XYOFFSET((2048-(buffer.width>>1))<<4,(2048-(buffer.height>>1))<<4);
 	gif[i++] = 0x18;
 
 

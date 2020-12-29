@@ -51,8 +51,8 @@
 		((unsigned long)mmag  <<  5 ) |	\
 		((unsigned long)mmin  <<  6 ) |	\
 		((unsigned long)mtba  <<  9 ) |	\
-		((unsigned long)l     << 19 ) |	\
-		((unsigned long)k     << 32 )
+		((unsigned long)l	 << 19 ) |	\
+		((unsigned long)k	 << 32 )
 
 #define GS_SET_TEX2(psm,cbp,cpsm,csm,csa,cld) \
 		((unsigned long)psm  << 20 ) |	\
@@ -126,7 +126,7 @@
 		((u64)zmsk  << 32 )
 
 #define GS_SET_PRMODECONT(ac) \
-		((u64)ac    <<  0 )
+		((u64)ac	<<  0 )
 
 #define GS_SET_DISPFBX(address, width, psm, x, y) \
 		(u64)((address	) & 0x000001FF) <<  0 | \
@@ -194,7 +194,7 @@
 
 
 #define GS_SET_UV(U,V) \
-		((u64)U  <<    0 ) | \
+		((u64)U  <<	0 ) | \
 		((u64)V  <<   16 )
 
 #define GS_SET_XYZ(X,Y,Z) \
@@ -203,11 +203,11 @@
 		((u64)Z  <<   32 )
 
 #define GS_SET_ST(S,T) \
-		((u64)S  <<    0 ) | \
+		((u64)S  <<	0 ) | \
 		((u64)T  <<   32 )
 
 #define GS_SET_UV(U,V) \
-		((u64)U  <<    0 ) | \
+		((u64)U  <<	0 ) | \
 		((u64)V  <<   16 )
 
 
@@ -552,8 +552,11 @@
 #define DRAW_DISABLE 	0
 #define DRAW_ENABLE 	1
 
+#define ATEST_KEEP 	0
+#define ATEST_KEEP_FB_ONLY 	1
+#define ATEST_KEEP_ZB_ONLY 	2
+#define ATEST_KEEP_RGB_ONLY 3
 
-#define ATEST_KEEP_FRAMEBUFFER 	2
 #define ZTEST_METHOD_ALLPASS 	1
 
 #define ATEST_METHOD_EQUAL 	4
@@ -565,18 +568,18 @@
 #define DMA_CALL_TAG(Addr, iQuadCount)	((((u64)(Addr)) << 32) | (0x5 << 28) | iQuadCount)
 #define DMA_RET_TAG(iQuadCount)					((((u64)(0x6)) << 28) | iQuadCount)
 #define DMA_REF_TAG(ADDR, COUNT) ((((unsigned long)ADDR) << 32) | (0x3 << 28) | COUNT )
-#define DMA_CNT_TAG(COUNT)       (((unsigned long)(0x1) << 28) | COUNT)
-#define DMA_END_TAG(COUNT)       (((unsigned long)(0x7) << 28) | COUNT)
+#define DMA_CNT_TAG(COUNT)	   (((unsigned long)(0x1) << 28) | COUNT)
+#define DMA_END_TAG(COUNT)	   (((unsigned long)(0x7) << 28) | COUNT)
 #define DMA_CHCR(DIR,MOD,ASP,TTE,TIE,STR) ( (((u32)DIR)<<0) | (((u32)MOD)<<2) | \
-                                            (((u32)ASP)<<4) | (((u32)TTE)<<6) | \
-                                            (((u32)TIE)<<7) | (((u32)STR)<<8) )
+											(((u32)ASP)<<4) | (((u32)TTE)<<6) | \
+											(((u32)TIE)<<7) | (((u32)STR)<<8) )
 
 //VIF
 #define VIF_NOP			0x00
 #define VIF_STCYL		0x01
 #define VIF_OFFSET		0x02
 #define VIF_BASE		0x03
-#define VIF_ITOP        0x04
+#define VIF_ITOP		0x04
 #define VIF_STMOD		0x05
 #define VIF_MSKPATH3	0x06
 #define VIF_MARK		0x07
@@ -623,8 +626,8 @@
 // Unpack mode defines
 ///////////////////////////////////////////////////////////////////////////////
 
-#define VIF_MODE_NORMAL     0x00
-#define VIF_MODE_OFFSET     0x01
+#define VIF_MODE_NORMAL	 0x00
+#define VIF_MODE_OFFSET	 0x01
 #define VIF_MODE_DIFFERENCE 0x02
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -632,8 +635,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define VIF_CODE(CMD,NUM,IMMEDIATE) ((((unsigned int)(CMD))<<24) | \
-                                     (((unsigned int)(NUM))<<16) | \
-                                      ((unsigned int)(IMMEDIATE)))
+									 (((unsigned int)(NUM))<<16) | \
+									  ((unsigned int)(IMMEDIATE)))
 
 #define VIF_STAT_PROGRAM_RUNNING  0x04
 #define VIF_STAT_UNPACKING		  0x03
@@ -642,17 +645,17 @@
 //Structure
 typedef struct
 {
-    int calculation,max_level;
-    int mag_filter,min_filter,mipmap_select;
-    int l,k;
+	int calculation,max_level;
+	int mag_filter,min_filter,mipmap_select;
+	int l,k;
 
 }PS2_lod;
 
 typedef struct
 {
-    int storage_mode,start;
-    int psm;
-    int load_method,address;
+	int storage_mode,start;
+	int psm;
+	int load_method,address;
 
 }PS2_clut;
 
@@ -666,6 +669,7 @@ void PS2_Graphic_Setup(LMP3D_Buffer buffer);
 void PS2_Graphic_Init(int width, int height, int psm,int fbaddr);
 void PS2_Init_Pad();
 void PS2_VU_Draw(float* matrix,LMP3D_Model *model);
+void PS2_VU_Load(LMP3D_Model *model);
 
 
 #define CACHED_SEG(x)   ( (void*) ( (unsigned int)(x) | (0xC0000000) ) )

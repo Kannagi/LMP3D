@@ -4,11 +4,12 @@
 
 #include "LMP3D/LMP3D.h"
 
+
 typedef struct
 {
 	int mode,i,endian,size;
-    FILE *file;
-    void *buffer;
+	FILE *file;
+	void *buffer;
 
 }LMP3D_FILE;
 
@@ -63,7 +64,7 @@ int LMP3D_fseek(void *file,int offset,int whence)
 		if(whence == SEEK_END)
 			internalfile->i = internalfile->size-offset;
 
-		//printf("seek %d %d    %d %d %d\n",internalfile->i,offset ,SEEK_SET ,SEEK_CUR ,SEEK_END );
+		//printf("seek %d %d	%d %d %d\n",internalfile->i,offset ,SEEK_SET ,SEEK_CUR ,SEEK_END );
 	}
 
 	return 0;

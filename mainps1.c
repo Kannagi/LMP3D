@@ -8,13 +8,13 @@
 #include "LMP3D/LMP3D.h"
 #include "LMP3D/PS1/PS1.h"
 
-//#include "DATA_ROM2.c"
+#include "DATAPS1.c"
 
 void game2(LMP3D_Buffer *buffer)
 {
 
 	unsigned int vram = LMP3D_VRAM_Get();
-
+	printf("Begin game\n----------------\n");
 	//--------------------------------
 	int fps = 0;
 	int i,vb;
@@ -40,36 +40,45 @@ void game2(LMP3D_Buffer *buffer)
 	LMP3D_Texture_Free_Pixel(texture);*/
 
 #else
+	LMP3D_TAR tar;
+	LMP3D_Tar(&tar,NULL,"zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,DATA_ROM_size);
+	//printf("%d\n",tar.offset);
+	model = LMP3D_Load_Model(NULL,tar.offset,DATA_ROM,tar.size);
 
-	model = LMP3D_Load_Model("ZACK.BCM",0,NULL,0);
+	//printf("%d\n",model->nf);
+	//model = LMP3D_Load_Model("ZACK.BCM",0,NULL,0);
 
 	//---------------------
+	/*
 	texture = LMP3D_Load_Texture("adell.PCX",0,NULL,0);
 	LMP3D_Texture_Upload(texture);
 	LMP3D_Texture_Free_Pixel(texture);
+*/
 
 	//---------------------
-	texture2 = LMP3D_Load_Texture("FONT.PCX",0,NULL,0);
+	LMP3D_Tar(&tar,NULL,"font.pcx",LMP3D_TAR_OFFSET,DATA_ROM,DATA_ROM_size);
+	texture2 = LMP3D_Load_Texture(NULL,tar.offset,DATA_ROM,tar.size);
 	LMP3D_Texture_Upload(texture2);
 	LMP3D_Texture_Free_Pixel(texture2);
 
 	//---------------------
+	/*
 	texture3 = LMP3D_Load_Texture("TILE.PCX",0,NULL,0);
 	LMP3D_Texture_Upload(texture3);
-	LMP3D_Texture_Free_Pixel(texture3);
+	LMP3D_Texture_Free_Pixel(texture3);*/
 
 #endif
 
-	LMP3D_TileMap *tilemap = LMP3D_Load_TileMap("OUT.KTM",0,NULL,0);
-	tilemap->texture = texture3;
+	//LMP3D_TileMap *tilemap = LMP3D_Load_TileMap("OUT.KTM",0,NULL,0);
+	//tilemap->texture = texture3;
 
 	char info[100];
 	char str[100];
 
-
 	model->iposition = LMP3D_Type_Vector3i(0,80,400);
 	model->irotate = LMP3D_Type_Vector3s(0x400,0,0);
 	model->iscale = LMP3D_Type_Vector3s(1<<12,1<<12,1<<12);
+
 
 	LMP3D_Sprite sprite[2];
 
@@ -91,13 +100,18 @@ void game2(LMP3D_Buffer *buffer)
 	LMP3D_Anim anim;
 
 	LMP3D_Anim_Init(&anim);
+	str[0] = 0;
 
 
 	while(1)
 	{
 		model->irotate.y += 0x18;
 		LMP3D_Event_Update(&event);
-		LMP3D_Camera_Perspective(camera);
+		//LMP3D_Camera_Perspective(camera);
+		PS1_GTE_Perspective_Set();
+
+		//if(event.key[Button_Up] == LMP3D_KEY_DOWNW) model->iposition.z += 16;
+		//if(event.key[Button_Up] == LMP3D_KEY_DOWNW)  model->irotate.y += 0x18;
 /*
 		if(event.key[Button_Up] == LMP3D_KEY_DOWNW) sposition.y -= 8;
 		if(event.key[Button_Down] == LMP3D_KEY_DOWNW) sposition.y += 8;
@@ -106,16 +120,16 @@ void game2(LMP3D_Buffer *buffer)
 */
 		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW) model->iposition.z += 16;
 		if(event.key[Button_Circle] == LMP3D_KEY_DOWNW) model->iposition.z -= 16;
-
+/*
 		if(event.key[Button_Up] == LMP3D_KEY_DOWNW) tilemap->position.y -= 8;
 		if(event.key[Button_Down] == LMP3D_KEY_DOWNW) tilemap->position.y += 8;
 		if(event.key[Button_Right] == LMP3D_KEY_DOWNW) tilemap->position.x += 8;
 		if(event.key[Button_Left] == LMP3D_KEY_DOWNW) tilemap->position.x -= 8;
-
+*/
 		if(fps >= 60)
 		{
 			LMP3D_VRAM_Info(info);
-			sprintf(str,"VBlank %d/56251\n%s",vb,info); //0X10800 max vb
+			sprintf(str,"VBlank %d/59251\n%s",vb,info); //0X10800 max vb
 
 			fps = 0;
 		}
@@ -127,15 +141,18 @@ void game2(LMP3D_Buffer *buffer)
 /*
 		LMP3D_Draw_TileMap(tilemap);
 */
-		sprite[1].rect.x = 32*anim.i;
-		LMP3D_Anim_Play(&anim,3,6);
+		//sprite[1].rect.x = 32*anim.i;
+		//LMP3D_Anim_Play(&anim,3,6);
 
-		LMP3D_Draw_Sprite_Array(sprite,2);
+		//LMP3D_Draw_Sprite_Array(sprite,2);
 
-		LMP3D_Model_Draw(model);
+		//printf("%d\n",model->nf);
+
+		model->nf = 1307;
+		//LMP3D_Model_Draw(model);
 
 		LMP3D_Texture_Setup(texture2);
-		LMP3D_Draw_Text(8,8,str);
+		//LMP3D_Draw_Text(8,8,str);
 
 		LMP3D_FlipBuffer(buffer);
 

@@ -3,8 +3,8 @@
 
 typedef struct
 {
-    unsigned char *buffer;
-    int size,type,offset;
+	unsigned char *buffer;
+	int size,type,offset;
 }LMP3D_TAR;
 
 void LMP3D_Tar(LMP3D_TAR *tar,char *pathtar,char *filename,int option,void *buffer,int size);

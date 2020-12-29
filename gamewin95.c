@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+#include <stdint.h>
 
 #include "LMP3D/LMP3D.h"
 void GsDrawSpriteTest(int posx,int posy);
@@ -13,7 +13,39 @@ extern unsigned char *DATA_ROM;
 extern unsigned int size_DATA_ROM;
 */
 
+void testfloat()
+{
+	int i;
+	float fl = 152.5f;
+	unsigned int ufl = *((unsigned int*)&fl);
+	int mantisse = ufl&0x7FFFFF;
+	int exposant = ((ufl>>23)&0xFF)-127;
+	int signe	= ufl>>31;
 
+	printf("nombre : %f %x\n", fl,ufl);
+	printf("signe : %d\n", signe);
+	printf("Exposant : %d\n", exposant);
+	printf("Mantisse : %x\n", mantisse);
+
+	if(signe == 0) signe = 1;
+	else signe = -1;
+
+	unsigned long long e1 = 1<<exposant;
+	unsigned long long e = e1;
+
+	int mask = 0x400000;
+	for(i = 1;i < 24;i++)
+	{
+		if(mantisse&mask)
+			e  += e1>>i;
+
+		printf("%d : %d\n",i,e);
+
+		mask = mask>>1;
+	}
+	printf("result : %ld.%d  %d\n", e,0,ufl>>23);
+
+}
 
 void intersect_segment(float A1x,float A1y,float A2x,float A2y,float B1x,float B1y,float B2x,float B2y,float *itx,float *ity);
 void LMP3D_Draw_Triangles_Fill(int *tri,int ntri,int color);
@@ -24,6 +56,7 @@ void LMP3D_SelectTexture_WIN95(LMP3D_Texture *texture);
 void mainsoft(LMP3D_Buffer *buffer)
 {
 	LMP3D_TAR tar;
+
 
 	LMP3D_Event event;
 
@@ -42,7 +75,10 @@ void mainsoft(LMP3D_Buffer *buffer)
 	p.z = 0;
 
 	int i,number = 1,tmpx,tmpy;
-/*
+
+
+
+
 	LMP3D_Tar(&tar,"DATA","font.png",LMP3D_TAR_OFFSET,NULL,0);
 	LMP3D_Texture *texture = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
 	LMP3D_Texture_Convert(texture,LMP3D_FORMAT_BGR565);
@@ -51,38 +87,25 @@ void mainsoft(LMP3D_Buffer *buffer)
 	LMP3D_Texture *texture2 = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
 	LMP3D_Texture_Convert(texture2,LMP3D_FORMAT_BGR565);
 
-
-	LMP3D_SelectTexture_WIN95(texture);
-*/
 	int tri[2*3];
 
 	tri[0] = 16;
-	tri[1] = 42;
+	tri[1] = 16;
 
-	tri[2] = 240;
+	tri[2] = 16;
 	tri[3] = 220;
 
-	tri[4] = 16;
-	tri[5] = 220;
+	tri[4] = 220;
+	tri[5] = 160;
 
-
-	/**/
-	tri[0] = 100;
-	tri[1] = 100;
-
-	tri[2] = 132;
-	tri[3] = 120;
-
-	tri[4] = 100;
-	tri[5] = 132;
 
 	int vt[2*3];
 
-	int chg = 0;
+	int chg = 1;
 
 
-	int ytmp = 120;
-	int xtmp = 100;
+	int ytmp = 220;
+	int xtmp = 16;
 
 
 	int line[4];
@@ -100,15 +123,15 @@ void mainsoft(LMP3D_Buffer *buffer)
 	line2[2] = 10;
 	line2[3] = 10;
 
-    while(event.exit == 0)
-    {
+	while(event.exit == 0)
+	{
 		LMP3D_Event_Update(&event);
 
 		LMP3D_Clear();
 
 
-		if(event.key[Button_Cross] == LMP3D_KEY_DOWN) number += 20;
-		if(event.key[Button_Circle] == LMP3D_KEY_DOWN) number -= 20;
+		if(event.key[Button_Cross] == LMP3D_KEY_DOWNW) number += 20;
+		if(event.key[Button_Circle] == LMP3D_KEY_DOWNW) number -= 20;
 /*
 		if(event.key[Button_Up] == LMP3D_KEY_DOWNW) number +=5;
 		if(event.key[Button_Down] == LMP3D_KEY_DOWNW) number -=5;
@@ -126,6 +149,13 @@ void mainsoft(LMP3D_Buffer *buffer)
 		if(event.key['o'] == LMP3D_KEY_DOWNW) tri[1] -=2;
 		if(event.key['l'] == LMP3D_KEY_DOWNW) tri[1] +=2;
 
+
+		if(event.key['f'] == LMP3D_KEY_DOWNW) tri[4] -=2;
+		if(event.key['h'] == LMP3D_KEY_DOWNW) tri[4] +=2;
+
+		if(event.key['t'] == LMP3D_KEY_DOWNW) tri[5] -=2;
+		if(event.key['g'] == LMP3D_KEY_DOWNW) tri[5] +=2;
+
 		tri[2] = xtmp;
 		tri[3] = ytmp;
 
@@ -133,25 +163,25 @@ void mainsoft(LMP3D_Buffer *buffer)
 		if(event.key['a'] == LMP3D_KEY_DOWN) chg =!chg;
 		//if(event.key[Button_Start] == LMP3D_KEY_DOWN) model->test = 0;
 
-
-		LMP3D_Draw_Triangles_Fill(tri,12,0);
-
 		//GsDrawSpriteTest(0,0);
+
+
+
+
 /*
+
 		if(chg == 0)
 		{
-			for(i = 0;i < number;i++)
-				LMP3D_Draw_Triangles_Fill(tri,12,0);
+			LMP3D_Draw_Triangles_Fill(tri,number,0);
 		}else
 		{
-			for(i = 0;i < number;i++)
-				LMP3D_Draw_Triangles_Texture(tri,12,texture2,vt);
+			LMP3D_Draw_Triangles_Texture(tri,number,texture2,vt);
 		}
 */
-
-
-
+		LMP3D_Draw_Triangles_Fill_Float(tri,number,0);
 /*
+
+
 		float fx=0,fy=0;
 		intersect_segment(line[0],line[1],line[2],line[3],tri[0],tri[1],tri[2],tri[3],&fx,&fy);
 
@@ -173,11 +203,11 @@ void mainsoft(LMP3D_Buffer *buffer)
 		if(i < 0) i = 0;
 		if(i > 0xEFFE) i = 0;
 
-		//pixels[i>>1]  = 0xFF00FF00;
+		pixels[i>>1]  = 0xFF00FF00;
 
-
+/*
 		float px,py,p,c,d,pz,z;
-*/
+
 		/*
 		tri
 		n try
@@ -195,7 +225,7 @@ void mainsoft(LMP3D_Buffer *buffer)
 
 		*/
 
-		/*
+/*
 		px = line[2]-line[0];
 		py = line[3]-line[1];
 		pz = 5-2;
@@ -268,15 +298,21 @@ void mainsoft(LMP3D_Buffer *buffer)
 */
 		LMP3D_Camera_Ortho2D();
 
-		//LMP3D_Texture_Setup(texture);
+		LMP3D_SelectTexture_WIN95(texture);
 
-		//sprintf(string,"ms :%.2d\nnum : %.3d",vblank,number*12);
+		//sprintf(string,"ms :%.2d\nnum : %.3d",vblank,number);
 		//bitmap_font2(string,8,8);
 
 		//printf("buf %x %x %x\n",buffer->faddress1,buffer->faddress2,buffer->zaddress);
 
 		LMP3D_FlipBuffer(buffer);
+		uint64_t start2 = rdtsc();
 		vblank = LMP3D_VBlank();
+
+
+		uint64_t end2 = rdtsc()-start2;
+
+	//printf("%d\n",end2);
 
 	}
 
@@ -314,17 +350,17 @@ void intersect_segment(float A1x,float A1y,float A2x,float A2y,float B1x,float B
 	//-------------------------------
 
 	Vector2 AO,AP;
-    AP.x = B1x - A1x;
-    AP.y = B1y - A1y;
-    AO.x = B2x - A1x;
-    AO.y = B2y - A1y;
+	AP.x = B1x - A1x;
+	AP.y = B1y - A1y;
+	AO.x = B2x - A1x;
+	AO.y = B2y - A1y;
 
 	if ((dif1x*AP.y - dif1y*AP.x)*(dif1x*AO.y - dif1y*AO.x) > 0) return;
 
 	//AP.x = -AP.x;
-    //AP.y = -AP.y;
-    AO.x = A2x - B1x;
-    AO.y = A2y - B1y;
+	//AP.y = -AP.y;
+	AO.x = A2x - B1x;
+	AO.y = A2y - B1y;
 
 	if ((dif2x*-AP.y - dif2y*-AP.x)*(dif2x*AO.y - dif2y*AO.x) > 0) return;
 
@@ -333,7 +369,12 @@ void intersect_segment(float A1x,float A1y,float A2x,float A2y,float B1x,float B
 	float Sy = (B2v-A2v)/(A1v-B1v);
 	float Sx = (B1v*Sy)+B2v;
 
-
+/*
+	if(Sx < A1x) return;
+	if(Sx > A2x) return;
+	if(Sy < A1y) return;
+	if(Sy > A2y) return;
+*/
 	*itx = Sx;
 	*ity = Sy;
 /*
@@ -353,3 +394,23 @@ void intersect_segment(float A1x,float A1y,float A2x,float A2y,float B1x,float B
 	*ity = A1y+(intersect);*/
 }
 
+/*
+order1 = A-B >=0
+order2 = B-C >= 0
+order3 = A-C
+
+if(order1 >= 0)
+{
+	if(order2 < 0)
+		change B <=> C
+}else
+{
+	if(order2 >= 0)
+		change A <=> B
+		if(order3 < 0)
+			change A <=> C
+	else
+}
+
+
+*/

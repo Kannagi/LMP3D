@@ -68,7 +68,7 @@ void PS1_VBlank_handler();
 //Init Console or other
 void LMP3D_Init()
 {
-	PSX_InitEx(PSX_INIT_CD);
+	//PSX_InitEx(PSX_INIT_CD);
 
 	GsInit();
 	GsClearMem();

@@ -100,8 +100,6 @@ void LMP3D_Draw_Sprite(LMP3D_Texture *texture,Vector2i position,Recti *rectin,in
 	va[6] = px+w-flagw;
 	va[7] = py-flagh;
 
-	glLoadIdentity();
-
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
@@ -206,8 +204,6 @@ void LMP3D_Draw_Text(int ipx,int ipy,char *text)
 		x += fw;
 	}
 
-	glLoadIdentity();
-
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
@@ -227,17 +223,21 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 	const float fpixelh = 1.0f/240.0f;
 
 	int i,flag,l = 0;
-	float va[8000];
-	float vt[8000];
+	float va[16];
+	float vt[16];
 
-	if(n > 1000) n = 1000;
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+	glVertexPointer(2,GL_FLOAT,0,va);
+	glTexCoordPointer(2,GL_FLOAT,0,vt);
 
 	for(i =0;i < n;i++)
 	{
+		sprite[i].flag &= 0x7F;
 		flag = sprite[i].flag;
 		if(flag & LMP3D_NODRAW) continue;
-
-		glBindTexture(GL_TEXTURE_2D,sprite[0].texture->address);
 
 		Recti rect = sprite[i].rect;
 		Vector2i position = sprite[i].position;
@@ -257,16 +257,23 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 		if(position.x+rect.w <= 0) continue;
 		if(position.y+rect.h <= 0) continue;
 
+		sprite[i].flag |= 0x80;
+
 		float px = -1.0f+(fpixelw*position.x);
 		float py = +1.0f-(fpixelh*position.y);
 
-		LMP3D_Texture *texture = sprite[i].texture;
-
 		float w = rect.w;
 		float h = rect.h;
+		float tfpixelw = 0;
+		float tfpixelh = 0;
 
-		float tfpixelw = 1.0f/texture->w;
-		float tfpixelh = 1.0f/texture->h;
+		LMP3D_Texture *texture = sprite[i].texture;
+		if(texture != NULL)
+		{
+			glBindTexture(GL_TEXTURE_2D,texture->address);
+			tfpixelw = 1.0f/texture->w;
+			tfpixelh = 1.0f/texture->h;
+		}
 
 		if(LMP3D_mode2D & 1)
 		{
@@ -277,17 +284,20 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 		float rectx = tfpixelw*rect.x;
 		float recty = tfpixelh*rect.y;
 
-		vt[l+0] = rectx;
-		vt[l+1] = recty;
+		float rectw = tfpixelw*w;
+		float recth = tfpixelh*h;
 
-		vt[l+2] = rectx;
-		vt[l+3] = recty+(tfpixelh*h);
+		vt[0] = rectx;
+		vt[1] = recty;
 
-		vt[l+4] = rectx+(tfpixelw*w);
-		vt[l+5] = recty+(tfpixelh*h);
+		vt[2] = rectx;
+		vt[3] = recty+recth;
 
-		vt[l+6] = rectx+(tfpixelw*w);
-		vt[l+7] = recty;
+		vt[4] = rectx+rectw;
+		vt[5] = recty+recth;
+
+		vt[6] = rectx+rectw;
+		vt[7] = recty;
 
 		w = fpixelw*w;
 		h = fpixelh*h;
@@ -296,29 +306,21 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 		if(flag & LMP3D_FLIPH) flagw = w;
 		if(flag & LMP3D_FLIPV) flagh = h;
 
-		va[l+0] = px+flagw;
-		va[l+1] = py-flagh;
+		va[0] = px+flagw;
+		va[1] = py-flagh;
 
-		va[l+2] = px+flagw;
-		va[l+3] = py-h+flagh;
+		va[2] = px+flagw;
+		va[3] = py-h+flagh;
 
-		va[l+4] = px+w-flagw;
-		va[l+5] = py-h+flagh;
+		va[4] = px+w-flagw;
+		va[5] = py-h+flagh;
 
-		va[l+6] = px+w-flagw;
-		va[l+7] = py-flagh;
-		l+= 8;
+		va[6] = px+w-flagw;
+		va[7] = py-flagh;
+
+		glDrawArrays(GL_QUADS,0,4);
 	}
 
-	glLoadIdentity();
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	glVertexPointer(2,GL_FLOAT,0,va);
-	glTexCoordPointer(2,GL_FLOAT,0,vt);
-
-	glDrawArrays( GL_QUADS, 0,l>>1);
 
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	glDisableClientState( GL_VERTEX_ARRAY );
@@ -326,11 +328,12 @@ void LMP3D_Draw_Sprite_Array(LMP3D_Sprite *sprite,int n)
 
 
 
+
 void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 {
 	int i=0,l = 0,flag;
-	float va[11000];
-	float vt[11000];
+	float va[16];
+	float vt[16];
 
 	const float fpixelw = 1.0f/320.0f;
 	const float fpixelh = 1.0f/240.0f;
@@ -395,6 +398,12 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 	float fpy = +1.0f-(fpixelh*py);
 	float forg = fpx;
 
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+	glVertexPointer(2,GL_FLOAT,0,va);
+	glTexCoordPointer(2,GL_FLOAT,0,vt);
+
 	for(y = 0;y < ntiley;y++)
 	{
 		for(x = 0;x < ntilex;x++)
@@ -424,33 +433,34 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 				float rectx = tfpixelw*rect.x;
 				float recty = tfpixelh*rect.y;
 
-				vt[l+0] = rectx;
-				vt[l+1] = recty;
+				vt[0] = rectx;
+				vt[1] = recty;
 
-				vt[l+2] = rectx;
-				vt[l+3] = recty+(tfpixelh*fh);
+				vt[2] = rectx;
+				vt[3] = recty+(tfpixelh*fh);
 
-				vt[l+4] = rectx+(tfpixelw*fw);
-				vt[l+5] = recty+(tfpixelh*fh);
+				vt[4] = rectx+(tfpixelw*fw);
+				vt[5] = recty+(tfpixelh*fh);
 
-				vt[l+6] = rectx+(tfpixelw*fw);
-				vt[l+7] = recty;
+				vt[6] = rectx+(tfpixelw*fw);
+				vt[7] = recty;
 
 				tfw = fpixelw*fw;
 				tfh = fpixelh*fh;
 
-				va[l+0] = fpx+flagw;
-				va[l+1] = fpy-flagh;
+				va[0] = fpx+flagw;
+				va[1] = fpy-flagh;
 
-				va[l+2] = fpx+flagw;
-				va[l+3] = fpy-tfh+flagh;
+				va[2] = fpx+flagw;
+				va[3] = fpy-tfh+flagh;
 
-				va[l+4] = fpx+tfw-flagw;
-				va[l+5] = fpy-tfh+flagh;
+				va[4] = fpx+tfw-flagw;
+				va[5] = fpy-tfh+flagh;
 
-				va[l+6] = fpx+tfw-flagw;
-				va[l+7] = fpy-flagh;
-				l+= 8;
+				va[6] = fpx+tfw-flagw;
+				va[7] = fpy-flagh;
+
+				glDrawArrays( GL_QUADS, 0,4);
 			}
 
 			fpx += fpixelw*fw;
@@ -461,15 +471,6 @@ void LMP3D_Draw_TileMap(LMP3D_TileMap *tilemap)
 		i += w-x;
 	}
 
-	glLoadIdentity();
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	glVertexPointer(2,GL_FLOAT,0,va);
-	glTexCoordPointer(2,GL_FLOAT,0,vt);
-
-	glDrawArrays( GL_QUADS, 0,l>>1);
 
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	glDisableClientState( GL_VERTEX_ARRAY );

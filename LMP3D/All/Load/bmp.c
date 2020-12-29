@@ -6,12 +6,12 @@
 
 typedef struct
 {
-    unsigned short signature;
-    unsigned int sizefile;
-    unsigned short reserved[2];
-    unsigned int offset,BITMAPINFOHEADER,width,height;
-    unsigned short nplanes,nbits;
-    unsigned int compression,size,hpixel,vpixel,noclors,ncolorsi;
+	unsigned short signature;
+	unsigned int sizefile;
+	unsigned short reserved[2];
+	unsigned int offset,BITMAPINFOHEADER,width,height;
+	unsigned short nplanes,nbits;
+	unsigned int compression,size,hpixel,vpixel,noclors,ncolorsi;
 }BMP_Header;
 
 LMP3D_Texture *LMP3D_Load_bmp(char *filename,int offset,void *buffer,int size)
@@ -79,13 +79,15 @@ LMP3D_Texture *LMP3D_Load_bmp(char *filename,int offset,void *buffer,int size)
 			for(x = 0;x < n;x += texture->pixelsize )
 			{
 				i = x + pitch;
-				texture->pixel[i+2]= buf[k++];
-				texture->pixel[i+1]= buf[k++];
-				texture->pixel[i+0]= buf[k++];
+				texture->pixel[i+2]= buf[k+0];
+				texture->pixel[i+1]= buf[k+1];
+				texture->pixel[i+0]= buf[k+2];
+				k+=3;
 
 				if(bmp.nbits == 32)
 				{
-					texture->pixel[i+3]= buf[k++];
+					texture->pixel[i+3]= buf[k];
+					k++;
 				}
 			}
 		}

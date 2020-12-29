@@ -10,7 +10,7 @@
 //Event update
 void LMP3D_Event_Update(LMP3D_Event *event)
 {
-	unsigned short padbuf;
+	unsigned short padbuf = 0;
 	static unsigned short old_pad = 0;
 	static unsigned short new_pad;
 	static unsigned short end_pad;
@@ -22,6 +22,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 	}
 
 	PSX_ReadPad(&padbuf, NULL);
+	//printf("%x\n",padbuf);
 
 	new_pad = padbuf & ~old_pad;
 	end_pad = (padbuf^old_pad)^new_pad;

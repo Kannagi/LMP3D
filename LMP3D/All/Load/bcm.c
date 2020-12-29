@@ -34,7 +34,7 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	//printf("%f %d\n",bcm.Xmin,bcm.nv);
 
 	LMP3D_Model *model = malloc(sizeof(LMP3D_Model));
-    LMP3D_Model_Init(model);
+	LMP3D_Model_Init(model);
 
 	if(bcm.nv > 0)
 	{
@@ -67,11 +67,14 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 		model->size += (bcm.nf*3*sizeindex);
 	}
 
+
+	//printf("face : %d/vertex : %d\n",bcm.nf,bcm.nv);
+
 	if(bcm.ntexture > 0)
 	{
 		model->texture = malloc(bcm.ntexture*sizeof(LMP3D_Texture*));
 		model->texture_begin = malloc(bcm.ntexture*sizeof(int));
-		model->name          = malloc(bcm.ntexture*sizeof(char*));
+		model->name		  = malloc(bcm.ntexture*sizeof(char*));
 
 		LMP3D_fread(model->texture_begin,sizeof(int),bcm.ntexture,file);
 
@@ -86,17 +89,22 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	if(bcm.flags1 & BCM_GROUP)
 	{
 		model->groupvertex  = malloc(bcm.ngroup*sizeof(unsigned int));
-		model->groupface    = malloc(bcm.ngroup*sizeof(unsigned int));
+		model->groupface	= malloc(bcm.ngroup*sizeof(unsigned int));
 		LMP3D_fread(model->groupvertex,sizeof(unsigned int),bcm.ngroup,file);
 		LMP3D_fread(model->groupface,sizeof(unsigned int),bcm.ngroup,file);
 	}
-/*
+
 	if(bcm.flags1 & BCM_ANIM)
 	{
-		model->id = malloc(bcm.nv*sizeof(unsigned char));
-		LMP3D_fread(model->id,sizeof(unsigned char),bcm.nv,file);
+		model->bones  = malloc((bcm.nbones+1)*sizeof(unsigned int));
+		LMP3D_fread(model->bones,sizeof(unsigned int),bcm.nbones,file);
+
+		model->bones[bcm.nbones] = bcm.nv;
+
+		model->matrix_bones  = malloc((bcm.nbones+1)*sizeof(float) *16);
+		LMP3D_fread(model->matrix_bones,sizeof(float),bcm.nbones*16,file);
 	}
-*/
+
 	LMP3D_fclose(file);
 
 	model->nf = bcm.nf;
@@ -104,6 +112,7 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	model->flag = bcm.flags1;
 	model->ntexture = bcm.ntexture;
 	model->ngroup = bcm.ngroup;
+	model->nbones = bcm.nbones;
 
 	model->Xmin = bcm.Xmin;
 	model->Ymin = bcm.Ymin;
@@ -120,11 +129,14 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	if(filename != NULL)
 		LMP3D_Folder_Out(filename,folder);
 
-    LMP3D_Load_Texture_Array(model,filename,folder,offset,buffer,size);
 
-    LMP3D_Convert_Model(model);
+	printf("filename/folder  : %s/%s\n",folder,filename);
 
-	printf("%d\n",model->size);
+	LMP3D_Load_Texture_Array(model,filename,folder,offset,buffer,size);
+
+	LMP3D_Convert_Model(model);
+
+	printf("byte : %d\n",model->size);
 
 	return model;
 }

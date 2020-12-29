@@ -3,18 +3,18 @@
 
 
 #define GP0_CMD_COLOR(cmd,r,g,b) \
-		(r    <<  0  ) |	\
-		(g    <<  8  ) |	\
-		(b    <<  16 ) |	\
+		(r	<<  0  ) |	\
+		(g	<<  8  ) |	\
+		(b	<<  16 ) |	\
 		(cmd  <<  24 )
 
 #define GP0_VERTEX(x,y) \
-		(x    <<  0  ) |	\
-		(y    <<  16 )
+		(x	<<  0  ) |	\
+		(y	<<  16 )
 
 #define GP0_TEXCOORD(x,y,arg) \
-		(x    <<  0  ) |	\
-		(y    <<  8  ) |	\
+		(x	<<  0  ) |	\
+		(y	<<  8  ) |	\
 		(arg  <<  16 )
 
 #define GP0_TEXPAGE(tpx,tpy,sm,tpc,dbit,dda,td,trx,try) \
@@ -31,10 +31,10 @@
 
 
 #define DMA_CHCR_SET(td,mas,ce,ts,dmaws,cpuws,dmast,smst,unk1,unk2) \
-		(td    <<  0  ) |	\
+		(td	<<  0  ) |	\
 		(mas   <<  1  ) |	\
-		(ce    <<  8  ) |	\
-		(ts    <<  9  ) |	\
+		(ce	<<  8  ) |	\
+		(ts	<<  9  ) |	\
 		(dmaws <<  16 ) |	\
 		(cpuws <<  20 ) |	\
 		(dmast <<  24 ) |	\
@@ -155,39 +155,39 @@
 #define PS1_PSM16	0x02
 
 
-#define D_CHCR_TO_RAM           0
-#define D_CHCR_FROM_RAM         (1 << 0)
-#define D_CHCR_FORWARD          0
-#define D_CHCR_BACKWARD         (1 << 1)
-#define D_CHCR_NO_CHOP          0
-#define D_CHCR_CHOP             (1 << 8)
-#define D_CHCR_SYNC_IMM         0
-#define D_CHCR_SYNC_DEV         (1 << 9) /* transfer blocks, device-controlled */
-#define D_CHCR_SYNC_LL          (2 << 9) /* transfer linked list, device-controlled */
+#define D_CHCR_TO_RAM		   0
+#define D_CHCR_FROM_RAM		 (1 << 0)
+#define D_CHCR_FORWARD		  0
+#define D_CHCR_BACKWARD		 (1 << 1)
+#define D_CHCR_NO_CHOP		  0
+#define D_CHCR_CHOP			 (1 << 8)
+#define D_CHCR_SYNC_IMM		 0
+#define D_CHCR_SYNC_DEV		 (1 << 9) /* transfer blocks, device-controlled */
+#define D_CHCR_SYNC_LL		  (2 << 9) /* transfer linked list, device-controlled */
 #define D_CHCR_CHOP_DMA_SIZE(x) (((x) & 7) << 16) /* size of dma window in words */
 #define D_CHCR_CHOP_CPU_SIZE(x) (((x) & 7) << 20) /* size of cpu window in clock cycles (33MHz?) */
-#define D_CHCR_START            (1 << 24) /* "master" trigger for transfers */
-#define D_CHCR_BUSY             (1 << 24) /* gets reset once transfer is complete */
-#define D_CHCR_IMM_TRIG         (1 << 28) /* trigger for immediate transfers, combine with START */
-#define D_CHCR_IMM_PAUSE        (1 << 29) /* pause for imm transfers? not verified, only makes sense with CHOP */
+#define D_CHCR_START			(1 << 24) /* "master" trigger for transfers */
+#define D_CHCR_BUSY			 (1 << 24) /* gets reset once transfer is complete */
+#define D_CHCR_IMM_TRIG		 (1 << 28) /* trigger for immediate transfers, combine with START */
+#define D_CHCR_IMM_PAUSE		(1 << 29) /* pause for imm transfers? not verified, only makes sense with CHOP */
 
 #define DICR_CH_ENABLE_OFFSET   16
-#define DICR_MASTER_ENABLE      (1 << 23)
-#define DICR_CH_FLAG_OFFSET     24
+#define DICR_MASTER_ENABLE	  (1 << 23)
+#define DICR_CH_FLAG_OFFSET	 24
 
 #define GPUREAD GP0
 #define GPUSTAT GP1
 
-#define GPUSTAT_CMD_READY      (1 << 26)
-#define GPUSTAT_DMA_READY      (1 << 28)
+#define GPUSTAT_CMD_READY	  (1 << 26)
+#define GPUSTAT_DMA_READY	  (1 << 28)
 
 #define GP0_COPY_CPU_TO_VRAM 0xA0
 
 #define GP1_RESET_CMD_BUFFER   0x01
 #define GP1_DISPLAY_AREA_START 0x05
-#define GP1_HRANGE             0x06
-#define GP1_VRANGE             0x07
-#define GP1_DISPLAY_MODE       0x08
+#define GP1_HRANGE			 0x06
+#define GP1_VRANGE			 0x07
+#define GP1_DISPLAY_MODE	   0x08
 
 #define EQU_GTE  ".equ RTPS  ,0x0180001\n	" \
 				 ".equ RTPT  ,0x0280030\n	" \
@@ -196,7 +196,7 @@
 				 ".equ AVSZ4 ,0x168002E\n	" \
 				 ".equ MVMVA ,0x0400012\n	" \
 				 ".equ SQR   ,0x0A00428\n	" \
-				 ".equ OP    ,0x0170000\n	" \
+				 ".equ OP	,0x0170000\n	" \
 				 ".equ CMD_SF ,1<<19\n	" \
 				 ".equ CMD_MMR ,0<<17\n	" \
 				 ".equ CMD_MML ,1<<17\n	" \
@@ -245,31 +245,31 @@
 				 ".equ R13R21 ,$1 \n	" \
 				 ".equ R22R23 ,$2 \n	" \
 				 ".equ R31R32 ,$3 \n	" \
-				 ".equ R33    ,$4 \n	" \
-				 ".equ TRX    ,$5 \n	" \
-				 ".equ TRY    ,$6 \n	" \
-				 ".equ TRZ    ,$7 \n	" \
+				 ".equ R33	,$4 \n	" \
+				 ".equ TRX	,$5 \n	" \
+				 ".equ TRY	,$6 \n	" \
+				 ".equ TRZ	,$7 \n	" \
 				 ".equ L11L12 ,$8 \n	" \
 				 ".equ L13L21 ,$9 \n	" \
 				 ".equ L22L23 ,$10 \n	" \
 				 ".equ L31L32 ,$11 \n	" \
-				 ".equ L33    ,$12 \n	" \
-				 ".equ RBK    ,$13 \n	" \
-				 ".equ GBK    ,$14 \n	" \
-				 ".equ BBK    ,$15 \n	" \
+				 ".equ L33	,$12 \n	" \
+				 ".equ RBK	,$13 \n	" \
+				 ".equ GBK	,$14 \n	" \
+				 ".equ BBK	,$15 \n	" \
 				 ".equ LR1LR2 ,$16 \n	" \
 				 ".equ LR3LG1 ,$17 \n	" \
 				 ".equ LG2LG3 ,$18 \n	" \
 				 ".equ LB1LB2 ,$19 \n	" \
-				 ".equ LB3    ,$20 \n	" \
-				 ".equ RFC    ,$21 \n	" \
-				 ".equ GFC    ,$22 \n	" \
-				 ".equ BFC    ,$23 \n	" \
-				 ".equ OFX    ,$24 \n	" \
-				 ".equ OFY    ,$25 \n	" \
-				 ".equ H      ,$26 \n	" \
-				 ".equ DQA    ,$27 \n	" \
-				 ".equ DQB    ,$28 \n	" \
+				 ".equ LB3	,$20 \n	" \
+				 ".equ RFC	,$21 \n	" \
+				 ".equ GFC	,$22 \n	" \
+				 ".equ BFC	,$23 \n	" \
+				 ".equ OFX	,$24 \n	" \
+				 ".equ OFY	,$25 \n	" \
+				 ".equ H	  ,$26 \n	" \
+				 ".equ DQA	,$27 \n	" \
+				 ".equ DQB	,$28 \n	" \
 				 ".equ ZSF3   ,$29 \n	" \
 				 ".equ ZSF4   ,$30 \n	" \
 				 ".equ FLAG   ,$31 \n	" \

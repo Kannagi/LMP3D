@@ -10,12 +10,12 @@ static SDL_Surface *ecran,*window;
 
 LMP3D_Buffer LMP3D_Window(char *name)
 {
-    SDL_WM_SetCaption(name, NULL);
+	SDL_WM_SetCaption(name, NULL);
 
-    ecran = SDL_SetVideoMode(256, 240, 16, SDL_HWSURFACE | SDL_DOUBLEBUF );
-    //window = SDL_CreateRGBSurface(0,256,240,24,0,0,0,0);
+	ecran = SDL_SetVideoMode(256, 240, 16, SDL_HWSURFACE | SDL_DOUBLEBUF );
+	//window = SDL_CreateRGBSurface(0,256,240,24,0,0,0,0);
 
-    window = ecran;
+	window = ecran;
 
 	LMP3D_Buffer buffer;
 
@@ -49,24 +49,23 @@ void *LMP3D_FrameBuffer_WIN95()
 	return window->pixels;
 }
 
+
 int LMP3D_Fps()
 {
 	static time_end,time_begin;
 
+	int time_dif,slp;
+	slp = 60;
 
-    int time_dif,slp;
-    slp = 50;
+	time_end = SDL_GetTicks();
+	time_dif = time_end - time_begin;
 
-    time_end = SDL_GetTicks();
-    time_dif = time_end - time_begin;
+	if(time_dif <= 0) time_dif = 0;
+	if(time_dif < slp) SDL_Delay(slp - time_dif);
 
-    if(time_dif <= 0) time_dif = 0;
-    if(time_dif < slp) SDL_Delay(slp - time_dif);
+	time_begin = SDL_GetTicks();
 
-    time_begin = SDL_GetTicks();
-
-
-    return time_dif;
+	return time_dif;
 }
 
 

@@ -15,11 +15,10 @@ void LMP3D_Camera_Perspective(LMP3D_Camera camera)
 
 	LMP3D_MatrixMultiply(matrixProjection,matrixLookAt,matrixProjection);
 
-
 	glEnable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(matrixProjection);
-    glMatrixMode( GL_MODELVIEW );
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(matrixProjection);
+	glMatrixMode( GL_MODELVIEW );
 }
 
 float *LMP3D_MatrixProjection_Get()
@@ -27,13 +26,37 @@ float *LMP3D_MatrixProjection_Get()
 	return matrixProjection;
 }
 
+
 void LMP3D_Camera_Ortho2D()
 {
-    glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-1,1,-1,1,-1,1);
-    glMatrixMode(GL_MODELVIEW);
+	glDisable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);
+
+	float matrix[16];
+	matrix[(0<<2)+0] = 1;
+	matrix[(0<<2)+1] = 0;
+	matrix[(0<<2)+2] = 0;
+	matrix[(0<<2)+3] = 0;
+
+	matrix[(1<<2)+0] = 0;
+	matrix[(1<<2)+1] = 1;
+	matrix[(1<<2)+2] = 0;
+	matrix[(1<<2)+3] = 0;
+
+	matrix[(2<<2)+0] = 0;
+	matrix[(2<<2)+1] = 0;
+	matrix[(2<<2)+2] = 1;
+	matrix[(2<<2)+3] = 0;
+
+	matrix[(3<<2)+0] = 0;
+	matrix[(3<<2)+1] = 0;
+	matrix[(3<<2)+2] = 0;
+	matrix[(3<<2)+3] = 1;
+
+	glLoadMatrixf(matrix);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(matrix);
 }
 
 #endif

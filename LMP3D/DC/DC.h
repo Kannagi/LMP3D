@@ -213,27 +213,27 @@
 #define TA_GROUP_STRIPLEN4  (0x08<<16)
 #define TA_GROUP_STRIPLEN6  (0x0C<<16)
 
-#define TA_GROUP_USERTILECLIP_DISABLE    (0x00<<16)
+#define TA_GROUP_USERTILECLIP_DISABLE	(0x00<<16)
 #define TA_GROUP_USERTILECLIP_ENABLEIN   (0x02<<16)
 #define TA_GROUP_USERTILECLIP_ENABLEOUT  (0x03<<16)
 
 
 #define TA_OBJ_16BITUV   0x01
 #define TA_OBJ_GOURAUD   0x02
-#define TA_OBJ_OFFSET    0x04
+#define TA_OBJ_OFFSET	0x04
 #define TA_OBJ_TEXTURE   0x08
 
-#define TA_OBJ_COLTYPE_8BIT    0x00
+#define TA_OBJ_COLTYPE_8BIT	0x00
 #define TA_OBJ_COLTYPE_FLOAT   0x10
 #define TA_OBJ_COLTYPE_MODE1   0x20
 #define TA_OBJ_COLTYPE_MODE2   0x30
-#define TA_OBJ_VOLUME    0x40
-#define TA_OBJ_SHADOW    0x80
+#define TA_OBJ_VOLUME	0x40
+#define TA_OBJ_SHADOW	0x80
 
 
-#define TA_ISP_DEPTH_NEVER    (0x00<<29)
-#define TA_ISP_DEPTH_LESS     (0x01<<29)
-#define TA_ISP_DEPTH_EQUAL    (0x02<<29)
+#define TA_ISP_DEPTH_NEVER	(0x00<<29)
+#define TA_ISP_DEPTH_LESS	 (0x01<<29)
+#define TA_ISP_DEPTH_EQUAL	(0x02<<29)
 #define TA_ISP_DEPTH_LEQUAL   (0x03<<29)
 #define TA_ISP_DEPTH_GREATER  (0x04<<29)
 #define TA_ISP_DEPTH_NOTEQUAL (0x05<<29)
@@ -241,73 +241,73 @@
 #define TA_ISP_DEPTH_ALWAYS   (0x07<<29)
 
 
-#define TA_ISP_CULLING_NO         (0x00<<27)
-#define TA_ISP_CULLING_SMALL      (0x01<<27)
+#define TA_ISP_CULLING_NO		 (0x00<<27)
+#define TA_ISP_CULLING_SMALL	  (0x01<<27)
 #define TA_ISP_CULLING_NEGATIVE   (0x02<<27)
 #define TA_ISP_CULLING_POSITIVE   (0x03<<27)
 
-#define TA_ISP_ZWRITE_DISABLE     (0x01<<26)
-#define TA_ISP_TEXTURE            (0x01<<25)
-#define TA_ISP_OFFSET             (0x01<<24)
-#define TA_ISP_GOURAUD            (0x01<<23)
-#define TA_ISP_16BITUV            (0x01<<22)
-#define TA_ISP_CACHE              (0x01<<21)
-#define TA_ISP_DCAK               (0x01<<20)
+#define TA_ISP_ZWRITE_DISABLE	 (0x01<<26)
+#define TA_ISP_TEXTURE			(0x01<<25)
+#define TA_ISP_OFFSET			 (0x01<<24)
+#define TA_ISP_GOURAUD			(0x01<<23)
+#define TA_ISP_16BITUV			(0x01<<22)
+#define TA_ISP_CACHE			  (0x01<<21)
+#define TA_ISP_DCAK			   (0x01<<20)
 
-#define TA_TSP_SRCALPHA(intr)     (intr<<29)
-#define TA_TSP_DSTALPHA(intr)     (intr<<26)
-#define TSP_ZERO           0x00
-#define TSP_ONE            0x01
-#define TSP_OCOLOR         0x02
-#define TSP_INV_OCOLOR     0x03
-#define TSP_SRC_ALPHA      0x04
+#define TA_TSP_SRCALPHA(intr)	 (intr<<29)
+#define TA_TSP_DSTALPHA(intr)	 (intr<<26)
+#define TSP_ZERO		   0x00
+#define TSP_ONE			0x01
+#define TSP_OCOLOR		 0x02
+#define TSP_INV_OCOLOR	 0x03
+#define TSP_SRC_ALPHA	  0x04
 #define TSP_INV_SRC_ALPHA  0x05
-#define TSP_DST_ALPHA      0x06
+#define TSP_DST_ALPHA	  0x06
 #define TSP_INV_DST_ALPHA  0x07
 
 
-#define TA_TSP_SRC_SELECT          (0x01<<25)
-#define TA_TSP_DST_SELECT          (0x01<<24)
+#define TA_TSP_SRC_SELECT		  (0x01<<25)
+#define TA_TSP_DST_SELECT		  (0x01<<24)
 
-#define TA_TSP_FOG_TABLE1          (0x00<<22)
-#define TA_TSP_FOG_VERTEX          (0x01<<22)
-#define TA_TSP_FOG_DISABLE         (0x02<<22)
-#define TA_TSP_FOG_TABLE2          (0x03<<22)
+#define TA_TSP_FOG_TABLE1		  (0x00<<22)
+#define TA_TSP_FOG_VERTEX		  (0x01<<22)
+#define TA_TSP_FOG_DISABLE		 (0x02<<22)
+#define TA_TSP_FOG_TABLE2		  (0x03<<22)
 
-#define TA_TSP_COLORCLAMP          (0x01<<21)
-#define TA_TSP_USEALPHA            (0x01<<20)
-#define TA_TSP_TEXALPHAIGN         (0x01<<19)
-#define TA_TSP_FLIPV               (0x01<<17)
-#define TA_TSP_FLIPU               (0x02<<17)
-#define TA_TSP_CLAMPV              (0x01<<15)
-#define TA_TSP_CLAMPU              (0x02<<15)
-#define TA_TSP_FILTER_POINT        (0x00<<13)
-#define TA_TSP_FILTER_BILINEAR     (0x01<<13)
-#define TA_TSP_FILTER_PASSA        (0x02<<13)
-#define TA_TSP_FILTER_PASSB        (0x03<<13)
-#define TA_TSP_SUPERSAMPLE         (0x01<<12)
-#define TA_TSP_MIPMAPD(value)      (value<<08)
-#define TA_TSP_TEXTURE_DECAL       (0x00<<06)
-#define TA_TSP_TEXTURE_MODULATE    (0x01<<06)
-#define TA_TSP_TEXTURE_ADECAL      (0x02<<06)
+#define TA_TSP_COLORCLAMP		  (0x01<<21)
+#define TA_TSP_USEALPHA			(0x01<<20)
+#define TA_TSP_TEXALPHAIGN		 (0x01<<19)
+#define TA_TSP_FLIPV			   (0x01<<17)
+#define TA_TSP_FLIPU			   (0x02<<17)
+#define TA_TSP_CLAMPV			  (0x01<<15)
+#define TA_TSP_CLAMPU			  (0x02<<15)
+#define TA_TSP_FILTER_POINT		(0x00<<13)
+#define TA_TSP_FILTER_BILINEAR	 (0x01<<13)
+#define TA_TSP_FILTER_PASSA		(0x02<<13)
+#define TA_TSP_FILTER_PASSB		(0x03<<13)
+#define TA_TSP_SUPERSAMPLE		 (0x01<<12)
+#define TA_TSP_MIPMAPD(value)	  (value<<08)
+#define TA_TSP_TEXTURE_DECAL	   (0x00<<06)
+#define TA_TSP_TEXTURE_MODULATE	(0x01<<06)
+#define TA_TSP_TEXTURE_ADECAL	  (0x02<<06)
 #define TA_TSP_TEXTURE_AMODULATE   (0x03<<06)
-#define TA_TSP_USIZE(size)         (size<<03)
-#define TA_TSP_VSIZE(size)         (size<<00)
+#define TA_TSP_USIZE(size)		 (size<<03)
+#define TA_TSP_VSIZE(size)		 (size<<00)
 
 #define TEXTURE_CONTROL_WORD_RGB(mipmapd,vqcompressed,pixelformat,scan,stride,address) \
-							((u32)address       <<   0  ) | \
-							((u32)stride        <<  25  ) | \
-							((u32)scan          <<  26  ) | \
+							((u32)address	   <<   0  ) | \
+							((u32)stride		<<  25  ) | \
+							((u32)scan		  <<  26  ) | \
 							((u32)pixelformat   <<  27  ) | \
 							((u32)vqcompressed  <<  30  ) | \
-							((u32)mipmapd       <<  31  )
+							((u32)mipmapd	   <<  31  )
 
 #define TEXTURE_CONTROL_WORD_PAL(mipmapd,vqcompressed,pixelformat,pal,address) \
-							((u32)address       <<   0  ) | \
-							((u32)pal           <<  21  ) | \
+							((u32)address	   <<   0  ) | \
+							((u32)pal		   <<  21  ) | \
 							((u32)pixelformat   <<  27  ) | \
 							((u32)vqcompressed  <<  30  ) | \
-							((u32)mipmapd       <<  31  )
+							((u32)mipmapd	   <<  31  )
 
 
 #define TA_TEXTURE_RGB1555 0
@@ -315,13 +315,13 @@
 #define TA_TEXTURE_RGB4444 2
 #define TA_TEXTURE_YUV422  3
 #define TA_TEXTURE_BUMPMAP 4
-#define TA_TEXTURE_4BPP    5
-#define TA_TEXTURE_8BPP    6
+#define TA_TEXTURE_4BPP	5
+#define TA_TEXTURE_8BPP	6
 
 
-#define TA_TEXTURE_NORMAL    0x00
+#define TA_TEXTURE_NORMAL	0x00
 #define TA_TEXTURE_TWILLED   0x10
-#define TA_TEXTURE_VQ	     0x20
+#define TA_TEXTURE_VQ		 0x20
 void DC_Init();
 void DC_Finish();
 void DC_InitClip();

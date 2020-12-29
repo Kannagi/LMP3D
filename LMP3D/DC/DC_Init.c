@@ -20,7 +20,7 @@ void LMP3D_Init()
 	//"sts		FPSCR,r0\n	" //GBR VBR SSR SPC SGR DBR
 	//"mov.l		r0,@%0\n	"
 
-    :: "r"(flag) : "memory");
+	:: "r"(flag) : "memory");
 
 	//printf("result :%x\n	",flag[0]);
 

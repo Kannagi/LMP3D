@@ -3,24 +3,24 @@
 
 typedef struct
 {
-    LMP3D_Texture *texture;
-    Vector2i position;
-    Recti rect;
-    int flag;
-    int color;
+	LMP3D_Texture *texture;
+	Vector2i position;
+	Recti rect;
+	int flag;
+	int color;
 }LMP3D_Sprite;
 
 typedef struct
 {
-    LMP3D_Texture *texture;
-    Vector2i position;
-    int w,h;
-    unsigned short *tiles;
+	LMP3D_Texture *texture;
+	Vector2i position;
+	int w,h;
+	unsigned short *tiles;
 }LMP3D_TileMap;
 
 typedef struct
 {
-    int act,old,i,itmp,end;
+	int act,old,i,itmp,end;
 }LMP3D_Anim;
 
 void LMP3D_Anim_Init(LMP3D_Anim *anim);

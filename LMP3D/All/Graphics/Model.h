@@ -22,48 +22,59 @@ enum
 
 typedef struct
 {
-    Matrix3x2 *skeleton;
-    short ntime,ncadence,n;
+	float matrix[16];
+}MATRIX4x4;
+
+typedef struct
+{
+	MATRIX4x4 *skeleton;
+	short ntime,ncadence,n;
 }LMP3D_Anim3D;
 
 typedef struct
 {
-    //Mesh
-    void *v,*vt,*vn,*va;
-    unsigned int nv,nf,ngroup;
-    void *index;
+	//Mesh
+	void *v,*vt,*vn,*va;
+	unsigned int nv,nf,ngroup;
+	void *index;
 	unsigned int *groupvertex,*groupface;
+	unsigned int *bones,nbones;
+	float *matrix_bones;
 
-    //Texture
-    int *texture_begin;
-    LMP3D_Texture **texture;
-    int ntexture;
+	//Texture
+	int *texture_begin;
+	LMP3D_Texture **texture;
+	int ntexture;
 	char **name;
+
+
+	LMP3D_Anim3D anim;
 /*
-    //Animation
-    short time; //frame
-    short play_old,cadence; // variable temporaire
-    short play,boucle,end; //control de animation
-    short nanim;//nombre animation
-    Vector3 *nodes; //skelette nodes
+	//Animation
+	short time; //frame
+	short play_old,cadence; // variable temporaire
+	short play,boucle,end; //control de animation
+	short nanim;//nombre animation
+	Vector3 *nodes; //skelette nodes
 
 
-    LMP3D_Anim3D defaut,**anim; //Squelette
-    unsigned char *id; //attribut pour chaque vertex
-    short *bones; //relation entre bones parent/enfant
-    short nbones; //nombre de bones
+	LMP3D_Anim3D defaut,**anim; //Squelette
+	unsigned char *id; //attribut pour chaque vertex
+	short *bones; //relation entre bones parent/enfant
+	short nbones; //nombre de bones
 */
 	Vector3 position;
 	Vector3 scale;
 	Vector3 rotate;
 	float Xmin,Xmax,Ymin,Ymax,Zmin,Zmax;
-
+/*
 	Vector3i iposition;
 	Vector3s iscale,irotate;
 	short iXmin,iXmax,iYmin,iYmax,iZmin,iZmax;
-
+*/
 	float box[32];
 	int test,flag,size;
+	void *displaylist[2];
 }LMP3D_Model;
 
 void LMP3D_Draw_Model(LMP3D_Model *model);

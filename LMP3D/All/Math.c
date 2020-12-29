@@ -77,6 +77,67 @@ double LMP3D_cosd(double x)
 	return t;
 }
 
+/*
+float LMP3D_sqrtf3(float s)
+{
+	float n;
+
+
+	//n = sqrt(s);
+	return n;
+}
+__attribute__((optimize("-O1"), noinline))
+*/
+
+float  LMP3D_sqrtf( float number )
+{
+	long i;
+	float x2, y;
+	const float threehalfs = 1.5F;
+
+	x2 = number * 0.5F;
+	y = number;
+	i = * ( long * ) &y; // evil floating point bit level hacking
+	i = 0x5f375a86 - ( (i) >> 1 ); // what the fuck? original : 0x5f3759df , new : 0x5f375a86
+	i = i&0x7FFFFFFF;
+	y = * ( float * ) &i;
+
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 2nd iteration, this can be removed
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 3 iteration, this can be removed
+
+
+	y = 1.0f/y;
+
+	return y;
+}
+
+double LMP3D_sqrtd( double number )
+{
+	long i;
+	double x2,y;
+	float y2;
+	const double threehalfs = 1.5;
+
+	x2 = number * 0.5;
+	y2 = number;
+	i = * ( long * ) &y2; // evil floating point bit level hacking
+	i = 0x5f375a86 - ( (i) >> 1 ); // what the fuck? original : 0x5f3759df , new : 0x5f375a86
+	i = i&0x7FFFFFFF;
+	y2 = * ( float * ) &i;
+	y = y2;
+
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 2nd iteration, this can be removed
+	y = y * ( threehalfs - ( x2 * y * y ) ); // 3 iteration, this can be removed
+
+
+	y = 1.0/y;
+
+	return y;
+}
+
+/*
 float LMP3D_sqrtf(float s)
 {
 	float n;
@@ -86,6 +147,34 @@ float LMP3D_sqrtf(float s)
 	n = (n + (s/n))/2.0f;
 	n = (n + (s/n))/2.0f;
 	return n;
+}
+*/
+
+float LMP3D_sqrtf2(unsigned int fsq2)
+{
+	float fsq1 = 1;
+
+	while(fsq1 < fsq2)
+	{
+		fsq1 = fsq1*2;
+		fsq2 = fsq2/2;
+	}
+	fsq1 = (fsq1+fsq2)/2;
+	return fsq1;
+}
+
+unsigned int LMP3D_sqrti2(unsigned int sq2)
+{
+	unsigned int sq1 = 1;
+
+	while(sq1 < sq2)
+	{
+		sq1 = sq1<<1;
+		sq2 = sq2>>1;
+	}
+
+	sq1 = (sq1+sq2)>>1;
+	return sq1;
 }
 
 unsigned int LMP3D_sqrti(const unsigned int s)
@@ -163,7 +252,7 @@ float invsqrtf( float number )
 	x2 = number * 0.5F;
 	y = number;
 	i = * ( long * ) &y; // evil floating point bit level hacking
-	i = 0x5f375a86 - ( i >> 1 ); // what the fuck? original : 0x5f3759df , new : 0x5f375a86
+	i = 0x5f3759df - ( i >> 1 ); // what the fuck? original : 0x5f3759df , new : 0x5f375a86
 	y = * ( float * ) &i;
 	y = y * ( threehalfs - ( x2 * y * y ) ); // 1st iteration
 // y = y * ( threehalfs - ( x2 * y * y ) ); // 2nd iteration, this can be removed

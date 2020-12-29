@@ -37,7 +37,7 @@ LMP3D_Buffer LMP3D_Window(char *name)
 
 
 	// This has to be interlaced
-	GsSetVideoModeEx(buffer.width, buffer.height, VMODE_NTSC, 0, 1, 0);
+	GsSetVideoModeEx(buffer.width, buffer.height, VMODE_PAL, 0, 1, 0);//VMODE_NTSC
 
 
 

@@ -89,9 +89,9 @@ static inline void GX2_Color3f32(f32 r, f32 g, f32 b)
 	wgPipe2->U8 = (u8)(b * 255.0);
 }
 #define _SHIFTL(v, s, w)	\
-    ((u32) (((u32)(v) & ((0x01 << (w)) - 1)) << (s)))
+	((u32) (((u32)(v) & ((0x01 << (w)) - 1)) << (s)))
 #define _SHIFTR(v, s, w)	\
-    ((u32)(((u32)(v) >> (s)) & ((0x01 << (w)) - 1)))
+	((u32)(((u32)(v) >> (s)) & ((0x01 << (w)) - 1)))
 
 #define GX_LOAD_XF_REGS(x, n)			\
 	do {								\
@@ -279,8 +279,8 @@ int game4(void)
 	// setup our projection matrix
 	// this creates a perspective matrix with a view angle of 90,
 	// and aspect ratio based on the display resolution
-    f32 w = rmode->viWidth;
-    f32 h = rmode->viHeight;
+	f32 w = rmode->viWidth;
+	f32 h = rmode->viHeight;
 	guPerspective(perspective, 45, (f32)w/h, 0.1F, 300.0F);
 	GX2_LoadProjectionMtx(perspective, GX_PERSPECTIVE);
 
@@ -311,21 +311,16 @@ int game4(void)
 
 
 		// do this stuff after drawing
-		//GX_DrawDone();
+		GX_DrawDone();
 
 		fb ^= 1;		// flip framebuffer
-		//GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-		//GX_SetColorUpdate(GX_TRUE);
-		//GX_CopyDisp(frameBuffer[fb],GX_TRUE);
-
-		//VIDEO_SetNextFramebuffer(frameBuffer[fb]);
+		GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
+		GX_SetColorUpdate(GX_TRUE);
+		GX_CopyDisp(frameBuffer[fb],GX_TRUE);
 
 
-
-		GX_CopyDisp(frameBuffer[0],GX_TRUE);
-
-		//VIDEO_Flush();
-
+		VIDEO_SetNextFramebuffer(frameBuffer[fb]);
+		VIDEO_Flush();
 		VIDEO_WaitVSync();
 
 

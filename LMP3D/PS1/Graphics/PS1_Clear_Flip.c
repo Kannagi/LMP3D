@@ -16,7 +16,7 @@ void LMP3D_Clear()
 	list[1] = GP0_CMD_COLOR(GP0_RECTANGLE_MO,128,128,128);
 	list[2] = GP0_VERTEX(0,0);
 	list[3] = GP0_VERTEX(320,240);
-	list[4] = 0x00ffffff;
+	list[4] = ((unsigned int)&list[0])&0x00ffffff;
 
 	gpu_ctrl(4, 2); // DMA CPU->GPU mode
 	while(!(RW_REGISTER_U32(GP1) & (1<<0x1a))); /* Wait for the GPU to finish
@@ -35,7 +35,7 @@ void LMP3D_Clear()
 
 void LMP3D_FlipBuffer(LMP3D_Buffer *buffer)
 {
-	PS1_BufferDraw();
+	//PS1_BufferDraw();
 	if(buffer->switchBuffer == 0)
 	{
 		PS1_GsSetDispEnv(0,0);

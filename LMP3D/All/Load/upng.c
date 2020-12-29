@@ -1333,6 +1333,9 @@ LMP3D_Texture *LMP3D_Load_png(char *adresse,int offset,void *buffer,int size)
 		break;
 	}
 
+
+
+
 	LMP3D_Texture_Format_Init(texture);
 	texture->pixel = (void*)upng_get_buffer(upng);
 /*

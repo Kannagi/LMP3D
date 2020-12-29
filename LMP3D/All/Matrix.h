@@ -15,6 +15,9 @@ void LMP3D_MatrixOrthogonal(float* matrix);
 void LMP3D_MatrixMultiply(float* dest,float* src1,float* src2);
 float *LMP3D_MatrixProjection_Get();
 
+Vector4 LMP3D_MatrixVecMultiplyFPU(float* matrix,Vector4 vec);
+void LMP3D_MatrixVec3MultiplyFPU(float* src1,float* src2);
+
 void LMP3D_MatrixRotateXS(short *matrix,short rotate);
 void LMP3D_MatrixRotateYS(short *matrix,short rotate);
 void LMP3D_MatrixRotateZS(short *matrix,short rotate);

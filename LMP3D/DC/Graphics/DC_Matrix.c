@@ -38,7 +38,7 @@ void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Load(float *matrix)
 	"frchg		\n	" //LS
 
 
-    ::"r"(matrix) : "memory");
+	::"r"(matrix) : "memory");
 }
 
 
@@ -105,7 +105,7 @@ void __attribute__((optimize("-O0"), noinline)) LMP3D_MatrixMultiply(float* dest
 	"fmov		fr13,@-%1\n	" //LS
 	"fmov		fr12,@-%1\n	" //LS
 
-    ::"r"(src1) , "r"(dest) : "memory");
+	::"r"(src1) , "r"(dest) : "memory");
 }
 
 

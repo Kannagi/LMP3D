@@ -24,12 +24,12 @@
 
 typedef struct
 {
-    char clikright;
-    char clikleft;
-    char exit;
-    int mousex,mousey;
+	char clikright;
+	char clikleft;
+	char exit;
+	int mousex,mousey;
 
-    char key[LMP3D_EVENT_MAX];
+	char key[LMP3D_EVENT_MAX];
 
 }LMP3D_Event;
 
@@ -88,7 +88,7 @@ void LMP3D_Event_Update(LMP3D_Event *event);
 
 #define LMP3D_KEY_DOWN   1
 #define LMP3D_KEY_DOWNW  2
-#define LMP3D_KEY_UP     3
+#define LMP3D_KEY_UP	 3
 
 #endif
 

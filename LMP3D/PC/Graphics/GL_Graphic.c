@@ -13,18 +13,20 @@ void GL_Graphic_Init()
 	glEnable(GL_TEXTURE_2D);
 
 
-    glEnable(GL_ALPHA_TEST);
+	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_EQUAL, 1.0f);
 
 	//glCullFace(GL_FRONT);
 
-/*
+	/*
 	glEnable(GL_BLEND) ;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
-*/
+	*/
 
 
-    //glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
+
+
 
 }
 
@@ -42,8 +44,7 @@ unsigned int LMP3D_VRAM_Get()
 void LMP3D_MatrixMultiply(float* dest,float* src1,float* src2)
 {
 	int i;
-	register float x,y,z,w;
-
+	float x,y,z,w;
 	for(i = 0;i < 4;i++)
 	{
 		x = src2[i+0];
@@ -60,9 +61,9 @@ void LMP3D_MatrixMultiply(float* dest,float* src1,float* src2)
 
 void LMP3D_MatrixPerspective(float* MatrixProjection,float fovy, float aspect, float zNear, float zFar)
 {
-    float deltaZ =zFar-zNear;
+	float deltaZ =zFar-zNear;
 
-    float ps = 640.0f/256.0f;
+	float ps = 640.0f/256.0f;
 
 	MatrixProjection[(0<<2)+0] = ps*0.9;
 	MatrixProjection[(0<<2)+1] = 0;

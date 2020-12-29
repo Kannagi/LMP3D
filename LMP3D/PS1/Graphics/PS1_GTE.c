@@ -50,11 +50,11 @@ void PS1_GTE_Init()
 	"ctc2 $t0,ZSF3\n	"
 	"ctc2 $t0,ZSF4\n	"
 
-     );
+	 );
 }
 
 //int extPerspective[5];
-void PS1_GTE_Perspective_Set()
+void __attribute__((optimize("-O0"), noinline))PS1_GTE_Perspective_Set()
 {
 	int perspective[5];
 	perspective[0] = (320/2)<<16;
@@ -87,8 +87,7 @@ void PS1_GTE_Perspective_Set()
 	"ctc2 $t3,DQB\n	"
 	"ctc2 $t4,H\n	"
 
-
-     :: "r"(perspective) :"memory" );
+	 :: "r"(perspective) :"memory" );
 }
 
 
@@ -137,8 +136,7 @@ void PS1_GTE_MulMat(void *m1,void *m2,void *mr)
 	"swc2	IR2,14(%2)\n	"
 	"swc2	IR3,16(%2)\n	"
 
-
-     :: "r"(m1),"r"(m2),"r"(mr) );
+	 :: "r"(m1),"r"(m2),"r"(mr) );
 
 }
 
@@ -167,8 +165,7 @@ void PS1_GTE_ModelView_Set(void *rotate,void *translate)
 	"ctc2 $t1,TRY\n	"
 	"ctc2 $t2,TRZ\n	"
 
-
-     :: "r"(rotate),"r"(translate));
+	 :: "r"(rotate),"r"(translate));
 
 }
 

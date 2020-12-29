@@ -9,13 +9,16 @@ void LMP3D_Convert_Model(LMP3D_Model *model)
 {
 	unsigned int l=0,i,l2=0;
 
-	float *vt  = model->vt;
+	float *vt;
 	float *v;
+	//float *vn;
 
 	model->size = (model->nv*5*4) + (model->nf*3*2);
 
 	if(!(model->flag & LMP3D_MODEL_FIXEDPOINT))
 		return;
+
+
 
 	short *iv = model->v;
 	v  = malloc(model->nv*3 * sizeof(float));

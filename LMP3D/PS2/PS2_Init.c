@@ -84,11 +84,11 @@ void LMP3D_Init2()
 
 	/*
 	SifInitRpc(0);
-    while(!SifIopReset("", 0)){};
-    while(!SifIopSync()){};
-    SifInitRpc(0);
-    */
-    fioInit();
+	while(!SifIopReset("", 0)){};
+	while(!SifIopSync()){};
+	SifInitRpc(0);
+	*/
+	fioInit();
 
 	PS2_LoadModules();
 /*

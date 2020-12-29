@@ -6,19 +6,21 @@ typedef struct
 	unsigned char bpp,format;
 	unsigned short w,h;
 	unsigned short pixelsize,palsize;
-	unsigned char *pixel,*palette;
+	unsigned short color,psm2;
 	int size;
 	unsigned int address,addresspal,psm;
+	unsigned char *pixel,*palette;
+
 
 }LMP3D_Texture;
 
-void LMP3D_Texture_Load(LMP3D_Texture *texture);    //Load Image to RAM
+void LMP3D_Texture_Load(LMP3D_Texture *texture);	//Load Image to RAM
 void LMP3D_Texture_Upload(LMP3D_Texture *texture);  //Alloc Texture VRAM and send RAM to VRAM
 void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture);  //RAM to VRAM
-void LMP3D_Texture_Setup(LMP3D_Texture *texbuf);    //Select Texture
+void LMP3D_Texture_Setup(LMP3D_Texture *texbuf);	//Select Texture
 
 void LMP3D_Texture_Free_Pixel(LMP3D_Texture *texture); //Free only pixel and pal
-void LMP3D_Texture_Free(LMP3D_Texture *texture);     //Free
+void LMP3D_Texture_Free(LMP3D_Texture *texture);	 //Free
 
 void LMP3D_Texture_Format_Init(LMP3D_Texture *texture);
 void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture);

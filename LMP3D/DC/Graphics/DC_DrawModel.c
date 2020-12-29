@@ -11,6 +11,9 @@
 #include "LMP3D/LMP3D.h"
 #include "LMP3D/DC/DC.h"
 
+//  Z =   X0*Y1 + X1*Y2 + X2*Y0 - X0*Y2 - X1*Y0 - X2*Y1
+//X0*Y1
+
 void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex(void *v,void *vbuf,int nv)
 {
 	int i;
@@ -24,9 +27,13 @@ void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex(void *v,void *v
 	"nop 		\n	" //MT
 
 	"add		#-32,%2\n	" //EX
-	"nop 		\n	" //MT
+	"mov		#-16,r0\n	" //LS
+	//"nop 		\n	" //MT
+
 
 	"loopvertex%=:\n	"
+
+
 
 	//A-------------
 
@@ -71,14 +78,316 @@ void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex(void *v,void *v
 	"fmov		@%1+,fr14\n	" //LS
 	"nop 		\n	" //MT
 
+
 	"fdiv		fr7,fr13\n	" //FE
 	"nop 		\n	" //MT
+
+	//"nop 		\n	" //MT
 	//A-------------
 	"fmul		fr12,fr2\n	" //FE
 	"fmov		fr15,@-%2\n	" //LS
 
 	"fmul		fr12,fr1\n	" //FE
 	"nop 		\n	" //MT
+
+	"fmul		fr12,fr0\n	" //FE
+	"fmov		fr2,@-%2\n	" //LS
+
+	"dt			%0\n	" //EX
+	"fschg\n	" //FE
+
+	"fmov		dr0,@-%2\n	" //LS
+	"fschg\n	" //FE
+
+	"bt/s		loopvertexend%=\n	"//BR
+	"fmul		fr13,fr6\n	" //FE
+
+	//B-------------
+	//"fmov		@(r0,%3),fr8\n	" //LS
+	"fmul		fr13,fr5\n	" //FE
+	"fmov		fr14,@-%3\n	" //LS
+
+
+	"fmul		fr13,fr4\n	" //FE
+	"fmov		fr6,@-%3\n	" //LS
+
+	"dt			%0\n	" //EX
+	"fschg\n	" //FE
+
+	"fmov		dr4,@-%3\n	" //LS
+	"bf/s		loopvertex%=\n	"//BR
+	"fschg\n	" //FE
+
+	"loopvertexend%=:\n	"
+
+	::"r"(i),"r"(v) , "r"(vbuf),"r"(nv)  : "memory");
+}
+
+void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex2(void *v,void *vbuf,int nv)
+{
+	int i;
+
+	asm (
+
+	"mov		%3,%0\n	" //LS
+	"mov		%2,%3\n	" //MT
+
+	"add		#-16,%3\n	" //EX
+	"nop 		\n	" //MT
+
+	"add		#-32,%2\n	" //EX
+	"mov		#-16,r0\n	" //LS
+	//"nop 		\n	" //MT
+
+
+	"loopvertex%=:\n	"
+
+
+
+	//A-------------
+
+	"fschg\n	" //FE
+	"fmov		@%1+,dr0\n	" //LS
+
+	"fschg\n	" //FE
+	"fmov		@%1+,fr2\n	" //LS
+
+	"fldi1		fr3\n	" //LS
+	"add		#48,%2\n	" //EX
+
+	"fmov		@%1+,fr15\n	" //LS
+	"add		#48,%3\n	" //EX
+
+	"fldi1		fr12\n	"//LS
+	"ftrv		xmtrx,fv0\n	" //FE
+
+	//B-------------
+	"fldi1		fr7\n	" //LS
+	"nop 		\n	" //MT
+
+	"fldi1		fr13\n	"//LS
+	"nop 		\n	" //MT
+
+	"fmov		@%1+,fr4\n	" //LS
+	"nop 		\n	" //MT
+
+	"fdiv		fr3,fr12\n	" //FE
+	"nop 		\n	" //MT
+
+	"fmov		@%1+,fr5\n	" //LS
+	"nop 		\n	" //MT
+
+	//B-------------
+	"fmov		@%1+,fr6\n	" //LS
+	"nop 		\n	" //MT
+
+	"ftrv		xmtrx,fv4\n	" //FE
+	"nop 		\n	" //MT
+
+	"fmov		@%1+,fr14\n	" //LS
+	"fmov		@(r0,%2),fr8\n	" //LS
+
+
+	"fdiv		fr7,fr13\n	" //FE
+	"nop 		\n	" //MT
+
+	//"nop 		\n	" //MT
+	//A-------------
+	"fmul		fr12,fr2\n	" //FE
+	"fmov		fr15,@-%2\n	" //LS
+
+	"fmul		fr12,fr1\n	" //FE
+	"nop 		\n	" //MT
+
+	"fmul		fr12,fr0\n	" //FE
+	"fmov		fr2,@-%2\n	" //LS
+
+	"dt			%0\n	" //EX
+	"fschg\n	" //FE
+
+	"fmov		dr0,@-%2\n	" //LS
+	"fschg\n	" //FE
+
+	"bt/s		loopvertexend%=\n	"//BR
+	"fmul		fr13,fr6\n	" //FE
+
+	//B-------------
+	//"fmov		@(r0,%3),fr8\n	" //LS
+	"fmul		fr13,fr5\n	" //FE
+	"fmov		fr14,@-%3\n	" //LS
+
+
+	"fmul		fr13,fr4\n	" //FE
+	"fmov		fr6,@-%3\n	" //LS
+
+	"dt			%0\n	" //EX
+	"fschg\n	" //FE
+
+	"fmov		dr4,@-%3\n	" //LS
+	"bf/s		loopvertex%=\n	"//BR
+	"fschg\n	" //FE
+
+	"loopvertexend%=:\n	"
+
+	::"r"(i),"r"(v) , "r"(vbuf),"r"(nv)  : "memory");
+}
+
+void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex3(void *v,void *vbuf,int nv)
+{
+	int i;
+
+	asm (
+
+	"mov		%3,%0\n	" //LS
+	"mov		%2,%3\n	" //MT
+
+	"add		#-16,%3\n	" //EX
+
+	"add		#-32,%2\n	" //EX
+	"mov		#-16,r0\n	" //LS
+
+
+	"loopvertex%=:\n	"
+
+
+
+	//A-------------
+
+	"fschg\n	" //FE
+	"fmov		@%1+,dr0\n	" //LS
+
+	"fschg\n	" //FE
+	"fmov		@%1+,fr2\n	" //LS
+
+	"fldi1		fr3\n	" //LS
+	"add		#48,%2\n	" //EX
+
+	"fmov		@%1+,fr15\n	" //LS
+	"add		#48,%3\n	" //EX
+
+	"fldi1		fr12\n	"//LS
+	"ftrv		xmtrx,fv0\n	" //FE
+
+	//B-------------
+	"fldi1		fr7\n	" //LS
+
+	"fldi1		fr13\n	"//LS
+
+	"fmov		@%1+,fr4\n	" //LS
+
+	"fdiv		fr3,fr12\n	" //FE
+
+	"fmov		@%1+,fr5\n	" //LS
+
+	//B-------------
+	"fmov		@%1+,fr6\n	" //LS
+
+	"ftrv		xmtrx,fv4\n	" //FE
+
+	"fmov		@%1+,fr14\n	" //LS
+	"fmov		@(r0,%2),fr8\n	" //LS
+
+	"fdiv		fr7,fr13\n	" //FE
+
+
+	//A-------------
+	"fmul		fr12,fr2\n	" //FE
+	"fmov		fr15,@-%2\n	" //LS
+
+	"fmul		fr12,fr1\n	" //FE
+
+	"fmul		fr12,fr0\n	" //FE
+	"fmov		fr2,@-%2\n	" //LS
+
+	"fschg\n	" //FE
+
+	"fmov		dr0,@-%2\n	" //LS
+	"fschg\n	" //FE
+
+	"fmul		fr13,fr6\n	" //FE
+
+	//B-------------
+	"fmul		fr13,fr5\n	" //FE
+	"fmov		fr14,@-%3\n	" //LS
+
+
+	"fmul		fr13,fr4\n	" //FE
+	"fmov		fr6,@-%3\n	" //LS
+
+	"dt			%0\n	" //EX
+	"fschg\n	" //FE
+
+	"fmov		dr4,@-%3\n	" //LS
+	"bf/s		loopvertex%=\n	"//BR
+	"fschg\n	" //FE
+
+	"loopvertexend%=:\n	"
+
+	::"r"(i),"r"(v) , "r"(vbuf),"r"(nv)  : "memory");
+}
+
+void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex4(void *v,void *vbuf,int nv)
+{
+	int i;
+
+	asm (
+
+	"mov		%3,%0\n	" //LS
+	"mov		%2,%3\n	" //MT
+
+	"add		#-16,%3\n	" //EX
+
+	"add		#-32,%2\n	" //EX
+	"mov		#-16,r0\n	" //LS
+
+
+	"loopvertex%=:\n	"
+
+
+
+	//A-------------
+
+	"fschg\n	" //FE
+	"fmov		@%1+,dr0\n	" //LS
+
+	"fschg\n	" //FE
+	"fmov		@%1+,fr2\n	" //LS
+
+	"fldi1		fr3\n	" //LS
+	"add		#48,%2\n	" //EX
+
+	"fmov		@%1+,fr15\n	" //LS
+	"add		#48,%3\n	" //EX
+
+	"fldi1		fr12\n	"//LS
+	"ftrv		xmtrx,fv0\n	" //FE
+
+	//B-------------
+	"fldi1		fr7\n	" //LS
+
+	"fldi1		fr13\n	"//LS
+
+	"fmov		@%1+,fr4\n	" //LS
+
+	"fdiv		fr3,fr12\n	" //FE
+
+	"fmov		@%1+,fr5\n	" //LS
+
+	//B-------------
+	"fmov		@%1+,fr6\n	" //LS
+
+	"ftrv		xmtrx,fv4\n	" //FE
+
+	"fmov		@%1+,fr14\n	" //LS
+	"fmov		@(r0,%2),fr8\n	" //LS
+
+	"fdiv		fr7,fr13\n	" //FE
+
+	//A-------------
+	"fmul		fr12,fr2\n	" //FE
+	"fmov		fr15,@-%2\n	" //LS
+
+	"fmul		fr12,fr1\n	" //FE
 
 	"fmul		fr12,fr0\n	" //FE
 	"fmov		fr2,@-%2\n	" //LS
@@ -112,6 +421,7 @@ void __attribute__((optimize("-O0"), noinline)) DC_Matrix_Vertex(void *v,void *v
 	::"r"(i),"r"(v) , "r"(vbuf),"r"(nv)  : "memory");
 }
 
+
 void __attribute__((optimize("-O0"), noinline)) DC_Index_Draw_NClip(unsigned short *index,unsigned int *buffer,unsigned int *v,int nf)
 {
 	int i;
@@ -137,7 +447,7 @@ void __attribute__((optimize("-O0"), noinline)) DC_Index_Draw_NClip(unsigned sho
 
 	"loopindex%=:\n	"
 
-	//------------
+	//------------ fv0 : x0,x1,x2,0 / fv4 : y1,y2,y0,0 / fv12 : y2,y0,y1,0
 
 	"fmov		@r0+,fr0\n	" //LS
 	"fmov		@r0+,fr6\n	" //LS
@@ -200,7 +510,7 @@ void __attribute__((optimize("-O0"), noinline)) DC_Index_Draw_NClip(unsigned sho
 	"fcmp/gt	fr14,fr12\n	" //FE
 	"mov.l		%5,@-%2\n	" //LS
 
-	"bf		loopindexend%=\n	"//BR
+	"bf			loopindexend%=\n	"//BR
 	"pref 		@%2\n	" //LS
 
 	//2-------------
@@ -232,6 +542,8 @@ void __attribute__((optimize("-O0"), noinline)) DC_Index_Draw_NClip(unsigned sho
 	::"r"(i),"r"(index) ,"r"(buffer) ,"r"(v) ,"r"(nf) ,"r"(PVR_CMD_VERTEX),"r"(PVR_CMD_VERTEX_EOL): "memory");
 
 }
+
+
 unsigned int fBufferVertex[0x10];
 unsigned int BufferVertex[0x8000];
 
@@ -252,12 +564,21 @@ void DC_DrawModel(LMP3D_Model *model)
 	if(typetest & 1)
 	*/
 
-	DC_Matrix_Vertex(model->v,BufferVertex,nv);
+	if(typetest == 0)
+		DC_Matrix_Vertex(model->v,BufferVertex,nv);
 
+	if(typetest == 1)
+		DC_Matrix_Vertex2(model->v,BufferVertex,nv);
 
+	if(typetest == 2)
+		DC_Matrix_Vertex3(model->v,BufferVertex,(nv>>1)+1);
 
-	//if(typetest & 2)
+	if(typetest == 3)
+		DC_Matrix_Vertex4(model->v,BufferVertex,nv);
+
 	DC_Index_Draw_NClip(index,d,BufferVertex,model->nf);
+	//if(typetest & 2)
+	//DC_Index_Draw_NClip(index,d,BufferVertex,model->nf);
 
 	//printf("%f %f %f\n",BufferVertex[0],BufferVertex[1],BufferVertex[2]);
 }

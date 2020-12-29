@@ -109,13 +109,14 @@ void LMP3D_Texture_Convert_Internal(LMP3D_Texture *texture)
 
 			if(ncolor <= 16) LMP3D_Texture_Convert(texture,LMP3D_FORMAT_4BPP);
 
-
 			LMP3D_Texture_Convert_Pal(texture,LMP3D_FORMAT_RGBA1555);
-			if(ncolor > 16) PS2_Convert_Pal(texture);
+			if(ncolor > 16)
+				PS2_Convert_Pal(texture);
 		break;
 
 		case LMP3D_FORMAT_4BPP:
 			LMP3D_Texture_Convert_Pal(texture,LMP3D_FORMAT_RGBA1555);
+			PS2_Convert_Pal(texture);
 		break;
 
 		case LMP3D_FORMAT_2BPP:
@@ -134,7 +135,7 @@ void LMP3D_Texture_Convert_Internal(LMP3D_Texture *texture)
 unsigned short LMP3D_Convert_Pixel(unsigned short pixel)
 {
 
-	//if(pixel == 0) pixel = 1;
+	if(pixel == 0) pixel = 1;
 	if(pixel == 0x7C1F) pixel = 0;
 	else
 	pixel = pixel | 0x8000;

@@ -7,12 +7,12 @@
 
 typedef struct
 {
-    unsigned char manufacturer,version,encoding,bitsPerPlane;
-    unsigned short Xmin,Ymin,Xmax,Ymax,VertDPI,HorzDPI;
-    unsigned char palette[48];
-    unsigned char reserved,colorPlanes;
-    unsigned short bytesPerPlaneLine,paltype,hScrSize,vScrSize;
-    char pad[54];
+	unsigned char manufacturer,version,encoding,bitsPerPlane;
+	unsigned short Xmin,Ymin,Xmax,Ymax,VertDPI,HorzDPI;
+	unsigned char palette[48];
+	unsigned char reserved,colorPlanes;
+	unsigned short bytesPerPlaneLine,paltype,hScrSize,vScrSize;
+	char pad[54];
 }PCX_Header;
 
 LMP3D_Texture *LMP3D_Load_pcx(char *filename,int offset,void *buffer,int size)
@@ -48,7 +48,8 @@ LMP3D_Texture *LMP3D_Load_pcx(char *filename,int offset,void *buffer,int size)
 
 	int i,pal1,pal2,l,psize = texture->size+0x301;
 
-	unsigned char *buf = malloc(psize);
+	//printf("%d\n",psize);
+	unsigned char buf[0x60000];
 	LMP3D_fread(buf,1,psize,file);
 
 	LMP3D_fclose(file);
@@ -82,7 +83,7 @@ LMP3D_Texture *LMP3D_Load_pcx(char *filename,int offset,void *buffer,int size)
 		memcpy(texture->palette,&buf[k],0x300);
 	}
 
-	free(buf);
+	//free(buf);
 
 	LMP3D_Texture_Format_Convert(texture);
 

@@ -131,7 +131,7 @@ void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture)
 
 	RW_REGISTER_U32(D_STAT) = DMA_SET_STAT(1 << 2,0,0,0,0,0,0);
 
-	//SyncDCache(gif, gif + (i<<3));
+	SyncDCache(gif, gif + (i<<3));
 
 	RW_REGISTER_U32(D2_QWC ) = 0;
 	RW_REGISTER_U32(D2_MADR) = 0;
@@ -158,10 +158,14 @@ inline unsigned char draw_log2(unsigned int x)
 void LMP3D_Texture_Setup(LMP3D_Texture *texbuf)
 {
 	if(texbuf == NULL) return;
+	static LMP3D_Texture *texbufrepeat = NULL;
+	if(texbufrepeat == texbuf) return;
+	texbufrepeat = texbuf;
 
 	PS2_clut clut;
 	PS2_lod lod;
 
+	lod.mipmap_select = 0;
 	lod.calculation = 1;
 	lod.max_level = 0;
 	lod.mag_filter = 0;

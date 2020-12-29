@@ -5,7 +5,7 @@
 #include <kernel.h>
 #include "LMP3D/LMP3D.h"
 #include "LMP3D/PS2/PS2.h"
-
+void PS2_VU_Init2D();
 
 LMP3D_Buffer LMP3D_Window(char *name)
 {
@@ -25,6 +25,7 @@ LMP3D_Buffer LMP3D_Window(char *name)
 	PS2_Graphic_Setup(buffer);
 
 	PS2_VU_Init();
+	PS2_VU_Init2D();
 
 	return buffer;
 }

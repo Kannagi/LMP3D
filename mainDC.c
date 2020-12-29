@@ -129,16 +129,21 @@ int __attribute__((optimize("-O0"), noinline)) main2()
 			LMP3D_Model_Draw(model);
 		}
 
+		LMP3D_Camera_Ortho2D();
+
 		vblank = LMP3D_VBlank();
 
 		LMP3D_Camera_Ortho2D();
+
+		LMP3D_Texture_Setup(texture);
+		LMP3D_Draw_Text(16,16,strinfo);
 /*
 		LMP3D_Draw_Config(1);
 
 		LMP3D_Draw_TileMap(tilemap);
 
 		LMP3D_Draw_Sprite(model->texture[0],LMP3D_Type_Vector2i(0,0),NULL,1);
-*/
+
 		LMP3D_Texture_Setup(texture);
 		LMP3D_Draw_Text(16,16,strinfo);
 
@@ -146,7 +151,7 @@ int __attribute__((optimize("-O0"), noinline)) main2()
 		LMP3D_Anim_Play(&anim,2,6);
 
 		LMP3D_Draw_Sprite_Array(sprite,2);
-
+*/
 		LMP3D_FlipBuffer(NULL);
 
 		camera.key[0] = event.key[Button_Left];
@@ -172,7 +177,7 @@ int __attribute__((optimize("-O0"), noinline)) main2()
 
 		if(event.key[Button_Left]  == LMP3D_KEY_DOWNW) tilemap->position.x -= 4;
 		if(event.key[Button_Right] == LMP3D_KEY_DOWNW) tilemap->position.x += 4;
-		if(event.key[Button_Up]    == LMP3D_KEY_DOWNW) tilemap->position.y -= 4;
+		if(event.key[Button_Up]	== LMP3D_KEY_DOWNW) tilemap->position.y -= 4;
 		if(event.key[Button_Down]  == LMP3D_KEY_DOWNW) tilemap->position.y += 4;
 
 
@@ -205,7 +210,7 @@ int __attribute__((optimize("-O0"), noinline)) main2()
 
 	*/
 
-		sprintf(strinfo,"Vblank :%d\nnumber %d\nTri %d ,VRAM : %x ,type %x\n",vblank,number,model->nf*number,pvr_offset,typetest);
+		sprintf(strinfo,"Vblank :%d\nnumber %d\nTri %d ,VRAM : %x ,type %x\n",vblank,number,model->nv*number,pvr_offset,typetest);
 
 		LMP3D_VBlank();
 	}

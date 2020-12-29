@@ -3,12 +3,12 @@
 
 typedef struct
 {
-    char tag[4];
-    unsigned char flags1,flags2,namelen,weightslen;
-    float Xmin,Xmax,Ymin,Ymax,Zmin,Zmax;
-    int nv,nf;
-    int ntexture,nbones,ntime,ngroup;
-    int unused[4];
+	char tag[4];
+	unsigned char flags1,flags2,namelen,weightslen;
+	float Xmin,Xmax,Ymin,Ymax,Zmin,Zmax;
+	int nv,nf;
+	int ntexture,nbones,ntime,ngroup;
+	int unused[4];
 
 }BCM_Header;
 
