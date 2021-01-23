@@ -14,6 +14,21 @@
 ; VF 29 index
 ; VF 30 ,31 clipping
 
+;memory
+;1-5 matrix
+;6
+
+;6-133 vertex 1
+;134-261 vt 1
+;262-389 vertex 2
+;390-517 vt2
+;518-729 index1
+;730-941 index2
+;942-979 buffer1 GIF
+;980-1015 buffer2 GIF
+;1016-1019 Matrix ?
+;1020-1023 light
+
 vu1Triangle_CodeStart:
 	.p2align 4
 	.vu
@@ -65,6 +80,11 @@ vu1Triangle_double:
 	nop					iaddi VI02, VI02, -1
 vertexLoop:
 	;Phase1 
+	
+	nop					iaddiu VI01, VI00,0
+	nop					mfir.w VF29,VI01
+	itof0.w VF29, VF29 nop
+	
 	mulax ACC, VF01, VF09x	div q, VF00w, VF12w 
 
 	madday ACC, VF02, VF09y	lqi  VF11, (VI06++)	; v4
@@ -84,6 +104,7 @@ vertexLoop:
 	itof4 VF08, VF08		nop
 	mulax ACC, VF01, VF11x	nop
 	
+	;mulw.w VF16,VF16,VF29w	nop
 	;Phase3
 	mulq.xyzw VF17, VF13, q	div q, VF00w, VF14w 
 
@@ -94,9 +115,11 @@ vertexLoop:
 	itof4 VF09, VF09		nop
 	nop					iaddi VI04, VI04, -1
 
+	;mulw.w VF17,VF17,VF29w	nop
 	;Phase4
 	mulq.xyzw VF18, VF14, q	div q, VF00w, VF15w 
-
+	;mulw.w VF18,VF18,VF29w	nop
+	
 	mulax ACC, VF01, VF08x	lqi  VF10,(VI06++)	; v3
 	madday ACC, VF02, VF08y	sqi  VF17, (VI02++)	; s v2
 	maddaz ACC, VF03, VF08z	nop
@@ -104,7 +127,7 @@ vertexLoop:
 	itof4 VF10, VF10		nop
 	nop					ibne VI04, VI00, vertexLoop
 	mulq.xyzw VF19, VF15, q	nop
-
+	;mulw.w VF19,VF19,VF29w	nop
 
 	nop					sq VF19, 0(VI02)	; s v4
 	nop					nop
@@ -125,12 +148,16 @@ PS2_VU_Func_Vectrex_Loop:
 	nop					iaddiu VI02, VI00, 262
 	nop					b vu1Triangle_double
 	nop					iaddiu VI06, VI00, 262
+	
+	
+	nop 					sq VF31, 0(VI00)	; s v4
 
 	nop[E]				nop
 	nop					nop
 
 PS2_VU_Func_Index:
 	nop					lqi VF29,(VI12++)
+	nop					iaddiu VI13, VI00, 0x20
 	
 	nop					mtir VI07, VF29x
 	nop					mtir VI08, VF29y
@@ -138,82 +165,70 @@ PS2_VU_Func_Index:
 
 	nop					lq  VF12, 134(VI07)	; vt1
 	nop					lq  VF13, 134(VI08)	; vt2
-	;nop					lq  VF14, 134(VI09)	; vt3
+	nop					lq  VF14, 134(VI09)	; vt3
 	
-	;nop					iadd VI02, VI11, VI03
 	
-	nop					iaddiu VI13, VI00,1
-	nop					mfir.z VF07,VI13
-	itof0.z VF07, VF07 nop
+	nop					iaddiu VI13, VI00,0
+	nop					mfir.w VF07,VI13
+	itof0.w VF07, VF07 nop
 	
+	
+
+	 
 
 ;--------------------------------------------------------------------------------
 IndexLoop:
-	
-	nop					lq  VF14, 134(VI09)	; vt3	
 	nop					iadd VI02, VI11, VI03
 
-	itof15 VF15, VF12		lq  VF08, 6(VI07)	; v1
-	itof15 VF16, VF13		lq  VF09, 6(VI08)	; v2
-	itof15 VF17, VF14		lq  VF10, 6(VI09)	; v3
+	itof15 VF12, VF12		lq  VF08, 6(VI07)	; v1
+	itof15 VF13, VF13		lq  VF09, 6(VI08)	; v2
+	itof15 VF14,VF14		lq  VF10, 6(VI09)	; v3
 	nop					iaddiu VI03, VI03, 37
 	
-	
-	mulw.xyz VF12, VF15, VF08w	nop
-	mulw.xyz VF13, VF16, VF09w	nop
-	mulw.xyz VF14, VF17, VF10w	nop
-	
+	;mulw.xy VF12,VF12,VF08w	nop
+	;mulw.xy VF13,VF13,VF09w	nop
+	;mulw.xy VF14,VF14,VF10w	nop
 
-	
 	ftoi4.xyz VF20, VF08		fcset 0
 	ftoi4.xyz VF21, VF09		iaddi VI14, VI14, -1
 	ftoi4.xyz VF22, VF10		lqi VF29,(VI12++)
-	clipw.xyz VF00,VF00		sq  VF12, 1+0(VI02)	; s vt1
+	sub.xyz VF16,VF08,VF09	sq  VF12, 1+0(VI02)	; s vt1
 
 	subw.xyz VF24,VF08,VF31	sq  VF13, 1+3(VI02)	; s vt2
 	subw.xyz VF25,VF09,VF31	sq  VF14, 1+6(VI02)	; s vt3
 	subw.xyz VF26,VF10,VF31	mtir VI07, VF29x
-	;subw.xyz VF17,VF08,VF09	mtir VI08, VF29y
-	nop	mtir VI08, VF29y
+	sub.xyz VF17,VF10,VF09	mtir VI08, VF29y
 	
 	;	14 cycles
 	
-	;subw.xyz VF16,VF10,VF09	iaddiu VI13, VI00, 0x20
-
-	clipw.xyz VF24,VF30		mtir VI09, VF29z
-	clipw.xyz VF25,VF30		sq  VF20, 1+0+2(VI02)	; s v1
-	clipw.xyz VF26,VF30		sq  VF21, 1+3+2(VI02)	; s v2
-	opmula.xyz acc,VF08,VF09	sq  VF22, 1+6+2(VI02)	; s v3
-	opmsub.xyz VF18,VF10,VF09	lq  VF12, 134(VI07)	; vt1
+	clipw.xyz VF24,VF30		sq  VF20, 1+0+2(VI02)	; s v1
+	clipw.xyz VF25,VF30		sq  VF21, 1+3+2(VI02)	; s v2
+	clipw.xyz VF26,VF30		sq  VF22, 1+6+2(VI02)	; s v3
+	opmula.xyz ACC,VF16,VF17 	mtir VI09, VF29z
+	opmsub.xyz VF18,VF17,VF16 	lq  VF12, 134(VI07)	; vt1
 	nop					lq  VF13, 134(VI08)	; vt2
-	
-	;Z =	X0*Y1 + X1*Y2 + X2*Y0 - X0*Y2 - X1*Y0 - X2*Y1
-
-
+	nop					lq  VF14, 134(VI09)	; vt3
+		
 	;20 cycles
 	
-	nop					iand VI03,VI03,VI10
 	nop					fcand VI01,0xFFFFFF
-	nop					ibeq VI01, VI00, RNextIndexLoop1
+	nop					ibeq VI01, VI00, Clipping1
 	nop					iand VI03,VI03,VI10
 	nop					sq  VF22, 1+0+2(VI02)	; s v1
+	nop					b BackfaceCulling1
 	nop					sq  VF22, 1+3+2(VI02)	; s v2
-RNextIndexLoop1:
+Clipping1:
 
-	;nop					iaddiu VI13, VI00, 0x20
-	;nop					fmand VI01, VI13
-	;nop					ibeq VI01, VI00, RNextIndexLoop0
-	;nop					nop	
-		
-	;nop			 		sq  VF22, 1+1(VI02)	; s v1
-	;nop					sq  VF22, 1+3(VI02)	; s v2
-
-
-RNextIndexLoop0:
+	nop					fmand VI01, VI13
+	nop					ibeq VI01, VI00, BackfaceCulling1
+	nop					nop		
+	;nop					sq  VF22, 1+0+2(VI02)	; s v1
+	;nop					sq  VF22, 1+3+2(VI02)	; s v2
+BackfaceCulling1:
 
 	nop					ibne VI14, VI00, IndexLoop
 	nop					xgkick VI02
-	;26 cycles
+	;28 cycles
 	
 	nop					nop
 	nop[E]				nop
@@ -225,7 +240,7 @@ PS2_VU_Func_Sprite:
 	nop					lq VF01, 0(VI00)
 	nop					lq VF02, 1(VI00)
 	nop					lq VF03, 2(VI00)
-	nop					iaddiu VI01, VI00,4048<<4
+	nop					iaddiu VI01, VI00,0xFFFF
 	nop					iaddiu VI02, VI00, 6
 	
 	nop					mtir VI11, VF03y  ;
