@@ -1,0 +1,5 @@
+;Register Cwc before using a .cwmake
+>
+-{_sOpt}="Debug"
+>
+-#Run Build.cwc -{_wToolchain}= VLianceTool/PS2_RT
