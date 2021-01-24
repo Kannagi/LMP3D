@@ -19,11 +19,6 @@
 -{vIncl}
 -{vFlag}
 >
-;Build DC
--c ../LMP3D/DC/ -o obj/cpp_{_sPlatform}_{_sOpt}/LMP3D/DC/
--{vIncl}
--{vFlag}
->
 ;Generate executable
 -o obj/cpp_{_sPlatform}_{_sOpt}/ -#To _out/{_sPlatform}_{_sOpt}/App.elf 
 -lc -lc -lpad -lkernel
