@@ -4,22 +4,25 @@
 -{vIncl}=
 -I ../ 
 >
+-{pObj}= "obj/{_sPlatform}_{_sOpt}/"
+-{pOut}="_out/{_sPlatform}_{_sOpt}/"
+>
 ;Build Main
--c &../ -o obj/cpp_{_sPlatform}_{_sOpt}/LMP3D/
+-c &../ -o {pObj}LMP3D/
 -{vIncl}
 -{vFlag}
 >
 ;Build PS2
--c ../LMP3D/PS2/ -o obj/cpp_{_sPlatform}_{_sOpt}/LMP3D/PS2/
+-c ../LMP3D/PS2/ -o {pObj}LMP3D/PS2/
 -{vIncl}
 -{vFlag}
 >
 ;Build Core
--c ../LMP3D/All/ -o obj/cpp_{_sPlatform}_{_sOpt}/LMP3D/All/
+-c ../LMP3D/All/ -o {pObj}LMP3D/All/
 -{vIncl}
 -{vFlag}
 >
 ;Generate executable
--o obj/cpp_{_sPlatform}_{_sOpt}/ -#To _out/{_sPlatform}_{_sOpt}/App.elf 
+-o {pObj} -#To {pOut}App.elf 
 -lc -lc -lpad -lkernel
 >
