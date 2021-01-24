@@ -29,3 +29,6 @@
 ;#Copy RC
 -#Copy ../bin/DATA  {pOut}
 >
+;Tips
+-#Trace "Tips: If you are using PCSX2 to run this elf, please enable HostFS under 'inis/PCSX2_vm.ini' => 'HostFs=enabled'"
+>
