@@ -26,3 +26,6 @@
 -o {pObj} -#To {pOut}App.elf 
 -lc -lc -lpad -lkernel
 >
+;#Copy RC
+-#Copy ../bin/DATA  {pOut}
+>
