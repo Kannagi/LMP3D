@@ -1,0 +1,15 @@
+;Register Cwc before using a .cwmake
+>
+-{_sOpt}=O2
+-{sPlatform}=PC
+-{vPFlag}=-DPC
+-{vPIncl}=-I Lib/SDL1/include/
+-{vLink_Lib}=-L Lib/SDL1/lib/
+-lopengl32 -lSDL.dll
+>
+-#Run Build.cwc -{_wToolchain}= VLianceTool/LibRT
+>
+-#Copy Lib/SDL1/bin/ {pOut}
+>
+-#Run
+>

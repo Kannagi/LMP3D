@@ -1,5 +1,12 @@
 ;Register Cwc before using a .cwmake
 >
--{_sOpt}="Debug"
+-{_sOpt}=Debug
+-{sPlatform}=PS2
+-{vPFlag}=-DPLAYSTATION2
+-{vLink_Lib}=-lc -lpad -lkernel
 >
 -#Run Build.cwc -{_wToolchain}= VLianceTool/PS2_RT
+>
+;Tips
+-#Trace "Tips: If you are using PCSX2 to run this elf, please enable HostFS under 'inis/PCSX2_vm.ini' => 'HostFs=enabled'"
+>

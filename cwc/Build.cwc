@@ -1,19 +1,18 @@
--{vFlag}=
--DPLAYSTATION2
+-{vFlag}=-{vPFlag}
 >
--{vIncl}=
--I ../ 
+-{vIncl}=-{vPIncl}
+-I ../
 >
--{pObj}= "obj/{_sPlatform}_{_sOpt}/"
--{pOut}="_out/{_sPlatform}_{_sOpt}/"
+-{pObj}= "obj/{sPlatform}_{_sOpt}/"
+-{pOut}="_out/{sPlatform}_{_sOpt}/"
 >
 ;Build Main
 -c &../ -o {pObj}LMP3D/
 -{vIncl}
 -{vFlag}
 >
-;Build PS2
--c ../LMP3D/PS2/ -o {pObj}LMP3D/PS2/
+;Build plateform
+-c ../LMP3D/{sPlatform}/ -o {pObj}LMP3D/{sPlatform}/
 -{vIncl}
 -{vFlag}
 >
@@ -23,12 +22,9 @@
 -{vFlag}
 >
 ;Generate executable
--o {pObj} -#To {pOut}App.elf 
--lc -lc -lpad -lkernel
+-o {pObj} -#To {pOut}App.* 
+-{vLink_Lib}
 >
 ;#Copy RC
 -#Copy ../bin/DATA  {pOut}
->
-;Tips
--#Trace "Tips: If you are using PCSX2 to run this elf, please enable HostFS under 'inis/PCSX2_vm.ini' => 'HostFs=enabled'"
 >
