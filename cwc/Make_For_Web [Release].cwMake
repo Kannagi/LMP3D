@@ -3,8 +3,8 @@
 -{_sOpt}=O2
 -{sPlatform}=PC
 -{vPFlag}=-DPC
--{vPIncl}=-I Lib/SDL1/include/
--{vLink_Lib}=-L Lib/SDL2/
+-{vPIncl}=-I Lib/SDL2/include/
+-{vLink_Lib}=
  -s USE_SDL=2 -s OFFSCREEN_FRAMEBUFFER=0 -s LEGACY_GL_EMULATION=1 
 >
 -{vPreloadRc}="--preload-file {pOut}/@Rc/"
