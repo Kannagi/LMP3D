@@ -4,6 +4,11 @@
 #ifndef PLAYSTATION1
 #include <time.h>
 #endif
+
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 /*
 #include <stdint.h>
 uint64_t rdtsc()
@@ -29,21 +34,198 @@ int varg_debug = 0;
 
 LMP3D_Anim3D MNS_load_3D_anim(char *nom_du_fichier);
 
-void game(LMP3D_Buffer *buffer)
+
+static LMP3D_Event event;
+static LMP3D_Camera camera;
+static int mode = 1;
+static int mode2 = 0;
+static Vector3 position;
+static int number;
+static LMP3D_TileMap* tilemap;
+static LMP3D_Model *model;
+static char string[100],strfps[50];
+static int vblank = 0;
+static LMP3D_Texture* texture;
+static unsigned int vram;
+static LMP3D_Sprite sprite[2];
+static LMP3D_Anim anim;
+static LMP3D_Buffer *buffer;
+
+void update(){
+
+//model->rotate.y += 0.01;
+	LMP3D_Event_Update(&event);
+
+	camera.key[0] = event.key[Button_Left];
+	camera.key[1] = event.key[Button_Right];
+	camera.key[2] = event.key[Button_Down];
+	camera.key[3] = event.key[Button_Up];
+
+	camera.key[4] = event.key[Button_A];
+	camera.key[5] = event.key[Button_B];
+
+	if(event.key[Button_L3] == LMP3D_KEY_DOWN)
+	{
+		mode2 = !mode2;
+	}
+
+	if(event.key[Button_Start] == LMP3D_KEY_DOWN)
+	{
+		mode = !mode;
+	}
+	/*
+	if(event.key[Button_X] == LMP3D_KEY_DOWN)
+		varg_debug++;
+
+	if(event.key[Button_Y] == LMP3D_KEY_DOWN)
+		varg_debug--;
+
+	varg_debug = varg_debug&3;
+*/
+	//camera
+	if(mode == 0)
+		LMP3D_Camera_ViewSub(&camera);
+	else
+		LMP3D_Camera_ViewObj(&camera,&position);
+
+	if(event.key[Button_R2] == LMP3D_KEY_DOWN) number +=10;
+	if(event.key[Button_L2] == LMP3D_KEY_DOWN) number -=10;
+	if(event.key[Button_R1] == LMP3D_KEY_DOWN) number++;
+	if(event.key[Button_L1] == LMP3D_KEY_DOWN) number--;
+
+
+	if(event.key[Button_Left]  == LMP3D_KEY_DOWNW) tilemap->position.x -= 4;
+	if(event.key[Button_Right] == LMP3D_KEY_DOWNW) tilemap->position.x += 4;
+	if(event.key[Button_Up]	== LMP3D_KEY_DOWNW) tilemap->position.y -= 4;
+	if(event.key[Button_Down]  == LMP3D_KEY_DOWNW) tilemap->position.y += 4;
+
+/*
+	if(event.key[Button_Select] == LMP3D_KEY_DOWN)
+	{
+		mode2++;
+		mode2 = mode2&7;
+
+	}*/
+	LMP3D_Clear();
+
+
+	LMP3D_Camera_Perspective(camera);
+
+/*
+	if(event.key[Button_Select] == LMP3D_KEY_DOWN)
+	{
+		mode2 = !mode2;
+		if(mode2)
+			SetGsCrt(0, 2, 0);
+		else
+			SetGsCrt(1, 2, 1);
+	}
+*/
+	if(mode2 == 0)
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	for(int i = 0;i <  number;i++)
+	{
+		int tmpx,tmpy;
+		tmpx = (i&0x0F)<<5;
+		tmpy = (i&0xF0)<<3;
+
+		model->position.x = tmpx;
+		model->position.y = tmpy-100;
+
+
+		LMP3D_Model_Draw(model);
+	}
+
+	if(mode2 == 0)
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+	LMP3D_Camera_Ortho2D();
+
+
+	//LMP3D_Draw_Config(1);
+
+
+
+	//LMP3D_Draw_TileMap(tilemap);
+
+	//LMP3D_Draw_Sprite(model->texture[0],LMP3D_Type_Vector2i(0,0),NULL,1);
+	//LMP3D_Draw_Sprite(texture3,LMP3D_Type_Vector2i(0,0),NULL,1);
+
+
+
+
+	//sprintf(string,"ms :%d\nnumber %d\nTri %d\n",vblank,number,model->nf*number);
+	//sprintf(string,"Time %s\nVblank :%d\nnumber %d\nTri %d\nperf %x\n%d\n",strfps,vblank,number,model->nf*number,model->texture[0]->addresspal,mode);
+
+	//sprintf(string,"Vblank :%d/54770\nnumber %d\nTri %d\nVertex %d",vblank,number,model->nf*number,model->nv*number);
+
+	sprintf(string,"Tri %d\nVertex %d\nvblank: %d\nvram : %x",model->nf*number,model->nv*number,vblank,vram);
+	LMP3D_Texture_Setup(texture);
+	LMP3D_Draw_Text(8,8,string);
+
+	sprintf(string,"Cycle :%d",(54770-vblank)*91);
+	LMP3D_Texture_Setup(texture);
+	//LMP3D_Draw_Text(8,200,string);
+
+
+	LMP3D_VRAM_Info(string);
+	LMP3D_Draw_Text(8,200,string);
+
+	sprite[1].rect.x = 32*anim.i;
+	LMP3D_Anim_Play(&anim,5,6);
+
+	LMP3D_Draw_Sprite_Array(sprite,2);
+
+
+
+
+	//printf("p: %f\n",model->position.z);
+	//printf("buf %x %x %x\n",buffer->faddress1,buffer->faddress2,buffer->zaddress);
+
+
+	//LMP3D_Camera_Perspective(camera);
+
+	//LMP3D_VBlank();
+	//model->position.z = -100;
+/*
+	if(mode2 == 0)
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	i = 0;
+	for(i = 0;i <  number;i++)
+	{
+		tmpx = (i&0x0F)<<5;
+		tmpy = (i&0xF0)<<3;
+
+		model->position.x = tmpx;
+		model->position.y = tmpy-100;
+
+
+		LMP3D_Model_Draw(model);
+	}
+*/
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+	LMP3D_FlipBuffer(buffer);
+
+	vblank = LMP3D_VBlank();
+}
+
+void game(LMP3D_Buffer *_buffer)
 {
+	buffer=_buffer;
+	
 	LMP3D_TAR tar;
 	printf("Begin game\n----------------\n");
 
-	LMP3D_Event event;
-	LMP3D_Camera camera;
+
 	camera = LMP3D_Camera_Init();
 
 	LMP3D_Event_Init(&event);
-	LMP3D_Model *model;
 
 
 
-	unsigned int vram = LMP3D_VRAM_Get();
+
+	vram = LMP3D_VRAM_Get();
 
 /*
 	int size;
@@ -73,16 +255,29 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 
 */
 
+
+#ifdef EMSCRIPTEN
+
+	model = LMP3D_Load_Model("Rc/zack.bcm",NULL,NULL,0);
+	if(!model){
+		printf("\nFail loading model\n");
+	}
+#else
+
+
 	LMP3D_Tar(&tar,"DATA","zack.bcm",LMP3D_TAR_OFFSET,NULL,0);
 
 	//LMP3D_Tar(&tar,"DATA","Tidus/Tidus.bcm",LMP3D_TAR_OFFSET,NULL,0);
 
 	model = LMP3D_Load_Model("DATA",tar.offset,NULL,0);
+
 	//model = LMP3D_Load_Model("boy.bcm",NULL,NULL,0);
 	//model = LMP3D_Load_Model("teapot.bcm",NULL,NULL,0);
 	//model = LMP3D_Load_Model("lightning.bcm",NULL,NULL,0);
 	//model = LMP3D_Load_Model("zack.bcm",0,NULL,0);
 	//model = LMP3D_Load_Model("untitled.bcm",NULL,NULL,0);
+#endif
+	
 /*
 	LMP3D_Model_Free(model);
 	model = LMP3D_Load_Model("DATA",tar.offset,NULL,0);*/
@@ -115,23 +310,21 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 	}*/
 
 	LMP3D_Tar(&tar,"DATA","font.png",LMP3D_TAR_OFFSET,NULL,0);
-	LMP3D_Texture *texture = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
+	texture = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
 	LMP3D_Texture_Upload(texture);
 	LMP3D_Texture_Free_Pixel(texture);
 
-	char string[100],strfps[50];
-	int vblank = 0;
 
 	//int t_end,t_begin,fps = 0,total=0;
 
-	int number = 1,tmpx,tmpy;
+	number = 1;
 
 	LMP3D_Tar(&tar,"DATA","adell.pcx",LMP3D_TAR_OFFSET,NULL,0);
 	LMP3D_Texture *texture2 = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
 	LMP3D_Texture_Upload(texture2);
 	LMP3D_Texture_Free_Pixel(texture2);
 
-	LMP3D_Sprite sprite[2];
+
 
 	LMP3D_Tar(&tar,"DATA","tile.pcx",LMP3D_TAR_OFFSET,NULL,0);
 	LMP3D_Texture *texture3 = LMP3D_Load_Texture("DATA",tar.offset,NULL,tar.size);
@@ -139,10 +332,9 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 	LMP3D_Texture_Free_Pixel(texture3);
 
 	LMP3D_Tar(&tar,"DATA","out.ktm",LMP3D_TAR_OFFSET,NULL,0);
-	LMP3D_TileMap *tilemap = LMP3D_Load_TileMap("DATA",tar.offset,NULL,tar.size);
+	tilemap = LMP3D_Load_TileMap("DATA",tar.offset,NULL,tar.size);
 	tilemap->texture = texture3;
 
-	LMP3D_Anim anim;
 
 	LMP3D_Anim_Init(&anim);
 
@@ -172,7 +364,7 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 
 	//float scale = 32.0f;
 	//model->scale = LMP3D_Type_Vector3(scale,scale,scale);
-	Vector3 position = model->position;
+	position = model->position;
 	position.y = 0;
 
 	camera.angle.z = position.z;
@@ -182,167 +374,16 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 	//model->rotate.x += -PI/2;
 
 
-	int mode = 1;
-	int mode2 = 0;
+
+#ifdef EMSCRIPTEN
+	// register update as callback
+	emscripten_set_main_loop(update, 0, 1);
+#else
 	while(event.exit == 0)
 	{
-		//model->rotate.y += 0.01;
-		LMP3D_Event_Update(&event);
-
-		camera.key[0] = event.key[Button_Left];
-		camera.key[1] = event.key[Button_Right];
-		camera.key[2] = event.key[Button_Down];
-		camera.key[3] = event.key[Button_Up];
-
-		camera.key[4] = event.key[Button_A];
-		camera.key[5] = event.key[Button_B];
-
-		if(event.key[Button_L3] == LMP3D_KEY_DOWN)
-		{
-			mode2 = !mode2;
-		}
-
-		if(event.key[Button_Start] == LMP3D_KEY_DOWN)
-		{
-			mode = !mode;
-		}
-		/*
-		if(event.key[Button_X] == LMP3D_KEY_DOWN)
-			varg_debug++;
-
-		if(event.key[Button_Y] == LMP3D_KEY_DOWN)
-			varg_debug--;
-
-		varg_debug = varg_debug&3;
-*/
-		//camera
-		if(mode == 0)
-			LMP3D_Camera_ViewSub(&camera);
-		else
-			LMP3D_Camera_ViewObj(&camera,&position);
-
-		if(event.key[Button_R2] == LMP3D_KEY_DOWN) number +=10;
-		if(event.key[Button_L2] == LMP3D_KEY_DOWN) number -=10;
-		if(event.key[Button_R1] == LMP3D_KEY_DOWN) number++;
-		if(event.key[Button_L1] == LMP3D_KEY_DOWN) number--;
-
-
-		if(event.key[Button_Left]  == LMP3D_KEY_DOWNW) tilemap->position.x -= 4;
-		if(event.key[Button_Right] == LMP3D_KEY_DOWNW) tilemap->position.x += 4;
-		if(event.key[Button_Up]	== LMP3D_KEY_DOWNW) tilemap->position.y -= 4;
-		if(event.key[Button_Down]  == LMP3D_KEY_DOWNW) tilemap->position.y += 4;
-
-/*
-		if(event.key[Button_Select] == LMP3D_KEY_DOWN)
-		{
-			mode2++;
-			mode2 = mode2&7;
-
-		}*/
-		LMP3D_Clear();
-
-
-		LMP3D_Camera_Perspective(camera);
-
-/*
-		if(event.key[Button_Select] == LMP3D_KEY_DOWN)
-		{
-			mode2 = !mode2;
-			if(mode2)
-				SetGsCrt(0, 2, 0);
-			else
-				SetGsCrt(1, 2, 1);
-		}
-*/
-		if(mode2 == 0)
-		//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-		for(i = 0;i <  number;i++)
-		{
-			tmpx = (i&0x0F)<<5;
-			tmpy = (i&0xF0)<<3;
-
-			model->position.x = tmpx;
-			model->position.y = tmpy-100;
-
-
-			LMP3D_Model_Draw(model);
-		}
-
-		if(mode2 == 0)
-		//glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-
-		LMP3D_Camera_Ortho2D();
-
-
-		//LMP3D_Draw_Config(1);
-
-
-
-		//LMP3D_Draw_TileMap(tilemap);
-
-		//LMP3D_Draw_Sprite(model->texture[0],LMP3D_Type_Vector2i(0,0),NULL,1);
-		//LMP3D_Draw_Sprite(texture3,LMP3D_Type_Vector2i(0,0),NULL,1);
-
-
-
-
-		//sprintf(string,"ms :%d\nnumber %d\nTri %d\n",vblank,number,model->nf*number);
-		//sprintf(string,"Time %s\nVblank :%d\nnumber %d\nTri %d\nperf %x\n%d\n",strfps,vblank,number,model->nf*number,model->texture[0]->addresspal,mode);
-
-		//sprintf(string,"Vblank :%d/54770\nnumber %d\nTri %d\nVertex %d",vblank,number,model->nf*number,model->nv*number);
-
-		sprintf(string,"Tri %d\nVertex %d\nvblank: %d\nvram : %x",model->nf*number,model->nv*number,vblank,vram);
-		LMP3D_Texture_Setup(texture);
-		LMP3D_Draw_Text(8,8,string);
-
-		sprintf(string,"Cycle :%d",(54770-vblank)*91);
-		LMP3D_Texture_Setup(texture);
-		//LMP3D_Draw_Text(8,200,string);
-
-
-		LMP3D_VRAM_Info(string);
-		LMP3D_Draw_Text(8,200,string);
-
-		sprite[1].rect.x = 32*anim.i;
-		LMP3D_Anim_Play(&anim,5,6);
-
-		LMP3D_Draw_Sprite_Array(sprite,2);
-
-
-
-
-		//printf("p: %f\n",model->position.z);
-		//printf("buf %x %x %x\n",buffer->faddress1,buffer->faddress2,buffer->zaddress);
-
-
-		//LMP3D_Camera_Perspective(camera);
-
-		//LMP3D_VBlank();
-		//model->position.z = -100;
-/*
-		if(mode2 == 0)
-		//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-		i = 0;
-		for(i = 0;i <  number;i++)
-		{
-			tmpx = (i&0x0F)<<5;
-			tmpy = (i&0xF0)<<3;
-
-			model->position.x = tmpx;
-			model->position.y = tmpy-100;
-
-
-			LMP3D_Model_Draw(model);
-		}
-*/
-		//glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-
-		LMP3D_FlipBuffer(buffer);
-
-		vblank = LMP3D_VBlank();
-
-
+		update();
 	}
+#endif
 
 	LMP3D_VRAM_Set(vram);
 }

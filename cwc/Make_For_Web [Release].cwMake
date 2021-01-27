@@ -7,7 +7,7 @@
 -{vLink_Lib}=
  -s USE_SDL=2 -s OFFSCREEN_FRAMEBUFFER=0 -s LEGACY_GL_EMULATION=1 
 >
--{vPreloadRc}="--preload-file {pOut}/@Rc/"
+-{vPreloadRc}="--preload-file Rc"
 >
 -#Run Build.cwc -{_wToolchain}= VLianceTool/WebRT
 >

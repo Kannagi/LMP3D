@@ -13,7 +13,9 @@ LMP3D_Model *LMP3D_Load_bcm(char *filename,int offset,void *buffer,int size)
 	void *file;
 	file = LMP3D_fopen(filename,"rb",buffer,offset+size);
 
-	if(file == NULL) return NULL;
+	if(file == NULL) {
+		return NULL;
+	}
 
 	LMP3D_fseek(file, offset, SEEK_SET);
 

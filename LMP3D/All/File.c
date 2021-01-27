@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "LMP3D/LMP3D.h"
 
@@ -31,6 +32,7 @@ void *LMP3D_fopen(char *path,char *mode,void *buffer,int size)
 		internalfile->file = fopen(srtfile,mode);
 		if(internalfile->file == NULL)
 		{
+			printf("\nError: %s [ %s ]",strerror(errno), path );
 			free(internalfile);
 			return NULL;
 		}
