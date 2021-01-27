@@ -42,7 +42,7 @@ void MNS_draw_skeleton_anim(LMP3D_Model *model,int j)
 	}
 
 	glColor3f(1.0f, 1.0f, 1.0f);
-	return 0;
+//	return 0;
 }
 
 void MNS_draw_skeleton(LMP3D_Model *model)

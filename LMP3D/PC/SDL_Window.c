@@ -3,17 +3,32 @@
 
 #ifdef PC
 
+#ifdef EMSCRIPTEN
+#include <SDL2/SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
+
 #include "LMP3D/LMP3D.h"
 
 void GL_Graphic_Init();
 
-
+#include <GL/gl.h>
 LMP3D_Buffer LMP3D_Window(char *name)
 {
+#ifdef EMSCRIPTEN
+	SDL_Renderer *renderer = NULL;
+	SDL_Window *window = NULL;
+	SDL_CreateWindowAndRenderer(512, 512, SDL_WINDOW_OPENGL, &window, &renderer);	
+#else	
 	SDL_WM_SetCaption(name, NULL);
-
-	SDL_SetVideoMode(640,480, 24,SDL_OPENGL);
+	SDL_Surface *screen = SDL_SetVideoMode(640,480, 16,SDL_OPENGL);
+	if ( !screen ) {
+		printf("Unable to set video mode: %s\n", SDL_GetError());
+	}
+#endif
+	
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // *new*
 
 	GL_Graphic_Init();
 

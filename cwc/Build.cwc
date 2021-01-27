@@ -22,7 +22,7 @@
 -{vFlag}
 >
 ;Generate executable
--o {pObj} -#To {pOut}App.* 
+-o {pObj} -#To {pOut}App.*  -{vPreloadRc} 
 -{vLink_Lib}
 >
 ;#Copy RC

@@ -185,7 +185,8 @@ int LMP3D_Texture_Convert(LMP3D_Texture *texture,int psmfinal)
 	if( (texture->format == LMP3D_FORMAT_8BPP) && (psmfinal == LMP3D_FORMAT_RGBA1555 ) )
 	{
 		n = texture->w*texture->h;
-		spixel = cpixel = pixel = malloc(n<<1);
+		cpixel = pixel = malloc(n<<1);
+		spixel = (unsigned short*)cpixel;
 		l = 0;
 		int id;
 

@@ -1,0 +1,17 @@
+;Register Cwc before using a .cwmake
+>
+-{_sOpt}=O2
+-{sPlatform}=PC
+-{vPFlag}=-DPC
+-{vPIncl}=-I Lib/SDL1/include/
+-{vLink_Lib}=-L Lib/SDL2/
+ -s USE_SDL=2 -s OFFSCREEN_FRAMEBUFFER=0 -s LEGACY_GL_EMULATION=1 
+>
+-{vPreloadRc}="--preload-file {pOut}/@Rc/"
+>
+-#Run Build.cwc -{_wToolchain}= VLianceTool/WebRT
+>
+-#Copy Lib/SDL1/bin/ {pOut}
+>
+-#Run
+>
