@@ -3,7 +3,11 @@
 
 #ifdef PC
 
+#ifdef EMSCRIPTEN
+#include <SDL2/SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
 
 #include "LMP3D/LMP3D.h"
 
@@ -70,12 +74,12 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 			break;
 
 			case SDL_KEYDOWN:
-				i = sdlevent.key.keysym.sym;
+				i = sdlevent.key.keysym.sym & 0xFFF;
 				event->key[i] = 1;
 			break;
 
 			case SDL_KEYUP:
-				i = sdlevent.key.keysym.sym;
+				i = sdlevent.key.keysym.sym & 0xFFF;
 				event->key[i] = 3;
 			break;
 			/*
@@ -165,6 +169,7 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 	}
 
 
+
 	event->key[Button_Start] = event->key['h'];
 	event->key[Button_Select] = event->key['j'];
 
@@ -173,11 +178,10 @@ void LMP3D_Event_Update(LMP3D_Event *event)
 	event->key[Button_X] = event->key['f'];
 	event->key[Button_Y] = event->key['g'];
 
-	event->key[Button_Up] = event->key[SDLK_UP];
-	event->key[Button_Down] = event->key[SDLK_DOWN];
-	event->key[Button_Right] = event->key[SDLK_RIGHT];
-	event->key[Button_Left] = event->key[SDLK_LEFT];
-
+	event->key[Button_Up] = event->key[(SDLK_UP & 0xFFF)];
+	event->key[Button_Down] = event->key[(SDLK_DOWN& 0xFFF)];
+	event->key[Button_Right] = event->key[(SDLK_RIGHT& 0xFFF)];
+	event->key[Button_Left] = event->key[(SDLK_LEFT& 0xFFF)];
 
 	event->key[Button_L1] = event->key['x'];
 	event->key[Button_R1] = event->key['c'];

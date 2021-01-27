@@ -3,7 +3,12 @@
 
 #ifdef PC
 
+#ifdef EMSCRIPTEN
+#include <SDL2/SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
+
 #include "LMP3D/LMP3D.h"
 
 SDL_Joystick *LMP3D_joystick = NULL;
