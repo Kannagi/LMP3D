@@ -10,6 +10,20 @@
 
 void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture)
 {
+
+#ifdef EMSCRIPTEN
+	glBindTexture(GL_TEXTURE_2D,texture->address);
+	glTexImage2D (
+	GL_TEXTURE_2D, 	//Type : texture 2D
+	0, 	//Mipmap : aucun
+	GL_RGBA, 	//Couleurs : 4
+	texture->w, 	//Largeur
+	texture->h, 	//Hauteur
+	0, 	//Largeur du bord : 0
+	 GL_RGBA,
+	 GL_UNSIGNED_BYTE, 	//Type des couleurs
+	texture->pixel 	//Addresse de l'texture
+#else
 	glBindTexture(GL_TEXTURE_2D,texture->address);
 	glTexImage2D (
 	GL_TEXTURE_2D, 	//Type : texture 2D
@@ -21,6 +35,8 @@ void LMP3D_Texture_Upload_VRAM(LMP3D_Texture *texture)
 	texture->psm,
 	texture->psm2, 	//Type des couleurs
 	texture->pixel 	//Addresse de l'texture
+#endif	
+	
 	);
 }
 
@@ -34,6 +50,12 @@ void LMP3D_Texture_Upload(LMP3D_Texture *texture)
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+
+
+
+
+
 
 }
 
