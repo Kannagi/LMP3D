@@ -255,16 +255,15 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 
 */
 
+/*
+#ifndef EMSCRIPTEN
 
-#ifdef EMSCRIPTEN
-
-	model = LMP3D_Load_Model("Rc/zack.bcm",NULL,NULL,0);
+	model = LMP3D_Load_Model("zack.bcm",NULL,NULL,0);
 	if(!model){
 		printf("\nFail loading model\n");
 	}
 #else
-
-
+*/
 	LMP3D_Tar(&tar,"DATA","zack.bcm",LMP3D_TAR_OFFSET,NULL,0);
 
 	//LMP3D_Tar(&tar,"DATA","Tidus/Tidus.bcm",LMP3D_TAR_OFFSET,NULL,0);
@@ -276,7 +275,7 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 	//model = LMP3D_Load_Model("lightning.bcm",NULL,NULL,0);
 	//model = LMP3D_Load_Model("zack.bcm",0,NULL,0);
 	//model = LMP3D_Load_Model("untitled.bcm",NULL,NULL,0);
-#endif
+//#endif
 	
 /*
 	LMP3D_Model_Free(model);
@@ -314,6 +313,11 @@ LMP3D_Tar(&tar,"","zack.bcm",LMP3D_TAR_OFFSET,DATA_ROM,size);
 	LMP3D_Texture_Upload(texture);
 	LMP3D_Texture_Free_Pixel(texture);
 
+if(!texture){
+	printf("\nError loading texture\n");
+}else{
+	printf("#nTexture sucess\n");
+}
 
 	//int t_end,t_begin,fps = 0,total=0;
 
