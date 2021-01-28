@@ -51,8 +51,8 @@ static LMP3D_Sprite sprite[2];
 static LMP3D_Anim anim;
 static LMP3D_Buffer *buffer;
 
-void update(){
 
+void update(){
 //model->rotate.y += 0.01;
 	LMP3D_Event_Update(&event);
 
@@ -209,6 +209,19 @@ void update(){
 
 	vblank = LMP3D_VBlank();
 }
+
+#ifdef EMSCRIPTEN
+void emsc_update(){
+	EM_ASM(
+		if(meter != undefined) meter.tickStart();
+	);
+	update();
+
+	EM_ASM(
+		if(meter != undefined) meter.tick();
+	);
+}
+#endif
 
 void game(LMP3D_Buffer *_buffer)
 {
@@ -381,7 +394,7 @@ if(!texture){
 
 #ifdef EMSCRIPTEN
 	// register update as callback
-	emscripten_set_main_loop(update, 0, 1);
+	emscripten_set_main_loop(emsc_update, 0, 1);
 #else
 	while(event.exit == 0)
 	{
