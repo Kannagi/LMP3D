@@ -1,3 +1,15 @@
+# CWC Version
+
+Try it out in your browser [here](https://cwc-lib.github.io/LMP3D/cwc/Web/App.html)
+
+## How to build
+-Grab the last [Cwc](https://github.com/VLiance/Cwc/releases) Release
+
+-Open the executable, the first use it will asscociate **.cwMake** files. *The menu "Config/Set cwc" do the same thing.*
+
+-Download this repo. Some **.cwMake** is avalaible under the cwc folder. Double click on it, the *Toolchains* and *Libs* will be automaticly downloaded, then compiled.
+
+***
 # LMP3D
 Multi Platform 3D Library
 This project aims to create a unified lib for different consoles without losing performance.
