@@ -8,7 +8,7 @@
 #include <tamtypes.h>
 
 #include "LMP3D/PS2/PS2.h"
-#include "PS2_vu1Triangle.c"
+#include "PS2_vu1Triangle.inc"
 
 #define PS2_VU_Func_Vectrex 		(0x0000>>3)
 #define PS2_VU_Func_Vectrex_Loop 	(0x0010>>3)
@@ -362,4 +362,3 @@ void PS2_VU_Draw(float* matrix,LMP3D_Model *model)
 
 
 #endif
-
