@@ -15,24 +15,28 @@ void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture)
 			texture->color = 1;
 			texture->psm = 6409;
 			texture->psm2 = GL_UNSIGNED_BYTE;
+			printf("\nUse LMP3D_FORMAT_LUM\n");
 		break;
 
 		case LMP3D_FORMAT_LUMA:
 			texture->color = 1;
 			texture->psm = 6410;
 			texture->psm2 = GL_UNSIGNED_BYTE;
+			printf("\nUse LMP3D_FORMAT_LUMA\n");
 		break;
 
 		case LMP3D_FORMAT_RGB888:
 			texture->color = 3;
 			texture->psm = GL_RGB;
 			texture->psm2 = GL_UNSIGNED_BYTE;
+			printf("\nUse GL_RGB\n");
 		break;
 
 		case LMP3D_FORMAT_RGBA8888:
 			texture->color = 4;
 			texture->psm = GL_RGBA;
 			texture->psm2 = GL_UNSIGNED_BYTE;
+			printf("\nUse GL_RGBA\n");
 		break;
 
 		case LMP3D_FORMAT_RGB555:
@@ -40,6 +44,7 @@ void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture)
 			texture->psm = GL_RGB;
 			//texture->psm2 = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 			texture->psm2 = 33638;
+			printf("\nUse GL_RGB\n");
 		break;
 
 		case LMP3D_FORMAT_RGBA1555:
@@ -47,20 +52,22 @@ void LMP3D_Texture_Format_Convert(LMP3D_Texture *texture)
 			texture->psm = GL_RGBA;
 			//texture->psm2 = GL_UNSIGNED_SHORT_1_5_5_5_REV;
 			texture->psm2 = 33638;
+			printf("\nUse GL_RGBA\n");
 		break;
 
 		case LMP3D_FORMAT_8BPP:
 			texture->color = 1;
 			texture->psm = 6409;
 			texture->psm2 = GL_UNSIGNED_BYTE;
+			printf("\nUse LMP3D_FORMAT_8BPP\n");
 		break;
 
 		case LMP3D_FORMAT_4BPP:
-
+			printf("\nUse LMP3D_FORMAT_4BPP\n");
 		break;
 
 		case LMP3D_FORMAT_2BPP:
-
+			printf("\nUse LMP3D_FORMAT_2BPP\n");
 		break;
 
 		default:
@@ -86,7 +93,10 @@ void LMP3D_Texture_Convert_Internal(LMP3D_Texture *texture)
 		break;
 
 		case LMP3D_FORMAT_RGBA8888:
+			#ifndef EMSCRIPTEN
 			LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555);
+			printf("\nUse LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555)\n");
+			#endif
 		break;
 
 		case LMP3D_FORMAT_RGB555:
@@ -96,7 +106,10 @@ void LMP3D_Texture_Convert_Internal(LMP3D_Texture *texture)
 		break;
 
 		case LMP3D_FORMAT_8BPP:
+			#ifndef EMSCRIPTEN
 			LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555);
+			printf("\nUse LMP3D_Texture_Convert(texture,LMP3D_FORMAT_RGBA1555)\n");
+			#endif
 		break;
 
 		case LMP3D_FORMAT_4BPP:

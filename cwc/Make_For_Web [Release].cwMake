@@ -5,9 +5,10 @@
 -{vPFlag}=-DPC
 -{vPIncl}=-I Lib/SDL2/include/
 -{vLink_Lib}=
- -s USE_SDL=2 -s OFFSCREEN_FRAMEBUFFER=0 -s LEGACY_GL_EMULATION=1 
+ -s USE_SDL=2 -s LEGACY_GL_EMULATION=1 
+ ;-s MAX_WEBGL_VERSION=2
 >
--{vPreloadRc}="--preload-file Rc@."
+-{vPreloadRc}="--preload-file Rc@." 
 >
 -#Run Build.cwc -{_wToolchain}= VLianceTool/WebRT
 >
