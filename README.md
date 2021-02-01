@@ -1,6 +1,6 @@
 # LMP3D
-LMP3D has become Aura Engine.
-This project aims to create a unified lib for different consoles without losing performance.
+LMP3D has become Aura Engine.  
+This project aims to create a unified lib for different consoles without losing performance.  
 Any contribution is welcome.
 
 ## The objective of this project is to create a engine for:
@@ -11,7 +11,7 @@ Any contribution is welcome.
 - XBOX
 - PSP
 
-(the PS1 version no longer exists, it will be on a specific Github for PS1 / Saturn)
+(the PS1 version no longer exists, it will be on a specific Github for PS1 / Saturn)  
 
 # Currently I am working on the PS1.
 <img src="sc2.png?raw=true" alt="PS1 Demo" width="480" height="360">
