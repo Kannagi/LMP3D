@@ -1,10 +1,9 @@
 # LMP3D
-Multi Platform 3D Library
+LMP3D has become Aura Engine.
 This project aims to create a unified lib for different consoles without losing performance.
 Any contribution is welcome.
 
-## The objective of this project is to create a 3D library for:
-- Playstation 1
+## The objective of this project is to create a engine for:
 - Playstation 2
 - DreamCast
 - GameCube
@@ -12,15 +11,7 @@ Any contribution is welcome.
 - XBOX
 - PSP
 
-## list of things to do:
-
-Playstation 1 / Playstation 2 / Dreamcast:
-- Skeleton animation
-
-Playstation 1:
-- improve the perspective
-- PSXSDK is way too long to handle the joypad
-
+(the PS1 version no longer exists, it will be on a specific Github for PS1 / Saturn)
 
 # Currently I am working on the PS1.
 <img src="sc2.png?raw=true" alt="PS1 Demo" width="480" height="360">
